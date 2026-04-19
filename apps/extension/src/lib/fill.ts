@@ -1,12 +1,21 @@
 import type { Profile, ProfileKey } from '@emplorio/shared';
+import { loadProfile } from './storage.js';
 
-export async function getProfile(): Promise<Profile | null> {
-  const { profile } = await chrome.storage.local.get('profile');
-  return (profile as Profile | undefined) ?? null;
+export async function getProfile(): Promise<Partial<Profile> | null> {
+  return loadProfile();
 }
 
-export function fillField(el: HTMLInputElement, profile: Profile, key: ProfileKey): boolean {
-  const value = (profile as Record<string, unknown>)[key];
+export function fillField(
+  el: HTMLInputElement,
+  profile: Partial<Profile>,
+  key: ProfileKey,
+): boolean {
+  let value = (profile as Record<string, unknown>)[key];
+  if ((value == null || value === '') && key === 'fullName') {
+    const fn = profile.firstName ?? '';
+    const ln = profile.lastName ?? '';
+    if (fn || ln) value = `${fn} ${ln}`.trim();
+  }
   if (value == null || value === '') return false;
   const str = String(value);
 
