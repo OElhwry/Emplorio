@@ -1,7 +1,7 @@
 import { getCachedToken } from './auth.js';
 import { getAnthropicKey } from './settings.js';
 
-export const API_ORIGIN = import.meta.env.VITE_API_ORIGIN ?? 'http://localhost:3001';
+export const API_ORIGIN = import.meta.env.VITE_API_ORIGIN ?? 'https://emplorio-api.fly.dev';
 const API_KEY = import.meta.env.VITE_EMPLORIO_API_KEY as string | undefined;
 
 export class NeedsApiKeyError extends Error {

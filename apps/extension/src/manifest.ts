@@ -4,20 +4,20 @@ export default defineManifest({
   manifest_version: 3,
   name: 'Emplorio',
   description: 'Apply once. Send everywhere.',
-  version: '0.0.1',
+  version: '1.0.0',
   icons: {
-    '16': 'icon.png',
-    '32': 'icon.png',
-    '48': 'icon.png',
-    '128': 'icon.png',
+    '16': 'icon16.png',
+    '32': 'icon32.png',
+    '48': 'icon48.png',
+    '128': 'icon128.png',
   },
   action: {
     default_popup: 'src/popup/index.html',
     default_title: 'Emplorio',
     default_icon: {
-      '16': 'icon.png',
-      '32': 'icon.png',
-      '48': 'icon.png',
+      '16': 'icon16.png',
+      '32': 'icon32.png',
+      '48': 'icon48.png',
     },
   },
   background: {
@@ -52,7 +52,7 @@ export default defineManifest({
     },
   ],
   permissions: ['storage', 'activeTab', 'scripting'],
-  host_permissions: ['https://*/*', 'http://localhost:3001/*'],
+  host_permissions: ['https://emplorio-api.fly.dev/*'],
   commands: {
     _execute_action: {
       suggested_key: { default: 'Alt+Shift+E' },
