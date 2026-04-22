@@ -48,15 +48,16 @@ export default function PrivacyPage() {
             <p>
               Profile and application data lives in two places: locally in your browser (so the extension works
               offline) and in our database (so it syncs across devices once you sign in). The database is hosted
-              with Supabase in the EU. Sign-in codes are sent via Resend.
+              on Neon (EU region) and the API runs on Fly.io in London. Sign-in codes are sent via Resend.
             </p>
 
             <h2>Third parties</h2>
             <p>
-              We use <strong>Anthropic</strong> for AI generation (only when you've added a key),{' '}
-              <strong>Supabase</strong> for database and authentication storage, and <strong>Resend</strong> for
-              one-time sign-in emails. We don't run analytics, advertising, or tracking pixels. Your data isn't
-              sold or shared with anyone else.
+              We use <strong>Neon</strong> for the Postgres database that stores your account, profile, and
+              application history; <strong>Fly.io</strong> for hosting the Emplorio API; <strong>Resend</strong>{' '}
+              for one-time sign-in emails; and <strong>Anthropic</strong> for AI generation (only when you've
+              added your own key). We don't run analytics, advertising, or tracking pixels. Your data isn't sold
+              or shared with anyone else.
             </p>
 
             <h2>Your controls</h2>

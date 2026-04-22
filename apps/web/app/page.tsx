@@ -52,7 +52,8 @@ function AmbientBackground() {
   useEffect(() => {
     if (typeof window === 'undefined') return;
     const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (reduce) return;
+    const isMobile = window.matchMedia('(max-width: 768px), (hover: none)').matches;
+    if (reduce || isMobile) return; // mobile keeps CSS-driven autonomous motion only
 
     let raf = 0;
     let tx = 0, ty = 0, cx = 0, cy = 0;
