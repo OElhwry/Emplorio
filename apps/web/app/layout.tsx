@@ -20,7 +20,7 @@ export const metadata = {
   },
 };
 
-const themeBootScript = `(function(){try{var t=localStorage.getItem('emplorio-theme');if(!t){t=window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';}document.documentElement.setAttribute('data-theme',t);}catch(e){}})();`;
+const themeBootScript = `(function(){try{var t=localStorage.getItem('emplorio-theme');if(t!=='light'&&t!=='dark'){t='dark';}document.documentElement.setAttribute('data-theme',t);}catch(e){document.documentElement.setAttribute('data-theme','dark');}})();`;
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (

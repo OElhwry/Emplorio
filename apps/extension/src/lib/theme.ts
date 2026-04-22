@@ -3,7 +3,7 @@ const KEY = 'emplorioTheme';
 
 export async function loadTheme(): Promise<Theme> {
   const got = await chrome.storage.local.get(KEY);
-  return (got[KEY] as Theme | undefined) ?? 'system';
+  return (got[KEY] as Theme | undefined) ?? 'dark';
 }
 
 export async function saveTheme(t: Theme): Promise<void> {

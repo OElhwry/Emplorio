@@ -26,10 +26,28 @@ export default function HomePage() {
   );
 }
 
+type ShapeCfg = {
+  leftPct: number; topPct: number;
+  size: number; br: number | string;
+  dx: number; dy: number; rot: number;
+  dur: number; delay: number;
+};
+
+const SHAPES: ShapeCfg[] = [
+  { leftPct: 6,  topPct: 10, size: 200, br: 26,    dx:  60, dy:  40, rot:  -8, dur: 52, delay:  -3 },
+  { leftPct: 88, topPct: 22, size: 130, br: 38,    dx: -70, dy:  50, rot:  14, dur: 68, delay: -19 },
+  { leftPct: 14, topPct: 78, size: 240, br: '50%', dx:  50, dy: -60, rot:   0, dur: 78, delay: -34 },
+  { leftPct: 76, topPct: 64, size: 100, br: 22,    dx: -55, dy: -45, rot:  22, dur: 44, delay:  -8 },
+  { leftPct: 92, topPct: 86, size: 160, br: 42,    dx:  45, dy: -70, rot: -16, dur: 60, delay: -27 },
+  { leftPct: 46, topPct: 52, size: 80,  br: '50%', dx:  80, dy:  35, rot:   0, dur: 38, delay: -12 },
+  { leftPct: 32, topPct: 30, size: 110, br: 32,    dx: -40, dy:  65, rot:  10, dur: 72, delay: -45 },
+];
+
 function AmbientBackground() {
   const farRef = useRef<HTMLDivElement>(null);
   const midRef = useRef<HTMLDivElement>(null);
   const nearRef = useRef<HTMLDivElement>(null);
+  const shapeWrapRefs = useRef<Array<HTMLSpanElement | null>>([]);
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -37,36 +55,71 @@ function AmbientBackground() {
     if (reduce) return;
 
     let raf = 0;
-    let tx = 0, ty = 0;
-    let cx = 0, cy = 0;
+    let tx = 0, ty = 0, cx = 0, cy = 0;
     let scrollY = window.scrollY;
+    let mx = -9999, my = -9999;
+
+    const N = SHAPES.length;
+    const offX = new Float32Array(N);
+    const offY = new Float32Array(N);
 
     const onMove = (e: PointerEvent) => {
+      mx = e.clientX; my = e.clientY;
       const nx = e.clientX / window.innerWidth - 0.5;
       const ny = e.clientY / window.innerHeight - 0.5;
-      tx = nx * 30;
-      ty = ny * 30;
+      tx = nx * 18;  // subtler than before — autonomous motion is primary
+      ty = ny * 18;
     };
+    const onLeave = () => { mx = -9999; my = -9999; };
     const onScroll = () => { scrollY = window.scrollY; };
 
     const tick = () => {
       cx += (tx - cx) * 0.05;
       cy += (ty - cy) * 0.05;
-      const far = farRef.current;
-      const mid = midRef.current;
-      const near = nearRef.current;
-      if (far)  far.style.transform  = `translate3d(${(cx * 0.35).toFixed(2)}px, ${(cy * 0.35 + scrollY * 0.025).toFixed(2)}px, 0)`;
-      if (mid)  mid.style.transform  = `translate3d(${cx.toFixed(2)}px, ${(cy + scrollY * 0.06).toFixed(2)}px, 0)`;
-      if (near) near.style.transform = `translate3d(${(cx * 1.8).toFixed(2)}px, ${(cy * 1.8 + scrollY * 0.11).toFixed(2)}px, 0)`;
+      const far = farRef.current, mid = midRef.current, near = nearRef.current;
+      if (far)  far.style.transform  = `translate3d(${(cx * 0.25).toFixed(2)}px, ${(cy * 0.25 + scrollY * 0.025).toFixed(2)}px, 0)`;
+      if (mid)  mid.style.transform  = `translate3d(${(cx * 0.6).toFixed(2)}px, ${(cy * 0.6 + scrollY * 0.05).toFixed(2)}px, 0)`;
+      if (near) near.style.transform = `translate3d(${(cx * 1.1).toFixed(2)}px, ${(cy * 1.1 + scrollY * 0.09).toFixed(2)}px, 0)`;
+
+      // per-shape proximity attraction (gentle, eased)
+      const RADIUS = 280;
+      for (let i = 0; i < N; i++) {
+        const el = shapeWrapRefs.current[i];
+        if (!el) continue;
+        let targetX = 0, targetY = 0;
+        if (mx > -9000) {
+          const r = el.getBoundingClientRect();
+          const sx = r.left + r.width / 2;
+          const sy = r.top + r.height / 2;
+          const dx = mx - sx, dy = my - sy;
+          const dist = Math.hypot(dx, dy);
+          if (dist < RADIUS && dist > 0.001) {
+            const fall = 1 - dist / RADIUS;       // 0..1
+            const k = fall * fall * 16;            // ease, max 16px
+            targetX = (dx / dist) * k;
+            targetY = (dy / dist) * k;
+          }
+        }
+        const px = (offX[i] ?? 0) + (targetX - (offX[i] ?? 0)) * 0.08;
+        const py = (offY[i] ?? 0) + (targetY - (offY[i] ?? 0)) * 0.08;
+        offX[i] = px;
+        offY[i] = py;
+        el.style.transform = `translate3d(${px.toFixed(2)}px, ${py.toFixed(2)}px, 0)`;
+      }
+
       raf = requestAnimationFrame(tick);
     };
 
     window.addEventListener('pointermove', onMove, { passive: true });
+    window.addEventListener('pointerleave', onLeave, { passive: true });
+    window.addEventListener('blur', onLeave);
     window.addEventListener('scroll', onScroll, { passive: true });
     raf = requestAnimationFrame(tick);
 
     return () => {
       window.removeEventListener('pointermove', onMove);
+      window.removeEventListener('pointerleave', onLeave);
+      window.removeEventListener('blur', onLeave);
       window.removeEventListener('scroll', onScroll);
       cancelAnimationFrame(raf);
     };
@@ -88,11 +141,31 @@ function AmbientBackground() {
         <span className="orb orb-4" />
       </div>
       <div className="parallax parallax-near" ref={nearRef}>
-        <span className="shape shape-1" />
-        <span className="shape shape-2" />
-        <span className="shape shape-3" />
-        <span className="shape shape-4" />
-        <span className="shape shape-5" />
+        {SHAPES.map((s, i) => (
+          <span
+            key={i}
+            className="shape-wrap"
+            ref={(el) => { shapeWrapRefs.current[i] = el; }}
+            style={{
+              left: `${s.leftPct}%`,
+              top: `${s.topPct}%`,
+              width: s.size,
+              height: s.size,
+            }}
+          >
+            <span
+              className="shape"
+              style={{
+                borderRadius: typeof s.br === 'number' ? `${s.br}px` : s.br,
+                animationDuration: `${s.dur}s`,
+                animationDelay: `${s.delay}s`,
+                ['--dx' as string]: `${s.dx}px`,
+                ['--dy' as string]: `${s.dy}px`,
+                ['--rot0' as string]: `${s.rot}deg`,
+              }}
+            />
+          </span>
+        ))}
       </div>
     </div>
   );
@@ -123,7 +196,45 @@ function useScrollReveal() {
 
 /* ---------- Nav ---------- */
 
+const NAV_LINKS: { id: string; label: string }[] = [
+  { id: 'features', label: 'Features' },
+  { id: 'how',      label: 'How it works' },
+  { id: 'pricing',  label: 'Pricing' },
+  { id: 'faq',      label: 'FAQ' },
+];
+
+function useActiveSection(ids: string[]): string | null {
+  const [active, setActive] = useState<string | null>(null);
+  useEffect(() => {
+    const sections = ids
+      .map((id) => document.getElementById(id))
+      .filter((el): el is HTMLElement => !!el);
+    if (sections.length === 0) return;
+    const visible = new Map<string, number>();
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((e) => {
+          if (e.isIntersecting) visible.set(e.target.id, e.intersectionRatio);
+          else visible.delete(e.target.id);
+        });
+        let bestId: string | null = null;
+        let bestRatio = 0;
+        visible.forEach((ratio, id) => {
+          if (ratio > bestRatio) { bestRatio = ratio; bestId = id; }
+        });
+        setActive(bestId);
+      },
+      { rootMargin: '-30% 0px -55% 0px', threshold: [0, 0.25, 0.5, 0.75, 1] }
+    );
+    sections.forEach((s) => io.observe(s));
+    return () => io.disconnect();
+  }, [ids]);
+  return active;
+}
+
 function Nav() {
+  const ids = NAV_LINKS.map((l) => l.id);
+  const active = useActiveSection(ids);
   return (
     <header className="nav">
       <div className="nav-inner">
@@ -135,10 +246,19 @@ function Nav() {
           Emplorio
         </a>
         <nav className="nav-links" aria-label="Primary">
-          <a href="#features">Features</a>
-          <a href="#how">How it works</a>
-          <a href="#pricing">Pricing</a>
-          <a href="#faq">FAQ</a>
+          {NAV_LINKS.map((l) => {
+            const isActive = active === l.id;
+            return (
+              <a
+                key={l.id}
+                href={`#${l.id}`}
+                className={isActive ? 'is-active' : undefined}
+                aria-current={isActive ? 'true' : undefined}
+              >
+                {l.label}
+              </a>
+            );
+          })}
           <ThemeToggle />
           <a href={CHROME_STORE_URL} className="nav-cta">
             <IconChrome /> Install
