@@ -5,7 +5,16 @@ export type FieldMapping = Record<string, ProfileKey>;
 export type GeneratedDocKind = 'cover_letter' | 'tailored_cv';
 
 export interface AtsAdapter {
-  readonly id: 'greenhouse' | 'lever' | 'workday' | 'ashby';
+  readonly id:
+    | 'greenhouse'
+    | 'lever'
+    | 'workday'
+    | 'ashby'
+    | 'linkedin'
+    | 'indeed'
+    | 'workable'
+    | 'smartrecruiters'
+    | 'icims';
   matches(url: string, doc: Document): boolean;
   detectFields(doc: Document): Array<{ selector: string; key: ProfileKey }>;
 }

@@ -19,12 +19,24 @@ const LABEL_KEYWORDS: Array<[RegExp, PK]> = [
   [/last.?name|surname/i, ProfileKey.LastName],
   [/full.?name/i, ProfileKey.FullName],
   [/email/i, ProfileKey.Email],
+  [/dial.?code|country.?code|phone.?country/i, ProfileKey.PhoneCountryCode],
   [/phone|mobile/i, ProfileKey.Phone],
+  [/address.?line.?1|street.?address|^street\b|^address$/i, ProfileKey.AddressLine1],
+  [/address.?line.?2|apt\b|suite|unit\b/i, ProfileKey.AddressLine2],
+  [/^city\b|city.?or.?town|town/i, ProfileKey.City],
+  [/state|province|region|county/i, ProfileKey.State],
+  [/postal.?code|zip\b|post.?code/i, ProfileKey.PostalCode],
+  [/^country\b/i, ProfileKey.Country],
+  [/current.?(job.?)?title|present.?title|job.?title|current.?role|present.?role/i, ProfileKey.CurrentTitle],
+  [/current.?(employer|company)|present.?(employer|company)|employer\b/i, ProfileKey.CurrentCompany],
   [/linkedin/i, ProfileKey.LinkedinUrl],
   [/github/i, ProfileKey.GithubUrl],
   [/portfolio|website/i, ProfileKey.PortfolioUrl],
   [/work.?auth|authoriz/i, ProfileKey.WorkAuthorization],
   [/sponsor/i, ProfileKey.RequiresSponsorship],
+  [/notice.?period|how.?much.?notice/i, ProfileKey.NoticePeriod],
+  [/(earliest|available|when.*can.*you).*(start|join)|start.?date|date.*available/i, ProfileKey.AvailableStartDate],
+  [/resume|^cv$|curriculum/i, ProfileKey.Resume],
 ];
 
 export function detectByHeuristics(doc: Document) {
@@ -35,6 +47,11 @@ export function detectByHeuristics(doc: Document) {
     const auto = el.getAttribute('autocomplete');
     if (auto && AUTOCOMPLETE_MAP[auto]) {
       out.push({ selector: cssPath(el, i), key: AUTOCOMPLETE_MAP[auto]! });
+      return;
+    }
+
+    if (el.closest('.phone-input__country, [class*="phone"][class*="country" i]')) {
+      out.push({ selector: cssPath(el, i), key: ProfileKey.PhoneCountryCode });
       return;
     }
 

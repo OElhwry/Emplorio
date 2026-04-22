@@ -2,8 +2,9 @@ import { Queue, Worker } from 'bullmq';
 import { Redis } from 'ioredis';
 import { env } from '../env.js';
 
-export const connection = new Redis(env.REDIS_URL, {
+export const connection = new Redis(env.REDIS_URL ?? 'redis://localhost:6379', {
   maxRetriesPerRequest: null,
+  lazyConnect: true,
 });
 
 export const pdfQueue = new Queue('pdf', { connection });

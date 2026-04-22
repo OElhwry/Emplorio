@@ -1,20 +1,35 @@
+import { config } from 'dotenv';
+import { fileURLToPath } from 'node:url';
+import { dirname, resolve } from 'node:path';
 import { z } from 'zod';
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
+config({ path: resolve(__dirname, '../../../.env') });
+
+
+const optionalUrl = z
+  .string()
+  .url()
+  .optional()
+  .or(z.literal('').transform(() => undefined));
 
 const envSchema = z.object({
   NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
   LOG_LEVEL: z.string().default('info'),
   API_PORT: z.coerce.number().default(3001),
-  API_ORIGIN: z.string().url(),
-  WEB_ORIGIN: z.string().url(),
-  COOKIE_DOMAIN: z.string(),
-  JWT_SECRET: z.string().min(32),
+  API_ORIGIN: z.string().url().default('http://localhost:3001'),
+  WEB_ORIGIN: z.string().url().default('http://localhost:3000'),
+  COOKIE_DOMAIN: z.string().default('localhost'),
+  JWT_SECRET: z.string().min(32).default('dev-dev-dev-dev-dev-dev-dev-dev-dev'),
   SESSION_TTL_DAYS: z.coerce.number().default(30),
-  DATABASE_URL: z.string().url(),
-  REDIS_URL: z.string().url(),
-  ANTHROPIC_API_KEY: z.string().min(10),
+  DATABASE_URL: optionalUrl,
+  REDIS_URL: optionalUrl,
+  ANTHROPIC_API_KEY: z.string().min(10).optional(),
   ANTHROPIC_MODEL: z.string().default('claude-opus-4-7'),
-  RESEND_API_KEY: z.string().min(5),
-  EMAIL_FROM: z.string(),
+  OWNER_EMAIL: z.string().email().optional(),
+  EMPLORIO_API_KEY: z.string().min(16).optional(),
+  RESEND_API_KEY: z.string().min(5).optional().or(z.literal('').transform(() => undefined)),
+  EMAIL_FROM: z.string().default('Emplorio <noreply@emplorio.app>'),
   R2_ACCOUNT_ID: z.string().optional(),
   R2_ACCESS_KEY_ID: z.string().optional(),
   R2_SECRET_ACCESS_KEY: z.string().optional(),

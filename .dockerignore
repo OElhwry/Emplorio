@@ -1,0 +1,38 @@
+# Dependencies
+node_modules
+**/node_modules
+
+# Build output
+dist
+**/dist
+apps/web/.next
+apps/extension/dist
+*.crx
+
+# Caches
+.turbo
+.cache
+coverage
+.next
+
+# Git / editors
+.git
+.gitignore
+.vscode
+.idea
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+# Env (never ship secrets into the image)
+.env
+.env.*
+!.env.example
+
+# Local
+*.local
+.claude

@@ -7,12 +7,13 @@
   "scripts": {
     "dev": "tsx watch src/index.ts",
     "build": "tsc -p tsconfig.json",
-    "start": "node dist/index.js",
+    "start": "tsx src/index.ts",
     "typecheck": "tsc --noEmit",
     "test": "vitest run"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.32.0",
+    "dotenv": "^16.4.5",
     "@aws-sdk/client-s3": "^3.685.0",
     "@emplorio/db": "workspace:*",
     "@emplorio/shared": "workspace:*",
@@ -32,12 +33,12 @@
     "pino-pretty": "^11.3.0",
     "react": "^18.3.1",
     "resend": "^4.0.1",
+    "tsx": "^4.19.1",
     "zod": "^3.23.8"
   },
   "devDependencies": {
     "@types/node": "^22.9.0",
     "@types/react": "^18.3.12",
-    "tsx": "^4.19.1",
     "typescript": "^5.6.3",
     "vitest": "^2.1.4"
   }

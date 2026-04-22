@@ -18,6 +18,7 @@
   "dependencies": {
     "@emplorio/shared": "workspace:*",
     "@neondatabase/serverless": "^0.10.1",
+    "dotenv": "^16.4.5",
     "drizzle-orm": "^0.36.0",
     "postgres": "^3.4.5"
   },

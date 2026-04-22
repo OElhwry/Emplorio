@@ -4,6 +4,7 @@ export const ProfileKey = {
   FullName: 'fullName',
   Email: 'email',
   Phone: 'phone',
+  PhoneCountryCode: 'phoneCountryCode',
   AddressLine1: 'addressLine1',
   AddressLine2: 'addressLine2',
   City: 'city',
@@ -19,10 +20,15 @@ export const ProfileKey = {
   CurrentTitle: 'currentTitle',
   CurrentCompany: 'currentCompany',
   DesiredSalary: 'desiredSalary',
+  AvailableStartDate: 'availableStartDate',
+  NoticePeriod: 'noticePeriod',
+  EeoAge: 'eeoAge',
   EeoGender: 'eeoGender',
   EeoEthnicity: 'eeoEthnicity',
+  EeoCommunities: 'eeoCommunities',
   EeoVeteranStatus: 'eeoVeteranStatus',
   EeoDisabilityStatus: 'eeoDisabilityStatus',
+  Resume: 'resume',
 } as const;
 
 export type ProfileKey = (typeof ProfileKey)[keyof typeof ProfileKey];

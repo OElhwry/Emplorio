@@ -17,6 +17,10 @@ const SELECTORS: Array<[string, PK]> = [
   ['#phone', ProfileKey.Phone],
   ['input[name="job_application[phone]"]', ProfileKey.Phone],
   ['input[type="tel"]', ProfileKey.Phone],
+
+  ['#resume', ProfileKey.Resume],
+  ['input[name="job_application[resume]"]', ProfileKey.Resume],
+  ['input[type="file"][name*="resume" i]', ProfileKey.Resume],
 ];
 
 export const greenhouse: AtsAdapter = {

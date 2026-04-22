@@ -5,24 +5,22 @@ WORKDIR /repo
 FROM base AS deps
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY apps/api/package.json apps/api/
+COPY apps/web/package.json apps/web/
+COPY apps/extension/package.json apps/extension/
 COPY packages/shared/package.json packages/shared/
 COPY packages/db/package.json packages/db/
-RUN pnpm install --frozen-lockfile
+RUN pnpm install --frozen-lockfile --filter @emplorio/api...
 
-FROM base AS build
+FROM base AS runtime
+ENV NODE_ENV=production
 COPY --from=deps /repo/node_modules ./node_modules
 COPY --from=deps /repo/apps/api/node_modules ./apps/api/node_modules
 COPY --from=deps /repo/packages/shared/node_modules ./packages/shared/node_modules
 COPY --from=deps /repo/packages/db/node_modules ./packages/db/node_modules
-COPY . .
-RUN pnpm --filter @emplorio/api build
-
-FROM base AS runtime
-ENV NODE_ENV=production
-COPY --from=build /repo/node_modules ./node_modules
-COPY --from=build /repo/apps/api/dist ./apps/api/dist
-COPY --from=build /repo/apps/api/package.json ./apps/api/
-COPY --from=build /repo/packages ./packages
+COPY apps/api ./apps/api
+COPY packages/shared ./packages/shared
+COPY packages/db ./packages/db
+COPY tsconfig.base.json ./
 WORKDIR /repo/apps/api
 EXPOSE 3001
-CMD ["node", "dist/index.js"]
+CMD ["pnpm", "start"]

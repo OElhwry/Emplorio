@@ -4,6 +4,7 @@ import { crx } from '@crxjs/vite-plugin';
 import manifest from './src/manifest.js';
 
 export default defineConfig({
+  envDir: '../..',
   plugins: [react(), crx({ manifest })],
   build: {
     outDir: 'dist',
@@ -11,5 +12,12 @@ export default defineConfig({
   },
   server: {
     port: 5173,
+    strictPort: true,
+    cors: {
+      origin: [/chrome-extension:\/\//],
+    },
+    hmr: {
+      port: 5173,
+    },
   },
 });
