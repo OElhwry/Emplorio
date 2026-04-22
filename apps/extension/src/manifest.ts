@@ -5,9 +5,20 @@ export default defineManifest({
   name: 'Emplorio',
   description: 'Apply once. Send everywhere.',
   version: '0.0.1',
+  icons: {
+    '16': 'icon.png',
+    '32': 'icon.png',
+    '48': 'icon.png',
+    '128': 'icon.png',
+  },
   action: {
     default_popup: 'src/popup/index.html',
     default_title: 'Emplorio',
+    default_icon: {
+      '16': 'icon.png',
+      '32': 'icon.png',
+      '48': 'icon.png',
+    },
   },
   background: {
     service_worker: 'src/background/index.ts',

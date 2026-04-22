@@ -132,7 +132,10 @@ export function App() {
     <main style={styles.main}>
       <header style={styles.header}>
         <div style={styles.brand}>
-          <span style={styles.logoDot} />
+          <span style={styles.logoMark}>
+            <img src="/icon-light.png" alt="" className="popup-logo popup-logo-light" />
+            <img src="/icon-dark.png" alt="" className="popup-logo popup-logo-dark" />
+          </span>
           <h1 style={styles.title}>Emplorio</h1>
           <button onClick={cycleTheme} className="theme-toggle" title={themeTitle} aria-label="Toggle theme">
             {themeIcon}
@@ -1277,13 +1280,12 @@ const styles: Record<string, React.CSSProperties> = {
     background: 'var(--bg-soft)',
   },
   brand: { display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 },
-  logoDot: {
-    display: 'inline-block',
-    width: 10,
-    height: 10,
-    borderRadius: 3,
-    background: 'linear-gradient(135deg, #4f46e5, #818cf8)',
-    boxShadow: '0 1px 3px rgba(79, 70, 229, 0.4)',
+  logoMark: {
+    display: 'inline-flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: 22,
+    height: 22,
   },
   title: { fontSize: 15, margin: 0, fontWeight: 600, letterSpacing: '-0.01em' },
   tabs: { display: 'flex', gap: 0 },

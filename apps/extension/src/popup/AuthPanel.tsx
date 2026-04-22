@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { OTPInput, REGEXP_ONLY_DIGITS, type SlotProps } from 'input-otp';
 import { apiFetch } from '../lib/api.js';
 import { saveSession, setCachedToken, type Session } from '../lib/auth.js';
 
@@ -167,20 +168,32 @@ export function AuthPanel({ onSignedIn }: { onSignedIn: (s: Session) => void }) 
       {step === 'code' && (
         <form onSubmit={verify} className="field-group">
           <p className="helper">Sent a 6-digit code to <strong>{email}</strong>.</p>
-          <label className="field">
+          <div className="field">
             <span className="field-label">Code</span>
-            <input
+            <OTPInput
               autoFocus
-              required
-              inputMode="numeric"
-              pattern="\d{6}"
               maxLength={6}
               value={code}
-              onChange={(e) => setCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
-              placeholder="123456"
-              style={{ letterSpacing: '6px', fontSize: '20px', textAlign: 'center' }}
+              onChange={setCode}
+              pattern={REGEXP_ONLY_DIGITS}
+              containerClassName="otp-container"
+              render={({ slots }) => (
+                <>
+                  <div className="otp-group">
+                    {slots.slice(0, 3).map((slot, idx) => (
+                      <OtpSlot key={idx} {...slot} />
+                    ))}
+                  </div>
+                  <div className="otp-sep" aria-hidden="true">–</div>
+                  <div className="otp-group">
+                    {slots.slice(3).map((slot, idx) => (
+                      <OtpSlot key={idx + 3} {...slot} />
+                    ))}
+                  </div>
+                </>
+              )}
             />
-          </label>
+          </div>
           {status && <p className="helper">{status}</p>}
           <div className="onb-actions">
             <button
@@ -207,5 +220,14 @@ export function AuthPanel({ onSignedIn }: { onSignedIn: (s: Session) => void }) 
         </form>
       )}
     </section>
+  );
+}
+
+function OtpSlot({ char, isActive, hasFakeCaret }: SlotProps) {
+  return (
+    <div className={`otp-slot${isActive ? ' is-active' : ''}`}>
+      {char}
+      {hasFakeCaret && <span className="otp-caret" aria-hidden="true" />}
+    </div>
   );
 }

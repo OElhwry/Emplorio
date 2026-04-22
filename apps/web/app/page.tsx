@@ -1,12 +1,21 @@
+'use client';
+
+import { useEffect, useRef, useState } from 'react';
+import * as Accordion from '@radix-ui/react-accordion';
+
 const CHROME_STORE_URL = '#'; // TODO: replace with Chrome Web Store URL after publish
 
 export default function HomePage() {
+  useScrollReveal();
   return (
     <>
+      <AmbientBackground />
       <Nav />
       <main>
         <Hero />
+        <LogosMarquee />
         <WhatItDoes />
+        <Stats />
         <HowItWorks />
         <Pricing />
         <FAQ />
@@ -17,6 +26,101 @@ export default function HomePage() {
   );
 }
 
+function AmbientBackground() {
+  const farRef = useRef<HTMLDivElement>(null);
+  const midRef = useRef<HTMLDivElement>(null);
+  const nearRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reduce) return;
+
+    let raf = 0;
+    let tx = 0, ty = 0;
+    let cx = 0, cy = 0;
+    let scrollY = window.scrollY;
+
+    const onMove = (e: PointerEvent) => {
+      const nx = e.clientX / window.innerWidth - 0.5;
+      const ny = e.clientY / window.innerHeight - 0.5;
+      tx = nx * 30;
+      ty = ny * 30;
+    };
+    const onScroll = () => { scrollY = window.scrollY; };
+
+    const tick = () => {
+      cx += (tx - cx) * 0.05;
+      cy += (ty - cy) * 0.05;
+      const far = farRef.current;
+      const mid = midRef.current;
+      const near = nearRef.current;
+      if (far)  far.style.transform  = `translate3d(${(cx * 0.35).toFixed(2)}px, ${(cy * 0.35 + scrollY * 0.025).toFixed(2)}px, 0)`;
+      if (mid)  mid.style.transform  = `translate3d(${cx.toFixed(2)}px, ${(cy + scrollY * 0.06).toFixed(2)}px, 0)`;
+      if (near) near.style.transform = `translate3d(${(cx * 1.8).toFixed(2)}px, ${(cy * 1.8 + scrollY * 0.11).toFixed(2)}px, 0)`;
+      raf = requestAnimationFrame(tick);
+    };
+
+    window.addEventListener('pointermove', onMove, { passive: true });
+    window.addEventListener('scroll', onScroll, { passive: true });
+    raf = requestAnimationFrame(tick);
+
+    return () => {
+      window.removeEventListener('pointermove', onMove);
+      window.removeEventListener('scroll', onScroll);
+      cancelAnimationFrame(raf);
+    };
+  }, []);
+
+  return (
+    <div className="ambient" aria-hidden="true">
+      <div className="parallax parallax-far" ref={farRef}>
+        <span className="dot dot-1" />
+        <span className="dot dot-2" />
+        <span className="dot dot-3" />
+        <span className="dot dot-4" />
+        <span className="dot dot-5" />
+      </div>
+      <div className="parallax parallax-mid" ref={midRef}>
+        <span className="orb orb-1" />
+        <span className="orb orb-2" />
+        <span className="orb orb-3" />
+        <span className="orb orb-4" />
+      </div>
+      <div className="parallax parallax-near" ref={nearRef}>
+        <span className="shape shape-1" />
+        <span className="shape shape-2" />
+        <span className="shape shape-3" />
+        <span className="shape shape-4" />
+        <span className="shape shape-5" />
+      </div>
+    </div>
+  );
+}
+
+function useScrollReveal() {
+  useEffect(() => {
+    const els = document.querySelectorAll<HTMLElement>('.reveal');
+    if (!('IntersectionObserver' in window) || els.length === 0) {
+      els.forEach((el) => el.classList.add('is-visible'));
+      return;
+    }
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((e) => {
+          if (e.isIntersecting) {
+            e.target.classList.add('is-visible');
+            io.unobserve(e.target);
+          }
+        });
+      },
+      { threshold: 0.08, rootMargin: '0px 0px -40px 0px' }
+    );
+    els.forEach((el) => io.observe(el));
+    return () => io.disconnect();
+  }, []);
+}
+
 /* ---------- Nav ---------- */
 
 function Nav() {
@@ -24,7 +128,10 @@ function Nav() {
     <header className="nav">
       <div className="nav-inner">
         <a href="#" className="brand" aria-label="Emplorio home">
-          <span className="brand-mark" aria-hidden="true">E</span>
+          <span className="brand-mark" aria-hidden="true">
+            <img src="/emplorio-mark-light.png" alt="" className="brand-mark-img brand-mark-light" />
+            <img src="/emplorio-mark-dark.png" alt="" className="brand-mark-img brand-mark-dark" />
+          </span>
           Emplorio
         </a>
         <nav className="nav-links" aria-label="Primary">
@@ -32,6 +139,7 @@ function Nav() {
           <a href="#how">How it works</a>
           <a href="#pricing">Pricing</a>
           <a href="#faq">FAQ</a>
+          <ThemeToggle />
           <a href={CHROME_STORE_URL} className="nav-cta">
             <IconChrome /> Install
           </a>
@@ -43,7 +151,10 @@ function Nav() {
 
 /* ---------- Hero ---------- */
 
+type MockupTab = 'fill' | 'cover' | 'questions' | 'history';
+
 function Hero() {
+  const [tab, setTab] = useState<MockupTab>('fill');
   return (
     <section className="hero">
       <div className="container hero-inner">
@@ -82,55 +193,192 @@ function Hero() {
             </span>
           </div>
         </div>
-        <div className="hero-visual" aria-hidden="true">
-          <div className="float-card fc-1">
-            <IconBolt />
-            14 fields filled
-          </div>
-          <div className="float-card fc-2">
-            <IconCheck />
-            Saved to History
-          </div>
-          <div className="mockup">
-            <div className="mockup-chrome">
-              <span /><span /><span />
-            </div>
-            <div className="mockup-header">
-              <div className="mockup-brand">
-                <span className="brand-mark">E</span>
-                Emplorio
-              </div>
-              <div className="mockup-tabs">
-                <div className="mockup-tab active">Fill</div>
-                <div className="mockup-tab">Cover</div>
-                <div className="mockup-tab">Questions</div>
-                <div className="mockup-tab">History</div>
-              </div>
-            </div>
-            <div className="mockup-body">
-              <div className="mockup-banner">
-                <IconCheck /> Already applied · 3d ago
-              </div>
-              <div className="mockup-btn">Fill this form</div>
-              <div className="mockup-stat">
-                <div>
-                  <strong>12</strong>
-                  <span>This Week</span>
-                </div>
-                <div>
-                  <strong>38</strong>
-                  <span>Past 30D</span>
-                </div>
-                <div>
-                  <strong>21%</strong>
-                  <span>Reply Rate</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+        <MockupPreview tab={tab} onTabChange={setTab} />
       </div>
     </section>
+  );
+}
+
+const FLOAT_BY_TAB: Record<MockupTab, { left: { icon: 'bolt' | 'check' | 'sparkles' | 'chat' | 'mail' | 'chart'; text: string }; right: { icon: 'bolt' | 'check' | 'sparkles' | 'chat' | 'mail' | 'chart'; text: string } }> = {
+  fill: {
+    left: { icon: 'bolt', text: '14 fields filled' },
+    right: { icon: 'check', text: 'Saved to History' },
+  },
+  cover: {
+    left: { icon: 'sparkles', text: 'Drafted in 1.2s' },
+    right: { icon: 'check', text: 'Tone: Friendly' },
+  },
+  questions: {
+    left: { icon: 'chat', text: '3 questions detected' },
+    right: { icon: 'sparkles', text: 'Drafted in your voice' },
+  },
+  history: {
+    left: { icon: 'chart', text: '38 in last 30 days' },
+    right: { icon: 'mail', text: '8 follow-ups queued' },
+  },
+};
+
+function FloatIcon({ name }: { name: 'bolt' | 'check' | 'sparkles' | 'chat' | 'mail' | 'chart' }) {
+  switch (name) {
+    case 'bolt': return <IconBolt />;
+    case 'check': return <IconCheck />;
+    case 'sparkles': return <IconSparkles />;
+    case 'chat': return <IconChat />;
+    case 'mail': return <IconMail />;
+    case 'chart': return <IconChart />;
+  }
+}
+
+function MockupPreview({ tab, onTabChange }: { tab: MockupTab; onTabChange: (t: MockupTab) => void }) {
+  const floats = FLOAT_BY_TAB[tab];
+  return (
+    <div className="hero-visual">
+      <div className="float-card fc-1" key={`fc1-${tab}`} aria-hidden="true">
+        <FloatIcon name={floats.left.icon} />
+        {floats.left.text}
+      </div>
+      <div className="float-card fc-2" key={`fc2-${tab}`} aria-hidden="true">
+        <FloatIcon name={floats.right.icon} />
+        {floats.right.text}
+      </div>
+      <div className="mockup-stage">
+      <div className="mockup">
+        <div className="mockup-chrome" aria-hidden="true">
+          <span /><span /><span />
+        </div>
+        <div className="mockup-header">
+          <div className="mockup-brand">
+            <span className="brand-mark mockup-brand-mark">
+              <img src="/emplorio-mark-light.png" alt="" className="brand-mark-img brand-mark-light" />
+              <img src="/emplorio-mark-dark.png" alt="" className="brand-mark-img brand-mark-dark" />
+            </span>
+            Emplorio
+          </div>
+          <div className="mockup-tabs" role="tablist" aria-label="Preview">
+            {(['fill', 'cover', 'questions', 'history'] as const).map((t) => (
+              <button
+                key={t}
+                type="button"
+                role="tab"
+                aria-selected={tab === t}
+                className={`mockup-tab${tab === t ? ' active' : ''}`}
+                onClick={() => onTabChange(t)}
+              >
+                {t === 'fill' ? 'Fill' : t === 'cover' ? 'Cover' : t === 'questions' ? 'Questions' : 'History'}
+              </button>
+            ))}
+          </div>
+        </div>
+        <div className="mockup-body" key={tab}>
+          {tab === 'fill' && <FillPanel />}
+          {tab === 'cover' && <CoverPanel />}
+          {tab === 'questions' && <QuestionsPanel />}
+          {tab === 'history' && <HistoryPanel />}
+        </div>
+      </div>
+      </div>
+    </div>
+  );
+}
+
+function FillPanel() {
+  return (
+    <>
+      <div className="mockup-banner">
+        <IconCheck /> Already applied · 3d ago
+      </div>
+      <div className="mockup-btn">Fill this form</div>
+      <div className="mockup-stat">
+        <div>
+          <strong>12</strong>
+          <span>This Week</span>
+        </div>
+        <div>
+          <strong>38</strong>
+          <span>Past 30D</span>
+        </div>
+        <div>
+          <strong>21%</strong>
+          <span>Reply Rate</span>
+        </div>
+      </div>
+    </>
+  );
+}
+
+function CoverPanel() {
+  return (
+    <>
+      <div className="mockup-meta-row">
+        <span className="mockup-chip">Senior Engineer · Vercel</span>
+        <span className="mockup-chip muted">Friendly</span>
+      </div>
+      <div className="mockup-letter">
+        <p><strong>Dear Hiring Team,</strong></p>
+        <p>I've been following Vercel since the early Next.js days and the focus on developer experience is exactly the energy I want to keep building around.</p>
+        <p>At my last role I led the migration of a 200k-LOC app to the App Router and shipped a streaming SSR layer that cut <span className="mockup-hl">TTFB by 38%</span><span className="mockup-caret" aria-hidden="true" /></p>
+      </div>
+      <div className="mockup-btn">Insert into application</div>
+    </>
+  );
+}
+
+function QuestionsPanel() {
+  return (
+    <>
+      <div className="mockup-q">
+        <div className="mockup-q-label">Question 1 of 3</div>
+        <div className="mockup-q-text">Why do you want to work at Vercel specifically?</div>
+        <div className="mockup-q-answer">
+          The infra team's work on edge runtimes lines up with what I built at my last role — and I'd rather ship to thousands of devs than ten internal teams.
+        </div>
+      </div>
+      <div className="mockup-q-nav">
+        <span className="mockup-chip">1</span>
+        <span className="mockup-chip muted">2</span>
+        <span className="mockup-chip muted">3</span>
+      </div>
+      <div className="mockup-btn">Use this answer</div>
+    </>
+  );
+}
+
+function HistoryPanel() {
+  const rows = [
+    { co: 'Vercel', role: 'Senior Engineer', when: '2d', status: 'replied' as const },
+    { co: 'Linear', role: 'Product Engineer', when: '5d', status: 'pending' as const },
+    { co: 'Stripe', role: 'Frontend', when: '1w', status: 'replied' as const },
+    { co: 'Figma', role: 'UI Engineer', when: '2w', status: 'rejected' as const },
+  ];
+  return (
+    <>
+      <div className="mockup-history">
+        {rows.map((r) => (
+          <div key={r.co} className="mockup-history-row">
+            <div className="mockup-history-co">
+              <div className="mockup-history-mark" aria-hidden="true">{r.co[0]}</div>
+              <div>
+                <div className="mockup-history-name">{r.co}</div>
+                <div className="mockup-history-role">{r.role} · {r.when}</div>
+              </div>
+            </div>
+            <span className={`mockup-status mockup-status-${r.status}`}>
+              {r.status === 'replied' ? 'Replied' : r.status === 'pending' ? 'Pending' : 'Closed'}
+            </span>
+          </div>
+        ))}
+      </div>
+      <div className="mockup-stat">
+        <div>
+          <strong>12</strong>
+          <span>This Week</span>
+        </div>
+        <div>
+          <strong>21%</strong>
+          <span>Reply Rate</span>
+        </div>
+      </div>
+    </>
   );
 }
 
@@ -138,7 +386,7 @@ function Hero() {
 
 function WhatItDoes() {
   return (
-    <section className="section" id="features">
+    <section className="section reveal" id="features">
       <div className="container">
         <div className="section-eyebrow">What it does</div>
         <h2 className="section-title">Everything you need to apply faster</h2>
@@ -159,8 +407,13 @@ function WhatItDoes() {
               <kbd style={{ padding: '2px 8px', background: 'rgba(255,255,255,0.1)', borderRadius: 6, fontSize: 11, fontFamily: 'inherit' }}>Shift</kbd>{' '}
               <kbd style={{ padding: '2px 8px', background: 'rgba(255,255,255,0.1)', borderRadius: 6, fontSize: 11, fontFamily: 'inherit' }}>F</kbd> to fill the current page.
             </p>
+            <div className="bento-stat">
+              <div className="big">&lt; 2s</div>
+              <div className="lbl">Average autofill time</div>
+            </div>
           </div>
           <div className="bento-card span-3">
+            <span className="bento-tag">AI</span>
             <div className="bento-icon"><IconSparkles /></div>
             <h3>AI cover letters</h3>
             <p>
@@ -169,6 +422,7 @@ function WhatItDoes() {
             </p>
           </div>
           <div className="bento-card span-3">
+            <span className="bento-tag">AI</span>
             <div className="bento-icon"><IconChat /></div>
             <h3>Question drafts</h3>
             <p>
@@ -177,6 +431,7 @@ function WhatItDoes() {
             </p>
           </div>
           <div className="bento-card span-2">
+            <span className="bento-tag">AI</span>
             <div className="bento-icon"><IconMail /></div>
             <h3>Follow-up emails</h3>
             <p>Drafted automatically a week after you apply.</p>
@@ -201,7 +456,7 @@ function WhatItDoes() {
 
 function HowItWorks() {
   return (
-    <section className="section" id="how" style={{ background: 'var(--bg-soft)', borderTop: '1px solid var(--border)', borderBottom: '1px solid var(--border)' }}>
+    <section className="section section-tinted reveal" id="how">
       <div className="container">
         <div className="section-eyebrow">How it works</div>
         <h2 className="section-title">Three steps. Two minutes.</h2>
@@ -243,7 +498,7 @@ function HowItWorks() {
 
 function Pricing() {
   return (
-    <section className="section" id="pricing">
+    <section className="section reveal" id="pricing">
       <div className="container">
         <div className="section-eyebrow">Pricing</div>
         <h2 className="section-title">Free forever. AI features use your own key.</h2>
@@ -327,22 +582,26 @@ function FAQ() {
     },
   ];
   return (
-    <section className="section" id="faq" style={{ background: 'var(--bg-soft)', borderTop: '1px solid var(--border)', borderBottom: '1px solid var(--border)' }}>
+    <section className="section section-tinted reveal" id="faq">
       <div className="container">
         <div className="section-eyebrow">FAQ</div>
         <h2 className="section-title">Questions, answered</h2>
         <p className="section-sub">Everything we get asked the most.</p>
-        <div className="faq-list">
-          {items.map((item) => (
-            <details key={item.q} className="faq-item">
-              <summary>
-                {item.q}
-                <IconChevron />
-              </summary>
-              <p>{item.a}</p>
-            </details>
+        <Accordion.Root type="single" collapsible defaultValue="faq-0" className="faq-list">
+          {items.map((item, i) => (
+            <Accordion.Item key={item.q} value={`faq-${i}`} className="faq-item">
+              <Accordion.Header>
+                <Accordion.Trigger className="faq-trigger">
+                  <span>{item.q}</span>
+                  <IconChevron />
+                </Accordion.Trigger>
+              </Accordion.Header>
+              <Accordion.Content className="faq-content">
+                <p>{item.a}</p>
+              </Accordion.Content>
+            </Accordion.Item>
           ))}
-        </div>
+        </Accordion.Root>
       </div>
     </section>
   );
@@ -352,7 +611,7 @@ function FAQ() {
 
 function FinalCTA() {
   return (
-    <section className="section">
+    <section className="section reveal">
       <div className="container">
         <div className="cta-final">
           <h2>Apply to your next ten roles before lunch.</h2>
@@ -387,7 +646,167 @@ function Footer() {
   );
 }
 
+/* ---------- Theme toggle ---------- */
+
+function ThemeToggle() {
+  const [theme, setTheme] = useState<'light' | 'dark' | null>(null);
+
+  useEffect(() => {
+    const initial = (document.documentElement.getAttribute('data-theme') as 'light' | 'dark') || 'light';
+    setTheme(initial);
+  }, []);
+
+  function toggle() {
+    const next = theme === 'dark' ? 'light' : 'dark';
+    setTheme(next);
+    document.documentElement.setAttribute('data-theme', next);
+    try { localStorage.setItem('emplorio-theme', next); } catch {}
+  }
+
+  return (
+    <button
+      type="button"
+      onClick={toggle}
+      className="theme-toggle"
+      aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+    >
+      {theme === 'dark' ? <IconSun /> : <IconMoon />}
+    </button>
+  );
+}
+
+/* ---------- Logos marquee ---------- */
+
+function LogosMarquee() {
+  const sites: { name: string; abbr: string; bg: string }[] = [
+    { name: 'Greenhouse', abbr: 'GH', bg: '#24a47f' },
+    { name: 'Lever', abbr: 'L', bg: '#00b0b9' },
+    { name: 'Workday', abbr: 'WD', bg: '#005cb9' },
+    { name: 'Ashby', abbr: 'AB', bg: '#6c4de6' },
+    { name: 'LinkedIn', abbr: 'in', bg: '#0a66c2' },
+    { name: 'Indeed', abbr: 'I', bg: '#2164f3' },
+    { name: 'Workable', abbr: 'WK', bg: '#1a1a2e' },
+    { name: 'SmartRecruiters', abbr: 'SR', bg: '#0f4c81' },
+    { name: 'iCIMS', abbr: 'iC', bg: '#00263e' },
+  ];
+  const row = [...sites, ...sites];
+  return (
+    <section className="logos" aria-label="Supported job sites">
+      <div className="container">
+        <p className="logos-label">
+          Works on the ATS systems behind <strong>~80%</strong> of online job listings
+        </p>
+        <div className="logos-track-wrap">
+          <div className="logos-track">
+            {row.map((s, i) => (
+              <span key={`${s.name}-${i}`} className="logo-chip">
+                <span className="logo-chip-mark" style={{ background: s.bg }}>{s.abbr}</span>
+                {s.name}
+              </span>
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ---------- Stats ---------- */
+
+function Stats() {
+  const stats: { num: string; label: string; counter?: number }[] = [
+    { num: '10×', label: 'Faster than typing manually' },
+    { num: '9', label: 'Major ATS supported out of the box', counter: 9 },
+    { num: '<2s', label: 'Average autofill time per page' },
+    { num: '£0', label: 'Subscription. Forever.' },
+  ];
+  const ref = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    const grid = ref.current;
+    if (!grid) return;
+    const targets = grid.querySelectorAll<HTMLElement>('[data-counter]');
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((e) => {
+          if (!e.isIntersecting) return;
+          const el = e.target as HTMLElement;
+          const target = Number(el.dataset.counter);
+          const start = performance.now();
+          const dur = 1400;
+          requestAnimationFrame(function tick(t) {
+            const p = Math.min((t - start) / dur, 1);
+            const eased = 1 - Math.pow(1 - p, 3);
+            el.textContent = String(Math.floor(eased * target));
+            if (p < 1) requestAnimationFrame(tick);
+            else el.textContent = String(target);
+          });
+          io.unobserve(el);
+        });
+      },
+      { threshold: 0.5 }
+    );
+    targets.forEach((t) => io.observe(t));
+    return () => io.disconnect();
+  }, []);
+
+  return (
+    <section className="stats-section reveal" aria-label="At a glance">
+      <div className="container">
+        <div className="stats-grid" ref={ref}>
+          {stats.map((s) => (
+            <div className="stat-card" key={s.label}>
+              <div className="stat-num">
+                {s.counter !== undefined ? (
+                  <span data-counter={s.counter}>0</span>
+                ) : (
+                  s.num
+                )}
+              </div>
+              <div className="stat-label">{s.label}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
 /* ---------- Inline SVG icons (Lucide-style) ---------- */
+
+function IconHummingbird() {
+  return (
+    <svg viewBox="0 0 32 32" fill="none" aria-hidden="true">
+      <path
+        d="M4 20.2c0-4 3.8-7.2 8.6-7.2 2.6 0 4.6 0.9 5.7 2.5l11-3-8.4 5.4c-1 3-3.7 4.9-7.5 4.9-5.5 0-9.4-1-9.4-2.6z"
+        fill="currentColor"
+      />
+      <path
+        d="M11 13.4c-0.4-4.6 3.5-7.6 7.7-5.5-0.6 4-3.9 6-7.7 5.5z"
+        fill="currentColor"
+        opacity="0.6"
+      />
+      <path d="M4 20.2l-3.2 1.9 4.6 0.4z" fill="currentColor" />
+      <circle cx="20" cy="14.6" r="0.95" fill="#ffffff" />
+    </svg>
+  );
+}
+
+function IconSun() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <circle cx="12" cy="12" r="4" />
+      <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41" />
+    </svg>
+  );
+}
+function IconMoon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+    </svg>
+  );
+}
 
 function IconChrome() {
   return (

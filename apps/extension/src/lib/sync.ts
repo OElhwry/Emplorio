@@ -183,5 +183,12 @@ export async function clearLocalUserData(): Promise<void> {
     'lastCoverLetter',
     'questionAnswers',
     'emplorioOnboardingComplete',
+    'emplorioSettings',
+    'emplorioAuthDraft',
+    'emplorioFillPaused',
+    'emplorioFillRunning',
+    'emplorioRecentSubmit',
   ]);
+  const { clearSettingsCache } = await import('./settings.js');
+  clearSettingsCache();
 }

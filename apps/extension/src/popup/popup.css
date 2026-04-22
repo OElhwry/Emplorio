@@ -1,3 +1,13 @@
+.popup-logo {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+.popup-logo-dark { display: none; }
+:root[data-theme="dark"] .popup-logo-light { display: none; }
+:root[data-theme="dark"] .popup-logo-dark { display: block; }
+
 :root,
 :root[data-theme="light"] {
   --bg: #ffffff;
@@ -760,4 +770,68 @@ kbd {
   color: var(--danger);
   font-weight: 700;
   flex-shrink: 0;
+}
+
+/* ---------- OTP input ---------- */
+.otp-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  justify-content: center;
+}
+.otp-container[data-input-otp-disabled] { opacity: 0.5; }
+.otp-group {
+  display: flex;
+  align-items: center;
+  gap: 0;
+}
+.otp-slot {
+  position: relative;
+  width: 34px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text);
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-right: 0;
+  transition: border-color 160ms ease, box-shadow 160ms ease, z-index 0s;
+  outline: none;
+  font-feature-settings: 'tnum';
+}
+.otp-group .otp-slot:first-child {
+  border-top-left-radius: 6px;
+  border-bottom-left-radius: 6px;
+}
+.otp-group .otp-slot:last-child {
+  border-top-right-radius: 6px;
+  border-bottom-right-radius: 6px;
+  border-right: 1px solid var(--border);
+}
+.otp-slot.is-active {
+  z-index: 2;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.18);
+}
+.otp-caret {
+  position: absolute;
+  width: 1.5px;
+  height: 18px;
+  background: var(--text);
+  animation: otp-caret-blink 1s steps(1) infinite;
+}
+@keyframes otp-caret-blink {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .otp-caret { animation: none; }
+}
+.otp-sep {
+  color: var(--text-subtle);
+  font-size: 16px;
+  user-select: none;
 }
