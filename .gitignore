@@ -25,4 +25,5 @@ packages/db/drizzle
 *.tsbuildinfo
 
 .claude/settings.local.json
+.claude/skills/
 **/__pycache__/

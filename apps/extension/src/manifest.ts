@@ -4,7 +4,7 @@ export default defineManifest({
   manifest_version: 3,
   name: 'Emplorio',
   description: 'Apply once. Send everywhere.',
-  version: '1.0.0',
+  version: '1.0.1',
   icons: {
     '16': 'icon16.png',
     '32': 'icon32.png',
@@ -51,7 +51,7 @@ export default defineManifest({
       run_at: 'document_idle',
     },
   ],
-  permissions: ['storage', 'activeTab', 'scripting'],
+  permissions: ['storage', 'activeTab'],
   host_permissions: ['https://emplorio-api.fly.dev/*'],
   commands: {
     _execute_action: {
