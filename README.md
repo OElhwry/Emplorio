@@ -2,180 +2,211 @@
 
 **Apply once. Send everywhere.**
 
-A browser extension and AI backend that kills the 30-minute job application. Fill your profile in once, and Emplorio handles every form after — autofilling fields across every major ATS, tailoring your CV to each role, and drafting cover letters grounded in your real work history.
+A Chrome extension and AI backend that kills the 30-minute job application. Fill your profile in once, and Emplorio handles every form after — autofilling fields across every major ATS, drafting cover letters and answers grounded in your real work history, and tracking every application you send.
+
+| | |
+|---|---|
+| **Web** | [emplorio.co.uk](https://emplorio.co.uk) |
+| **API** | [emplorio-api.fly.dev](https://emplorio-api.fly.dev/health) |
+| **Extension** | Chrome Web Store *(in review)* |
+| **Status** | v1.0.0 — production |
 
 ---
 
-## The Problem
+## What it does
 
-Serious job hunters fill the same 20 fields (name, email, phone, work authorisation, previous roles, EEO questions) across 10+ applications a day. Each application takes 20–40 minutes of copy-paste tedium, and that's before writing a custom cover letter or re-shaping the CV to match the job description. The pain compounds: applying to 100 roles costs 40+ hours of pure form-filling.
+### Smart autofill across 9 ATS platforms
 
-## The Solution
+Click once and every field on a job application populates in under a second. Built-in adapters with hardcoded selectors for:
 
-A Chrome extension that knows your profile and fills forms on detection, plus a web dashboard that tracks every application and generates tailored documents on demand. The LLM is grounded in your real CV — it rewrites, reorders, and emphasises; it never invents.
+**Greenhouse · Lever · Workday · Ashby · LinkedIn · Indeed · Workable · SmartRecruiters · iCIMS**
 
----
+Three-layer detection strategy:
 
-## Core Features
+1. **ATS adapters** — bespoke selectors per platform (covers most mid-size + enterprise applications)
+2. **Generic heuristics** — matches `autocomplete` attributes → `name`/`id` → adjacent `<label>` text against a known profile schema
+3. **LLM fallback** — for unknown forms, serialises field labels and asks Claude for a mapping. Cached per-domain so the model runs once per new site, not every visit
 
-### 1. Smart Autofill (browser extension)
+### AI cover letters, question answers & follow-ups *(BYO Anthropic key)*
 
-One click fills every field on a job application form. Three-layer detection strategy:
+- **Cover letters** streamed from `{ jobDescription + company + role + your profile + tone }`
+- **Open-ended question drafts** ("Why this role?", "Tell us about a time…") drafted from your CV + the question
+- **Follow-up emails** post-application
+- **CV extraction** — drop a PDF in once, Claude pulls structured work history into your profile
 
-- **ATS adapters** — hardcoded selectors for Greenhouse, Lever, Workday, and Ashby (covers ~70% of mid-size and enterprise applications)
-- **Generic heuristics** — matches `autocomplete` attributes, then `name`/`id`, then adjacent `<label>` text against a known profile schema
-- **LLM fallback** — for unknown forms, serialises field labels and sends them to Claude, which returns a mapping. Cached per-domain so the model runs once per new site, not every visit
+The Anthropic key lives only in `chrome.storage` on your device. When you trigger an AI action it's sent on a single request, used to call Anthropic on your behalf, and discarded server-side. Never logged, never persisted.
 
-### 2. Co-Pilot Mode (default)
+### Application tracking
 
-Every application is reviewed before submission. Emplorio fills every field, generates the CV and cover letter, and stops — you eyeball it, adjust anything, and hit submit yourself. Full control, zero form-filling. This is the default mode because auto-submit-without-review looks like spam to recruiters.
+Every application logs automatically with company, role, URL, status, and timestamps. The job description is frozen at apply-time so you can regenerate a tailored draft six weeks later even if the posting is taken down.
 
-### 3. Auto-Apply Mode (opt-in, power users)
+### Cross-device sync
 
-For vetted job boards where you've reviewed the role already, Emplorio can submit end-to-end automatically. Rate-limited and always logs every submission to the dashboard, with the full payload stored so you know exactly what went out.
+Sign in once with a magic-link OTP. Profile, application history, and generated drafts sync to a Postgres database in the EU and follow you across browsers.
 
-### 4. Tailored CVs
+### Privacy-first by design
 
-Upload your base CV once (or build it in the profile editor). For each role, Claude receives the job description plus your structured CV and returns a tailored version — bullets reordered, relevant experience emphasised, vocabulary matched to the JD. Exported as PDF via `react-pdf`. Every tailored version is saved and diffable against your base.
-
-### 5. Cover Letter Generator
-
-Streaming cover letters generated from `{ jobDescription + company + role + your profile + tone preference }`. Uses Claude's prompt caching on the profile half — base CV cached once, every generation reuses it → 10× cheaper, 3× faster. Editable textarea before sending.
-
-### 6. Application Dashboard
-
-Every application tracked with: company, role, job URL, frozen JD snapshot, status (applied → interview → offer/rejected), notes, and attached generated docs. You always know where you stand, and the JD snapshot means you can regenerate a tailored CV six weeks later even if the posting is taken down.
-
-### 7. Smart Job Matching (stretch)
-
-Filters incoming jobs by role, seniority band, salary floor, and remote/hybrid. Sources from public job APIs (Adzuna, JSearch) rather than scraping LinkedIn — legally cleaner and more reliable. Probably phase 2: the autofill product stands alone without it.
+- Bring your own AI key — Emplorio never bills you, never holds it
+- All data stored in the EU (Neon / Frankfurt) and London (Fly.io / `lhr`)
+- No analytics, no tracking pixels, no advertising
+- Open source — read the code that runs on your machine
 
 ---
 
-## How It Works — User Flow
+## Tech stack
 
-1. **Sign up** → build profile (personal info, work history, education, skills, preferences). ~10 minutes, one time only.
-2. **Install extension** → find a job → click "Fill". Every field populates in under a second.
-3. **Click "Tailor CV"** or "Generate cover letter" in the dashboard. Claude streams the result; you tweak and save.
-4. **Review → submit.** Application logs automatically to the dashboard.
-5. **Track** → update status as you hear back.
-
----
-
-## Tech Stack
-
-| Layer     | Choice                                                          | Why                                                          |
-| --------- | --------------------------------------------------------------- | ------------------------------------------------------------ |
-| Extension | TypeScript + React + Vite + `@crxjs/vite-plugin` (Manifest V3)  | Modern MV3 DX, shared types with backend                     |
-| Backend   | Fastify on Node 22                                              | Real server (not serverless) — middleware, SSE, long-running |
-| ORM       | Drizzle                                                         | SQL-first, strong TS inference, looks serious on a CV        |
-| DB        | Neon (serverless Postgres)                                      | New tool vs Supabase past, has branching                     |
-| Auth      | Roll-your-own magic link → HTTP-only JWT cookie                 | Backend-depth signal                                         |
-| Host      | Fly.io (Docker)                                                 | Persistent container, global regions, real `fly.toml`        |
-| Jobs      | BullMQ + Upstash Redis                                          | Async PDF generation, LLM batch                              |
-| Storage   | Cloudflare R2                                                   | S3-compatible, cheap, for stored PDFs                        |
-| Email     | Resend                                                          | Magic-link delivery                                          |
-| LLM       | Claude API (`@anthropic-ai/sdk`) with prompt caching + streaming | Best long-context model, cache-friendly for profile reuse    |
-| PDF       | `@react-pdf/renderer`                                           | Pure JS, no headless browser ops                             |
-| Logs      | Pino → Axiom                                                    | Structured logging, free tier                                |
-| Tests     | Vitest + Testcontainers                                         | Integration tests against real Postgres                      |
+| Layer | Choice |
+|---|---|
+| **Extension** | TypeScript · React 18 · Vite · `@crxjs/vite-plugin` · Manifest V3 |
+| **Web** | Next.js 15 (App Router) · React 18 · vanilla CSS · Radix UI · deployed on **Vercel** |
+| **API** | Fastify on Node 22 · Docker · deployed on **Fly.io** (London region) |
+| **Database** | **Neon** Postgres (EU) · Drizzle ORM |
+| **Auth** | Magic-link OTP via Resend → HTTP-only JWT cookie + bearer token |
+| **AI** | Anthropic Claude (`@anthropic-ai/sdk`) with prompt caching + streaming |
+| **PDF** | `pdfjs-dist` for CV extraction |
+| **Email** | **Resend** for OTP delivery |
+| **Tests** | Vitest |
 
 ### Repo layout — pnpm monorepo
 
 ```
 emplorio/
 ├── apps/
-│   ├── extension/     # MV3 + React + Vite
-│   ├── api/           # Fastify server
-│   └── web/           # Next.js dashboard
+│   ├── extension/         # MV3 Chrome extension (popup + content scripts + service worker)
+│   │   ├── src/adapters/  # 9 ATS adapters
+│   │   └── src/lib/       # autofill engine, AI client, scrape, sync, settings, theme
+│   ├── api/               # Fastify server
+│   │   └── src/routes/    # /auth /profile /applications /generate /field-mappings
+│   └── web/               # Next.js marketing site (emplorio.co.uk)
 └── packages/
-    ├── shared/        # Types, Zod schemas, ProfileKey enum
-    └── db/            # Drizzle schema + migrations
+    ├── shared/            # Zod schemas, types, ProfileKey enum
+    └── db/                # Drizzle schema + migrations
 ```
 
-### Architecture at a Glance
+### Architecture
 
 ```
-┌──────────────┐   ┌──────────────┐   ┌──────────────┐
-│  Extension   │   │ Web Dashboard│   │   Claude API │
-│ (MV3 content │   │  (Next.js)   │   │              │
-│  + popup)    │   │              │   │              │
-└──────┬───────┘   └──────┬───────┘   └──────▲───────┘
-       │                  │                  │
-       │  HTTPS + cookie  │                  │
-       └────────┬─────────┘                  │
-                ▼                            │
-         ┌─────────────┐                     │
-         │   Fastify   │─────────────────────┘
-         │   API       │   (streaming, cached prompts)
-         └──────┬──────┘
-                │
-      ┌─────────┼──────────┬──────────┐
-      ▼         ▼          ▼          ▼
-   Neon PG   Redis      R2 blobs   Resend
-              (jobs)    (PDFs)     (email)
+┌────────────────┐    HTTPS + bearer/cookie    ┌──────────────────┐
+│  Chrome Ext    │ ──────────────────────────▶ │   Fastify API    │
+│  (popup +      │                              │   (Fly.io / lhr) │
+│   content)     │ ◀──────────────────────────  │                  │
+└───────┬────────┘                              └────┬─────────┬───┘
+        │                                            │         │
+        │ chrome.storage (profile cache)             │         │
+        ▼                                            ▼         ▼
+   user's device                              Neon Postgres   Anthropic
+                                              (EU)            (BYO key)
+
+┌────────────────┐
+│  emplorio.co.uk│  Static marketing + privacy + terms (Vercel)
+└────────────────┘
 ```
 
 ---
 
-## Data Model — Highlights
+## Keyboard shortcuts
 
-- **`profiles`** (+ nested `work_history`, `education`, `skills`) — the single source of truth for every generated document
-- **`applications`** — with `jdSnapshot` frozen at apply-time so regeneration works forever
-- **`generated_docs`** — every cover letter and tailored CV, with `tokensIn`/`tokensOut`/`cacheHit` for cost telemetry
-- **`field_mappings`** — global, not per-user — Stripe's Greenhouse form is the same for every applicant, so one user's LLM call benefits everyone. Big cost win.
+| Shortcut | Action |
+|---|---|
+| `Alt+Shift+E` | Open Emplorio popup |
+| `Alt+Shift+F` | Fill the current form |
+| `Alt+Shift+S` | Save the current job to history |
+
+---
+
+## Getting started (local dev)
+
+```bash
+# 1. Install
+pnpm install
+
+# 2. Environment
+cp .env.example .env       # fill DATABASE_URL, JWT_SECRET, RESEND_API_KEY, etc.
+
+# 3. Database
+pnpm db:migrate
+
+# 4. Run everything in parallel
+pnpm dev                   # api on :3001, web on :3000, extension watcher
+
+# 5. Load extension in Chrome
+# chrome://extensions → Developer mode → Load unpacked → select apps/extension/dist
+```
+
+### Building for production
+
+```bash
+# Web (Vercel auto-deploys from main)
+pnpm --filter @emplorio/web build
+
+# API (Fly.io — see apps/api/fly.toml)
+cd apps/api && fly deploy
+
+# Extension (output → apps/extension/dist, ready to zip for CWS)
+VITE_API_ORIGIN=https://emplorio-api.fly.dev pnpm --filter @emplorio/extension build
+```
+
+### Useful scripts
+
+```bash
+pnpm typecheck             # tsc --noEmit across the monorepo
+pnpm test                  # vitest, all workspaces
+pnpm db:studio             # Drizzle Studio against your DATABASE_URL
+pnpm db:generate           # generate a new migration from schema changes
+```
+
+---
+
+## Environment variables
+
+| Variable | Where | Purpose |
+|---|---|---|
+| `DATABASE_URL` | api | Neon Postgres connection string |
+| `JWT_SECRET` | api | ≥32 chars; signs session tokens |
+| `RESEND_API_KEY` | api | OTP email delivery |
+| `EMAIL_FROM` | api | Sender for OTP emails |
+| `WEB_ORIGIN` | api | CORS allow origin (e.g. `https://emplorio.co.uk`) |
+| `COOKIE_DOMAIN` | api | e.g. `emplorio.co.uk` in prod |
+| `ANTHROPIC_API_KEY` | api *(optional)* | Server-owned fallback key — users normally bring their own |
+| `ANTHROPIC_MODEL` | api | Defaults to `claude-opus-4-7` |
+| `EMPLORIO_API_KEY` | api + extension | Optional shared secret to gate the API |
+| `VITE_API_ORIGIN` | extension build | Production API URL baked into the bundle |
+
+---
+
+## Privacy & data
+
+See [emplorio.co.uk/privacy](https://emplorio.co.uk/privacy) and [emplorio.co.uk/terms](https://emplorio.co.uk/terms) for the full policy.
+
+Short version:
+
+- **Stored on our database (Neon, EU):** your sign-in email, profile fields, application history, generated drafts, settings
+- **Stored only on your device (`chrome.storage`):** your Anthropic API key, theme preference, in-progress sign-in state
+- **Never collected:** payment info, location, browsing history, telemetry
+- **Third parties:** Neon (database), Fly.io (API hosting), Resend (OTP email), Anthropic (AI generation, only when you've added a key)
 
 ---
 
 ## Roadmap
 
-### MVP (weeks 1–3)
-
-- Extension with Greenhouse + Lever adapters only
-- Profile editor, local storage
-- Cover letter generation (no CV tailoring yet)
-- Co-Pilot mode only
-
-### v1 (weeks 4–6)
-
-- Backend + auth + cloud sync
-- LLM field-mapping fallback (works on any site)
-- CV tailoring with PDF export
-- Application dashboard with full CRUD
-- Workday + Ashby adapters
-
-### v2 (stretch)
-
-- Auto-Apply mode (opt-in, rate-limited)
-- Smart Job Matching via Adzuna/JSearch
-- Response-rate analytics per CV variant
-- Chrome Web Store listing
-- Public landing page at `emplorio.app`
+- [x] MV1 — Greenhouse + Lever adapters, profile editor, local storage
+- [x] v1.0 — 9 ATS adapters · API + auth + cloud sync · AI cover letters / answers / follow-ups · CV extraction · application tracking · marketing site · privacy/terms · Chrome Web Store submission
+- [ ] v1.1 — Auto-Apply mode (opt-in, rate-limited) · response-rate analytics per CV variant · more ATS adapters
+- [ ] v2 — Smart job matching (Adzuna / JSearch APIs) · tailored CV PDF export · team/agency mode
 
 ---
 
-## Why It Stands Out (Portfolio Angle)
+## Why it stands out
 
-This is the only project in the portfolio that demonstrates all of:
-
-- Browser extension engineering (Manifest V3, content scripts, cross-context messaging)
-- Real backend (hand-written Fastify server on Docker, not BaaS)
-- LLM product thinking (streaming, prompt caching, grounded generation, cost telemetry)
-- PDF generation (interesting technical wrinkle)
-- Privacy discipline (sensitive PII → encryption at rest, scoped permissions, no logging of profile data)
-- Product sense (Co-Pilot as default, Auto-Apply as opt-in — restraint over flash)
-
-Plus the narrative: *"I built it while job hunting, used it on the roles I'm interviewing for right now, and it saved me 40+ hours."*
+- **Browser extension engineering** — Manifest V3, content scripts, cross-context messaging, MV3-compliant CSP (no inline scripts)
+- **Real backend** — hand-written Fastify on Docker, not BaaS
+- **LLM product thinking** — streaming, prompt caching, BYO-key model that aligns incentives, grounded generation that never invents
+- **Privacy discipline** — sensitive PII handling, scoped permissions (no `https://*/*`), no logging of profile data, EU-only storage
+- **Product sense** — Co-Pilot as default, Auto-Apply as opt-in; restraint over flash
 
 ---
 
-## Getting Started
+## License & contact
 
-```bash
-pnpm install
-cp .env.example .env       # fill in DATABASE_URL, ANTHROPIC_API_KEY, etc.
-pnpm db:migrate
-pnpm dev                   # runs api + web + extension in parallel
-```
-
-Then load `apps/extension/dist` as an unpacked extension in Chrome.
+Personal project, all rights reserved.
+Questions / bugs: [emplorioEXT@gmail.com](mailto:emplorioEXT@gmail.com)
