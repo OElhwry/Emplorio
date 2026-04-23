@@ -1,0 +1,349 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Emplorio — Marquee 1400×560</title>
+<style>
+  /* ---- exact canvas ---- */
+  html, body { margin: 0; padding: 0; background: #05050a; }
+  body { width: 1400px; height: 560px; overflow: hidden;
+    font-family: 'Inter', -apple-system, 'Segoe UI', Roboto, sans-serif;
+    -webkit-font-smoothing: antialiased; text-rendering: geometricPrecision; }
+
+  .stage {
+    position: relative;
+    width: 1400px; height: 560px;
+    background:
+      radial-gradient(1100px 620px at 18% 8%, rgba(99, 102, 241, 0.28), transparent 60%),
+      radial-gradient(900px 520px at 92% 92%, rgba(168, 85, 247, 0.22), transparent 60%),
+      radial-gradient(700px 420px at 58% 46%, rgba(129, 140, 248, 0.12), transparent 60%),
+      linear-gradient(180deg, #0b0a18 0%, #0a0916 100%);
+    overflow: hidden;
+    isolation: isolate;
+  }
+
+  /* subtle grid */
+  .grid {
+    position: absolute; inset: 0;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+    background-size: 48px 48px;
+    mask-image: radial-gradient(900px 500px at 50% 50%, #000 0%, transparent 75%);
+    -webkit-mask-image: radial-gradient(900px 500px at 50% 50%, #000 0%, transparent 75%);
+    opacity: 0.6;
+  }
+
+  /* floating shapes */
+  .shape { position: absolute; border-radius: 24px;
+    border: 1px solid rgba(129, 140, 248, 0.24);
+    background: linear-gradient(135deg, rgba(99,102,241,0.12), rgba(168,85,247,0.04));
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.06), 0 40px 80px -30px rgba(79,70,229,0.35);
+    backdrop-filter: blur(6px);
+  }
+  .s1 { width: 120px; height: 120px; top: 70px; left: 70px; border-radius: 28px; transform: rotate(-14deg); }
+  .s2 { width: 70px; height: 70px; top: 430px; left: 200px; border-radius: 50%; }
+  .s3 { width: 90px; height: 90px; top: 70px; right: 560px; border-radius: 22px; transform: rotate(18deg); }
+  .s4 { width: 60px; height: 60px; top: 450px; right: 110px; border-radius: 50%; }
+
+  /* dots */
+  .dot { position: absolute; width: 6px; height: 6px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(167,139,250,0.95), rgba(167,139,250,0));
+    opacity: 0.75; filter: blur(0.3px); }
+  .d1 { top: 110px; left: 360px; width: 5px; height: 5px; }
+  .d2 { top: 200px; left: 220px; }
+  .d3 { top: 380px; left: 90px; width: 4px; height: 4px; }
+  .d4 { top: 150px; right: 440px; }
+  .d5 { top: 330px; right: 580px; width: 4px; height: 4px; }
+
+  /* ---- content ---- */
+  .content {
+    position: relative; z-index: 2;
+    height: 100%;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: center;
+    padding: 0 72px;
+    gap: 56px;
+  }
+
+  .eyebrow {
+    display: inline-flex; align-items: center; gap: 10px;
+    padding: 7px 14px 7px 10px;
+    background: rgba(99, 102, 241, 0.12);
+    border: 1px solid rgba(129, 140, 248, 0.32);
+    border-radius: 999px;
+    color: #c7d2fe;
+    font-size: 13px; font-weight: 600; letter-spacing: 0.01em;
+    margin-bottom: 26px;
+  }
+  .eyebrow .dot-live {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: #a78bfa;
+    box-shadow: 0 0 0 4px rgba(167,139,250,0.2);
+  }
+
+  h1 {
+    color: #fff;
+    font-size: 72px;
+    line-height: 1.02;
+    letter-spacing: -0.035em;
+    font-weight: 800;
+    margin: 0 0 22px;
+  }
+  h1 .grad {
+    background: linear-gradient(135deg, #a5b4fc 0%, #c4b5fd 45%, #e9d5ff 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  p.sub {
+    color: #b4b9d1;
+    font-size: 20px;
+    line-height: 1.5;
+    max-width: 520px;
+    margin: 0 0 34px;
+  }
+
+  .ctas { display: flex; align-items: center; gap: 14px; }
+  .btn {
+    display: inline-flex; align-items: center; gap: 10px;
+    padding: 15px 22px;
+    border-radius: 14px;
+    font-weight: 700; font-size: 16px;
+    letter-spacing: -0.005em;
+  }
+  .btn-primary {
+    background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+    color: #fff;
+    box-shadow:
+      0 12px 30px -8px rgba(79, 70, 229, 0.55),
+      inset 0 1px 0 rgba(255,255,255,0.18);
+  }
+  .btn-ghost {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.10);
+    color: #e8eaf4;
+  }
+  .btn svg { width: 18px; height: 18px; }
+
+  .meta {
+    margin-top: 22px;
+    display: flex; align-items: center; gap: 14px;
+    color: #8b90ad; font-size: 13.5px;
+  }
+  .meta .sep { width: 3px; height: 3px; border-radius: 50%; background: #4a4f6b; }
+  .meta .stars { color: #fbbf24; letter-spacing: 1px; }
+
+  /* ---- right: UI mock ---- */
+  .mock {
+    position: relative;
+    width: 100%;
+    height: 440px;
+    max-width: 580px;
+    margin-left: auto;
+  }
+  .card {
+    position: absolute;
+    border-radius: 20px;
+    background: rgba(17, 17, 30, 0.7);
+    border: 1px solid rgba(255,255,255,0.08);
+    backdrop-filter: blur(14px);
+    box-shadow:
+      0 40px 80px -20px rgba(0, 0, 0, 0.55),
+      0 0 0 1px rgba(129, 140, 248, 0.08),
+      inset 0 1px 0 rgba(255,255,255,0.06);
+    overflow: hidden;
+  }
+
+  .card-form {
+    top: 20px; left: 40px; right: 20px;
+    padding: 22px 24px 24px;
+  }
+  .card-form .row {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 16px;
+  }
+  .url-pill {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 6px 12px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 999px;
+    color: #9ca3c4; font-size: 12px;
+  }
+  .lock { width: 12px; height: 12px; color: #a78bfa; }
+  .dots3 { display: flex; gap: 6px; }
+  .dots3 span { width: 8px; height: 8px; border-radius: 50%; background: rgba(255,255,255,0.12); }
+
+  .field { margin-bottom: 14px; }
+  .label { font-size: 11px; color: #8890b1; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.08em; font-weight: 600; }
+  .input {
+    position: relative;
+    height: 38px;
+    border-radius: 10px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    display: flex; align-items: center; padding: 0 14px;
+    color: #e8eaf4; font-size: 14px; font-weight: 500;
+    overflow: hidden;
+  }
+  .input.filling { border-color: rgba(129, 140, 248, 0.55); box-shadow: 0 0 0 3px rgba(99,102,241,0.15); }
+  .input .ghost-caret {
+    display: inline-block; width: 2px; height: 16px; background: #a5b4fc; margin-left: 2px;
+  }
+  .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+  /* chip badge on top right */
+  .badge {
+    position: absolute;
+    top: -14px; right: 24px;
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 8px 14px 8px 10px;
+    background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+    color: #fff;
+    font-size: 12.5px; font-weight: 700;
+    border-radius: 999px;
+    box-shadow: 0 18px 36px -10px rgba(79,70,229,0.6);
+  }
+  .badge .pulse {
+    width: 8px; height: 8px; border-radius: 50%; background: #fff;
+    box-shadow: 0 0 0 4px rgba(255,255,255,0.25);
+  }
+
+  /* small floating "time saved" stat card */
+  .stat {
+    position: absolute;
+    left: 0; bottom: 20px;
+    padding: 14px 18px;
+    background: rgba(17, 17, 30, 0.82);
+    border: 1px solid rgba(129, 140, 248, 0.28);
+    backdrop-filter: blur(14px);
+    border-radius: 14px;
+    box-shadow: 0 30px 60px -20px rgba(0, 0, 0, 0.6);
+  }
+  .stat .num {
+    font-size: 22px; font-weight: 800; color: #fff; letter-spacing: -0.02em; line-height: 1;
+    background: linear-gradient(135deg, #a5b4fc 0%, #c4b5fd 100%);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  .stat .lbl {
+    font-size: 11px; color: #9ca3c4; letter-spacing: 0.06em;
+    margin-top: 4px; font-weight: 600; text-transform: uppercase;
+  }
+
+  /* top-edge highlight */
+  .stage::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(129,140,248,0.4), transparent);
+    z-index: 3;
+  }
+</style>
+</head>
+<body>
+  <div class="stage">
+    <div class="grid"></div>
+
+    <span class="shape s1"></span>
+    <span class="shape s2"></span>
+    <span class="shape s3"></span>
+    <span class="shape s4"></span>
+    <span class="dot d1"></span>
+    <span class="dot d2"></span>
+    <span class="dot d3"></span>
+    <span class="dot d4"></span>
+    <span class="dot d5"></span>
+
+    <div class="content">
+      <!-- LEFT: copy + CTA -->
+      <div>
+        <span class="eyebrow"><span class="dot-live"></span>AI-powered autofill for job seekers</span>
+        <h1>
+          Apply once.<br/>
+          <span class="grad">Send everywhere.</span>
+        </h1>
+        <p class="sub">
+          Emplorio fills Greenhouse, Lever, Workday, Ashby and more in seconds — then drafts tailored
+          cover letters and answers using your own Anthropic API key.
+        </p>
+        <div class="ctas">
+          <a class="btn btn-primary">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10" /><circle cx="12" cy="12" r="4" />
+              <line x1="21.17" y1="8" x2="12" y2="8" />
+              <line x1="3.95" y1="6.06" x2="8.54" y2="14" />
+              <line x1="10.88" y1="21.94" x2="15.46" y2="14" />
+            </svg>
+            Add to Chrome — Free
+          </a>
+          <span class="btn btn-ghost">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="5 12 10 17 20 7" />
+            </svg>
+            Works on 9 top ATS sites
+          </span>
+        </div>
+        <div class="meta">
+          <span class="stars">★ ★ ★ ★ ★</span>
+          <span>Built for serious job seekers</span>
+          <span class="sep"></span>
+          <span>Privacy-first · Bring your own key</span>
+        </div>
+      </div>
+
+      <!-- RIGHT: floating UI mock -->
+      <div class="mock">
+        <div class="card card-form">
+          <div class="badge"><span class="pulse"></span>Auto-filling…</div>
+          <div class="row">
+            <span class="url-pill">
+              <svg class="lock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/>
+              </svg>
+              boards.greenhouse.io/apply
+            </span>
+            <span class="dots3"><span></span><span></span><span></span></span>
+          </div>
+
+          <div class="field">
+            <div class="label">Full name</div>
+            <div class="input filling">Alex Morgan</div>
+          </div>
+          <div class="row2">
+            <div class="field">
+              <div class="label">Email</div>
+              <div class="input filling">alex.morgan@example.com</div>
+            </div>
+            <div class="field">
+              <div class="label">Phone</div>
+              <div class="input filling">+44 7700 900 000</div>
+            </div>
+          </div>
+          <div class="row2">
+            <div class="field">
+              <div class="label">Location</div>
+              <div class="input filling">London, UK</div>
+            </div>
+            <div class="field">
+              <div class="label">LinkedIn</div>
+              <div class="input">linkedin.com/in/<span class="ghost-caret"></span></div>
+            </div>
+          </div>
+          <div class="field" style="margin-bottom:0">
+            <div class="label">Why this role?</div>
+            <div class="input" style="height:54px; align-items:flex-start; padding-top:10px; font-size:13px; color:#c8cce6; line-height:1.4">
+              Drafted by Claude from your profile &amp; the job post…
+            </div>
+          </div>
+        </div>
+
+        <div class="stat">
+          <div class="num">48 sec</div>
+          <div class="lbl">avg application</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
