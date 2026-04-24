@@ -15,8 +15,8 @@ export default function HomePage() {
         <Hero />
         <LogosMarquee />
         <WhatItDoes />
-        <Stats />
         <HowItWorks />
+        <Stats />
         <Pricing />
         <FAQ />
         <FinalCTA />
@@ -139,7 +139,6 @@ function AmbientBackground() {
         <span className="orb orb-1" />
         <span className="orb orb-2" />
         <span className="orb orb-3" />
-        <span className="orb orb-4" />
       </div>
       <div className="parallax parallax-near" ref={nearRef}>
         {SHAPES.map((s, i) => (
@@ -236,6 +235,19 @@ function useActiveSection(ids: string[]): string | null {
 function Nav() {
   const ids = NAV_LINKS.map((l) => l.id);
   const active = useActiveSection(ids);
+  const [drawerOpen, setDrawerOpen] = useState(false);
+
+  useEffect(() => {
+    if (!drawerOpen) return;
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') setDrawerOpen(false); };
+    document.documentElement.style.overflow = 'hidden';
+    window.addEventListener('keydown', onKey);
+    return () => {
+      document.documentElement.style.overflow = '';
+      window.removeEventListener('keydown', onKey);
+    };
+  }, [drawerOpen]);
+
   return (
     <header className="nav">
       <div className="nav-inner">
@@ -265,6 +277,59 @@ function Nav() {
             <IconChrome /> Install
           </a>
         </nav>
+        <button
+          type="button"
+          className="nav-hamburger"
+          aria-label="Open menu"
+          aria-expanded={drawerOpen}
+          aria-controls="mobile-nav-drawer"
+          onClick={() => setDrawerOpen(true)}
+        >
+          <IconMenu />
+        </button>
+      </div>
+      <div
+        className={`nav-drawer${drawerOpen ? ' open' : ''}`}
+        id="mobile-nav-drawer"
+        role="dialog"
+        aria-modal="true"
+        aria-label="Navigation"
+      >
+        <div className="nav-drawer-backdrop" onClick={() => setDrawerOpen(false)} />
+        <div className="nav-drawer-panel">
+          <div className="nav-drawer-head">
+            <span className="nav-drawer-brand">Menu</span>
+            <button
+              type="button"
+              className="nav-drawer-close"
+              aria-label="Close menu"
+              onClick={() => setDrawerOpen(false)}
+            >
+              <IconX />
+            </button>
+          </div>
+          <nav className="nav-drawer-links" aria-label="Mobile">
+            {NAV_LINKS.map((l) => (
+              <a
+                key={l.id}
+                href={`#${l.id}`}
+                onClick={() => setDrawerOpen(false)}
+              >
+                {l.label}
+              </a>
+            ))}
+          </nav>
+          <div className="nav-drawer-foot">
+            <ThemeToggle />
+            <a
+              href={CHROME_STORE_URL}
+              className="nav-cta"
+              onClick={() => setDrawerOpen(false)}
+            >
+              <IconChrome /> Install
+            </a>
+          </div>
+        </div>
       </div>
     </header>
   );
@@ -304,7 +369,7 @@ function Hero() {
           </div>
           <div className="hero-meta" aria-label="Highlights">
             <span className="hero-meta-item">
-              <IconCheck /> Works on Greenhouse, Lever, Workday, Ashby
+              <IconCheck /> Works on the ATS systems you actually use
             </span>
             <span className="hero-meta-item">
               <IconCheck /> No card required
@@ -520,13 +585,12 @@ function WhatItDoes() {
             <div className="bento-icon"><IconForm /></div>
             <h3>One-click autofill</h3>
             <p>
-              Detects fields on Greenhouse, Lever, Workday, Ashby, iCIMS, Workable, SmartRecruiters,
-              Indeed, and LinkedIn — and fills them from your saved profile in under a second.
+              Detects fields on every major ATS and fills them from your saved profile in under a second.
             </p>
-            <p style={{ marginTop: 4, fontSize: 13, color: 'rgba(255,255,255,0.5)' }}>
-              <kbd style={{ padding: '2px 8px', background: 'rgba(255,255,255,0.1)', borderRadius: 6, fontSize: 11, fontFamily: 'inherit' }}>Alt</kbd>{' '}
-              <kbd style={{ padding: '2px 8px', background: 'rgba(255,255,255,0.1)', borderRadius: 6, fontSize: 11, fontFamily: 'inherit' }}>Shift</kbd>{' '}
-              <kbd style={{ padding: '2px 8px', background: 'rgba(255,255,255,0.1)', borderRadius: 6, fontSize: 11, fontFamily: 'inherit' }}>F</kbd> to fill the current page.
+            <p className="bento-shortcut-row">
+              <kbd>Alt</kbd>{' '}
+              <kbd>Shift</kbd>{' '}
+              <kbd>F</kbd> to fill the current page.
             </p>
             <div className="bento-stat">
               <div className="big">&lt; 2s</div>
@@ -647,13 +711,12 @@ function Pricing() {
           </div>
           <div className="tier featured">
             <div className="tier-badge">With AI</div>
-            <div className="tier-name">Free + your key</div>
+            <div className="tier-name">With AI features</div>
             <div className="tier-price">
-              ~£0.01<small> per application</small>
+              £0<small> / forever</small>
             </div>
             <p className="tier-desc">
-              Unlock AI features by adding your own Anthropic API key. You pay Anthropic directly,
-              we never see it.
+              Unlock AI features by adding your own Anthropic API key, typically around £0.01 per application. You pay Anthropic directly, we never see it.
             </p>
             <ul className="tier-list">
               <li><IconCheck /> Everything in Free</li>
@@ -847,6 +910,14 @@ function Stats() {
     const grid = ref.current;
     if (!grid) return;
     const targets = grid.querySelectorAll<HTMLElement>('[data-counter]');
+    let seen = false;
+    try { seen = localStorage.getItem('emplorio-stats-seen') === '1'; } catch {}
+    if (seen) {
+      targets.forEach((el) => {
+        el.textContent = String(Number(el.dataset.counter));
+      });
+      return;
+    }
     const io = new IntersectionObserver(
       (entries) => {
         entries.forEach((e) => {
@@ -864,6 +935,7 @@ function Stats() {
           });
           io.unobserve(el);
         });
+        try { localStorage.setItem('emplorio-stats-seen', '1'); } catch {}
       },
       { threshold: 0.5 }
     );
@@ -1017,6 +1089,23 @@ function IconChevron() {
   return (
     <svg className="faq-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
       <polyline points="6 9 12 15 18 9" />
+    </svg>
+  );
+}
+function IconMenu() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <line x1="4" y1="7" x2="20" y2="7" />
+      <line x1="4" y1="12" x2="20" y2="12" />
+      <line x1="4" y1="17" x2="20" y2="17" />
+    </svg>
+  );
+}
+function IconX() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <line x1="6" y1="6" x2="18" y2="18" />
+      <line x1="18" y1="6" x2="6" y2="18" />
     </svg>
   );
 }

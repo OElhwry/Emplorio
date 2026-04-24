@@ -3,6 +3,7 @@ import type { Profile } from '@emplorio/shared';
 import { loadProfile, saveProfile } from '../lib/storage.js';
 import { extractPdfText, fileToDataUrl } from '../lib/cv.js';
 import { apiFetch } from '../lib/api.js';
+import { IconPartyPopper, IconSparkles, IconSpinner } from './icons.js';
 
 const ONBOARDING_KEY = 'emplorioOnboardingComplete';
 
@@ -51,7 +52,7 @@ export function Onboarding({ onDone }: { onDone: () => void }) {
       };
       setProfile(next);
       await saveProfile(next);
-      setCvStatus(text ? `✓ ${file.name} · ${text.length.toLocaleString()} chars` : `✓ ${file.name}`);
+      setCvStatus(text ? `Loaded ${file.name} · ${text.length.toLocaleString()} chars` : `Loaded ${file.name}`);
     } catch (err) {
       setCvStatus(`Error: ${(err as Error).message}`);
     }
@@ -92,7 +93,7 @@ export function Onboarding({ onDone }: { onDone: () => void }) {
       setProfile(next);
       await saveProfile(next);
       const counts = `${data.workHistory?.length ?? 0} jobs · ${data.education?.length ?? 0} education · ${data.skills?.length ?? 0} skills`;
-      setExtractStatus(`✓ Extracted ${counts}`);
+      setExtractStatus(`Extracted ${counts}`);
       setStep('basics');
     } catch (err) {
       setExtractStatus(`Error: ${(err as Error).message}`);
@@ -116,15 +117,36 @@ export function Onboarding({ onDone }: { onDone: () => void }) {
     onDone();
   }
 
+  const ORDER: Step[] = ['welcome', 'cv', 'extract', 'basics', 'done'];
+  function goBack() {
+    const i = ORDER.indexOf(step);
+    if (i > 0) {
+      setCvStatus('');
+      setExtractStatus('');
+      setStep(ORDER[i - 1] as Step);
+    }
+  }
+  const canGoBack = step !== 'welcome' && step !== 'done';
+
   return (
     <section className="onboarding">
-      <div className="onb-progress">
-        {(['welcome', 'cv', 'extract', 'basics', 'done'] as Step[]).map((s, i) => (
-          <span
-            key={s}
-            className={`onb-dot ${s === step ? 'active' : ''} ${stepIndex(step) > i ? 'done' : ''}`}
-          />
-        ))}
+      <div className="onb-topbar">
+        {canGoBack ? (
+          <button type="button" className="onb-back" onClick={goBack} aria-label="Back">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" width="14" height="14">
+              <polyline points="15 18 9 12 15 6" />
+            </svg>
+            Back
+          </button>
+        ) : <span />}
+        <div className="onb-progress">
+          {(['welcome', 'cv', 'extract', 'basics', 'done'] as Step[]).map((s, i) => (
+            <span
+              key={s}
+              className={`onb-dot ${s === step ? 'active' : ''} ${stepIndex(step) > i ? 'done' : ''}`}
+            />
+          ))}
+        </div>
       </div>
 
       {step === 'welcome' && (
@@ -134,10 +156,10 @@ export function Onboarding({ onDone }: { onDone: () => void }) {
             Apply once, send everywhere. We'll set you up in three quick steps so the extension can fill
             forms with your details.
           </p>
-          <ul className="onb-list">
-            <li>📄 Upload your CV</li>
-            <li>✨ Let AI extract your work history</li>
-            <li>👤 Confirm the basics</li>
+          <ul className="onb-list onb-list-icons">
+            <li><span className="onb-step-num">1</span> Upload your CV</li>
+            <li><span className="onb-step-num">2</span> Let AI extract your work history</li>
+            <li><span className="onb-step-num">3</span> Confirm the basics</li>
           </ul>
           <div className="onb-actions">
             <button onClick={skip} className="btn-link">Skip — I'll do it later</button>
@@ -183,8 +205,9 @@ export function Onboarding({ onDone }: { onDone: () => void }) {
           {extractStatus && <p className="helper">{extractStatus}</p>}
           <div className="onb-actions">
             <button onClick={() => setStep('basics')} className="btn-link">Skip — fill manually</button>
-            <button onClick={runExtract} disabled={busy} className="btn-primary">
-              {busy ? 'Extracting…' : '✨ Extract with AI'}
+            <button onClick={runExtract} disabled={busy} className="btn-primary btn-with-icon">
+              {busy ? <IconSpinner /> : <IconSparkles />}
+              {busy ? 'Extracting…' : 'Extract with AI'}
             </button>
           </div>
         </>
@@ -236,7 +259,10 @@ export function Onboarding({ onDone }: { onDone: () => void }) {
 
       {step === 'done' && (
         <>
-          <h2 className="onb-title">You're set 🎉</h2>
+          <h2 className="onb-title onb-title-row">
+            <span className="onb-title-icon"><IconPartyPopper size={18} /></span>
+            You're set
+          </h2>
           <p className="onb-body">Open a job page and try the keyboard shortcuts:</p>
           <div className="card onb-shortcuts">
             <div className="onb-shortcut"><span><kbd>Alt</kbd> <kbd>Shift</kbd> <kbd>F</kbd></span><span>Fill the current form</span></div>

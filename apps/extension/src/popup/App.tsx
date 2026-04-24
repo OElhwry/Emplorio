@@ -29,9 +29,38 @@ import {
 import { registerSyncHooks } from '../lib/syncHooks.js';
 
 import { apiFetch } from '../lib/api.js';
+import {
+  IconCalendar,
+  IconCheck,
+  IconDownload,
+  IconExternal,
+  IconLightbulb,
+  IconMail,
+  IconMonitor,
+  IconMoon,
+  IconPause,
+  IconPlay,
+  IconPower,
+  IconSettings,
+  IconSparkles,
+  IconSpinner,
+  IconStar,
+  IconSun,
+} from './icons.js';
 
 function isNeedsKey(res: Response): boolean {
   return res.status === 402;
+}
+
+type StatusKind = 'info' | 'success' | 'error';
+interface StatusMsg {
+  text: string;
+  kind: StatusKind;
+}
+function statusOf(s: StatusMsg | string | null): StatusMsg | null {
+  if (!s) return null;
+  if (typeof s === 'string') return { text: s, kind: 'info' };
+  return s;
 }
 
 registerSyncHooks({
@@ -48,7 +77,6 @@ const TABS: { id: Tab; label: string }[] = [
   { id: 'questions', label: 'Questions' },
   { id: 'history', label: 'History' },
   { id: 'profile', label: 'Profile' },
-  { id: 'settings', label: 'Settings' },
 ];
 
 export function App() {
@@ -87,7 +115,7 @@ export function App() {
     applyTheme(next);
     void saveTheme(next);
   }
-  const themeIcon = theme === 'dark' ? '☾' : theme === 'light' ? '☀' : '◐';
+  const ThemeIcon = theme === 'dark' ? IconMoon : theme === 'light' ? IconSun : IconMonitor;
   const themeTitle = `Theme: ${theme} (click to cycle)`;
 
   async function signOut() {
@@ -137,18 +165,30 @@ export function App() {
             <img src="/icon-dark.png" alt="" className="popup-logo popup-logo-dark" />
           </span>
           <h1 style={styles.title}>Emplorio</h1>
-          <button onClick={cycleTheme} className="theme-toggle" title={themeTitle} aria-label="Toggle theme">
-            {themeIcon}
-          </button>
-          <button
-            onClick={signOut}
-            className="theme-toggle"
-            title={`Signed in as ${session.email} — click to sign out`}
-            aria-label="Sign out"
-            style={{ marginLeft: 4 }}
-          >
-            ⏻
-          </button>
+          <div style={styles.headerActions}>
+            <button
+              onClick={() => {
+                setTab('settings');
+                setHighlightAi(false);
+              }}
+              className={`icon-btn ${tab === 'settings' ? 'active' : ''}`}
+              title="Settings"
+              aria-label="Settings"
+            >
+              <IconSettings />
+            </button>
+            <button onClick={cycleTheme} className="icon-btn" title={themeTitle} aria-label="Toggle theme">
+              <ThemeIcon />
+            </button>
+            <button
+              onClick={signOut}
+              className="icon-btn"
+              title={`Signed in as ${session.email}. Click to sign out.`}
+              aria-label="Sign out"
+            >
+              <IconPower />
+            </button>
+          </div>
         </div>
         <nav style={styles.tabs}>
           {TABS.map((t) => (
@@ -156,7 +196,7 @@ export function App() {
               key={t.id}
               onClick={() => {
                 setTab(t.id);
-                if (t.id !== 'settings') setHighlightAi(false);
+                setHighlightAi(false);
               }}
               className={`tab-btn ${tab === t.id ? 'active' : ''}`}
             >
@@ -295,10 +335,11 @@ function FillPanel() {
     <section style={styles.panel}>
       {existing && (
         <div className={`banner ${existing.status === 'applied' ? 'success' : 'info'}`}>
-          <strong>
+          <strong className="banner-title">
+            {existing.status === 'applied' ? <IconCheck /> : <IconStar />}
             {existing.status === 'applied'
-              ? `✓ Already applied · ${existing.appliedAt ? relativeDays(existing.appliedAt) : ''}`
-              : `★ Saved ${existing.savedAt ? relativeDays(existing.savedAt) : 'recently'}`}
+              ? `Already applied · ${existing.appliedAt ? relativeDays(existing.appliedAt) : ''}`
+              : `Saved ${existing.savedAt ? relativeDays(existing.savedAt) : 'recently'}`}
           </strong>
           {(existing.role || existing.company) && (
             <span style={styles.bannerSub}>
@@ -310,8 +351,9 @@ function FillPanel() {
       <p style={styles.helperText}>Open a job page, then fill the form.</p>
       {completeness && completeness.filled < completeness.total && (
         <div className="banner info profile-tip">
-          <strong>
-            💡 Profile {Math.round((completeness.filled / completeness.total) * 100)}% complete
+          <strong className="banner-title">
+            <IconLightbulb />
+            Profile {Math.round((completeness.filled / completeness.total) * 100)}% complete
           </strong>
           <span style={styles.bannerSub}>
             Add{' '}
@@ -321,20 +363,23 @@ function FillPanel() {
           </span>
         </div>
       )}
-      <button onClick={fill} disabled={busy} className="btn-primary">
+      <button onClick={fill} disabled={busy} className="btn-primary btn-with-icon">
+        {busy && <IconSpinner />}
         {busy ? 'Filling…' : 'Fill this form'}
       </button>
       {busy && (
-        <button onClick={togglePause} className="btn-secondary">
-          {paused ? '▶ Resume' : '❚❚ Pause'}
+        <button onClick={togglePause} className="btn-secondary btn-with-icon">
+          {paused ? <IconPlay /> : <IconPause />}
+          {paused ? 'Resume' : 'Pause'}
         </button>
       )}
       {!busy && existing?.status !== 'applied' && (
-        <button onClick={saveForLater} className="btn-secondary">
-          {existing ? 'Update saved entry' : '★ Save for later'}
+        <button onClick={saveForLater} className="btn-secondary btn-with-icon">
+          {!existing && <IconStar />}
+          {existing ? 'Update saved entry' : 'Save for later'}
         </button>
       )}
-      {status && <p style={styles.status}>{status}</p>}
+      {status && <StatusLine status={status} />}
       <div className="card" style={styles.shortcuts}>
         <div style={styles.shortcutsHead}>Keyboard shortcuts</div>
         <div style={styles.shortcutRow}>
@@ -487,8 +532,9 @@ function CoverPanel({ onNeedKey }: { onNeedKey: () => void }) {
           <option value="concise">Concise</option>
         </select>
       </label>
-      <button onClick={generate} disabled={busy} className="btn-primary">
-        {busy ? 'Generating…' : '✨ Generate cover letter'}
+      <button onClick={generate} disabled={busy} className="btn-primary btn-with-icon">
+        {busy ? <IconSpinner /> : <IconSparkles />}
+        {busy ? 'Generating…' : 'Generate cover letter'}
       </button>
       {text && (
         <>
@@ -520,7 +566,7 @@ function CoverPanel({ onNeedKey }: { onNeedKey: () => void }) {
           </button>
         </>
       )}
-      {status && <p style={styles.status}>{status}</p>}
+      {status && <StatusLine status={status} />}
     </section>
   );
 }
@@ -684,36 +730,47 @@ function ApplicationRow({
       </div>
 
       {upcoming != null && (
-        <div className={`banner ${upcoming <= 3 ? 'warn' : 'info'}`}>
-          📅 Interview{' '}
-          {upcoming < 0
-            ? `was ${-upcoming}d ago`
-            : upcoming === 0
-              ? 'today'
-              : upcoming === 1
-                ? 'tomorrow'
-                : `in ${upcoming}d`}{' '}
-          ({app.interviewDate})
+        <div className={`banner banner-row ${upcoming <= 3 ? 'warn' : 'info'}`}>
+          <IconCalendar />
+          <span>
+            Interview{' '}
+            {upcoming < 0
+              ? `was ${-upcoming}d ago`
+              : upcoming === 0
+                ? 'today'
+                : upcoming === 1
+                  ? 'tomorrow'
+                  : `in ${upcoming}d`}{' '}
+            ({app.interviewDate})
+          </span>
         </div>
       )}
       {stale && !editing && (
-        <div className="banner info">★ Saved {relativeDays(app.savedAt!)} — still want to apply?</div>
+        <div className="banner banner-row info">
+          <IconStar />
+          <span>Saved {relativeDays(app.savedAt!)}. Still want to apply?</span>
+        </div>
       )}
       {needsFollowUp && !followUp && !editing && (
         <div className="banner warn followup-banner">
-          <span>📨 Applied {daysSinceApplied}d ago, no reply. Send a follow-up?</span>
+          <span className="banner-row-inline">
+            <IconMail />
+            Applied {daysSinceApplied}d ago, no reply. Send a follow-up?
+          </span>
           <button
             onClick={draftFollowUp}
             disabled={followUpBusy}
-            className="btn-small"
+            className="btn-small btn-with-icon"
           >
-            {followUpBusy ? 'Drafting…' : '✨ Draft follow-up'}
+            {followUpBusy ? <IconSpinner /> : <IconSparkles />}
+            {followUpBusy ? 'Drafting…' : 'Draft follow-up'}
           </button>
         </div>
       )}
       {app.followUpSentAt && !editing && (
-        <div className="banner success">
-          ✓ Follow-up sent {relativeDays(app.followUpSentAt)}
+        <div className="banner banner-row success">
+          <IconCheck />
+          <span>Follow-up sent {relativeDays(app.followUpSentAt)}</span>
         </div>
       )}
       {followUpError && <div className="banner warn">{followUpError}</div>}
@@ -764,8 +821,9 @@ function ApplicationRow({
 
       <div style={styles.appActions}>
         {app.url && (
-          <button onClick={() => chrome.tabs.create({ url: app.url })} className="btn-small">
-            ↗ Open
+          <button onClick={() => chrome.tabs.create({ url: app.url })} className="btn-small btn-with-icon">
+            <IconExternal />
+            Open
           </button>
         )}
         <select
@@ -1046,10 +1104,11 @@ function HistoryPanel({ onNeedKey }: { onNeedKey: () => void }) {
         {items.length > 0 && (
           <button
             onClick={() => exportApplicationsCsv(items)}
-            className="btn-secondary"
+            className="btn-secondary btn-with-icon"
             title="Download applications.csv"
           >
-            ↓ Export CSV
+            <IconDownload />
+            Export CSV
           </button>
         )}
       </div>
@@ -1103,9 +1162,17 @@ function HistoryPanel({ onNeedKey }: { onNeedKey: () => void }) {
         ))}
       </div>
       {visible.length === 0 && (
-        <p style={styles.helperText}>
-          Nothing here yet. Hit Fill on a job page to log it, or Save for later.
-        </p>
+        <div className="empty-state">
+          <div className="empty-state-icon"><IconStar size={22} /></div>
+          <div className="empty-state-title">
+            {items.length === 0 ? 'No applications yet' : `No ${filter} applications`}
+          </div>
+          <div className="empty-state-body">
+            {items.length === 0
+              ? 'Hit Fill on a job page to log it, or Save for later.'
+              : 'Try a different filter above, or add an application manually.'}
+          </div>
+        </div>
       )}
       {visible.map((a) => (
         <ApplicationRow
@@ -1244,8 +1311,9 @@ function QuestionsPanel({ onNeedKey }: { onNeedKey: () => void }) {
       <p style={styles.helperText}>
         Detects open-ended questions on the current form and drafts answers from your profile.
       </p>
-      <button onClick={generate} disabled={busy} className="btn-primary">
-        {busy ? 'Working…' : '✨ Find questions & draft answers'}
+      <button onClick={generate} disabled={busy} className="btn-primary btn-with-icon">
+        {busy ? <IconSpinner /> : <IconSparkles />}
+        {busy ? 'Working…' : 'Find questions & draft answers'}
       </button>
       {rows.map((r, i) => (
         <div key={r.selector} className="card" style={styles.qBox}>
@@ -1267,19 +1335,35 @@ function QuestionsPanel({ onNeedKey }: { onNeedKey: () => void }) {
           </button>
         </div>
       )}
-      {status && <p style={styles.status}>{status}</p>}
+      {status && <StatusLine status={status} />}
     </section>
   );
 }
 
+function classifyStatus(text: string): StatusKind {
+  const t = text.trim();
+  if (!t) return 'info';
+  if (/^(error|api error|couldn't|could not|failed|no active|not supported|page not)/i.test(t)) return 'error';
+  if (/^(filled |saved |copied|cleared|done|updated|generating)/i.test(t)) return 'success';
+  return 'info';
+}
+
+function StatusLine({ status }: { status: StatusMsg | string | null }) {
+  const msg = statusOf(status);
+  if (!msg) return null;
+  const kind = msg.kind === 'info' ? classifyStatus(msg.text) : msg.kind;
+  return <p className={`status-line status-${kind}`}>{msg.text}</p>;
+}
+
 const styles: Record<string, React.CSSProperties> = {
-  main: { width: 380, color: 'var(--text)' },
+  main: { width: 400, color: 'var(--text)' },
   header: {
     padding: '14px 16px 0',
     borderBottom: '1px solid var(--border)',
     background: 'var(--bg-soft)',
   },
   brand: { display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 },
+  headerActions: { display: 'flex', alignItems: 'center', gap: 4, marginLeft: 'auto' },
   logoMark: {
     display: 'inline-flex',
     alignItems: 'center',

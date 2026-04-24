@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { getAnthropicKey, setAnthropicKey } from '../lib/settings.js';
+import { IconCheck, IconEye, IconEyeOff, IconLock, IconSparkles } from './icons.js';
 
 export function SettingsPanel({ highlightAi = false }: { highlightAi?: boolean }) {
   const [key, setKey] = useState('');
@@ -22,7 +23,7 @@ export function SettingsPanel({ highlightAi = false }: { highlightAi?: boolean }
     }
     await setAnthropicKey(trimmed || undefined);
     setSaved(trimmed || undefined);
-    setStatus(trimmed ? '✓ Key saved locally on your device.' : '✓ Key cleared.');
+    setStatus(trimmed ? 'Key saved locally on your device.' : 'Key cleared.');
   }
 
   async function clearKey() {
@@ -72,7 +73,7 @@ export function SettingsPanel({ highlightAi = false }: { highlightAi?: boolean }
                 aria-label={show ? 'Hide key' : 'Show key'}
                 title={show ? 'Hide key' : 'Show key'}
               >
-                {show ? '🙈' : '👁'}
+                {show ? <IconEyeOff size={15} /> : <IconEye size={15} />}
               </button>
             </div>
           </label>
@@ -96,21 +97,26 @@ export function SettingsPanel({ highlightAi = false }: { highlightAi?: boolean }
         </div>
         <div className="feature-cols">
           <div className="feature-col">
-            <div className="feature-col-head feature-col-yes">Without a key</div>
+            <div className="feature-col-head feature-col-included">
+              <IconCheck size={12} /> Included free
+            </div>
             <ul className="feature-list">
-              <li><span className="feature-yes">✓</span> Auto-fill application forms</li>
-              <li><span className="feature-yes">✓</span> Track applications in History</li>
-              <li><span className="feature-yes">✓</span> Save jobs from any page</li>
-              <li><span className="feature-yes">✓</span> Sync profile across devices</li>
+              <li><span className="feature-yes"><IconCheck size={11} /></span> Auto-fill application forms</li>
+              <li><span className="feature-yes"><IconCheck size={11} /></span> Track applications in History</li>
+              <li><span className="feature-yes"><IconCheck size={11} /></span> Save jobs from any page</li>
+              <li><span className="feature-yes"><IconCheck size={11} /></span> Sync profile across devices</li>
             </ul>
           </div>
           <div className="feature-col">
-            <div className="feature-col-head feature-col-no">Needs a key</div>
+            <div className="feature-col-head feature-col-unlock">
+              {saved ? <IconCheck size={12} /> : <IconLock size={12} />}
+              {saved ? 'Unlocked' : 'Unlock with key'}
+            </div>
             <ul className="feature-list">
-              <li><span className="feature-no">✕</span> Cover letter generator</li>
-              <li><span className="feature-no">✕</span> Open-ended question drafts</li>
-              <li><span className="feature-no">✕</span> Follow-up email drafts</li>
-              <li><span className="feature-no">✕</span> Extract details from CV</li>
+              <li><span className={saved ? 'feature-yes' : 'feature-unlock'}>{saved ? <IconCheck size={11} /> : <IconSparkles size={11} />}</span> Cover letter generator</li>
+              <li><span className={saved ? 'feature-yes' : 'feature-unlock'}>{saved ? <IconCheck size={11} /> : <IconSparkles size={11} />}</span> Open-ended question drafts</li>
+              <li><span className={saved ? 'feature-yes' : 'feature-unlock'}>{saved ? <IconCheck size={11} /> : <IconSparkles size={11} />}</span> Follow-up email drafts</li>
+              <li><span className={saved ? 'feature-yes' : 'feature-unlock'}>{saved ? <IconCheck size={11} /> : <IconSparkles size={11} />}</span> Extract details from CV</li>
             </ul>
           </div>
         </div>
