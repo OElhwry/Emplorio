@@ -307,6 +307,13 @@ function FillPanel() {
     setStatus('Saved to History.');
   }
 
+  async function unsave() {
+    if (!existing) return;
+    await deleteApplication(existing.id);
+    setExisting(null);
+    setStatus('Removed from History.');
+  }
+
   async function fill() {
     setBusy(true);
     setStatus('');
@@ -342,7 +349,7 @@ function FillPanel() {
       {existing && (
         <div className={`banner ${existing.status === 'applied' ? 'success' : 'info'}`}>
           <strong className="banner-title">
-            {existing.status === 'applied' ? <IconCheck /> : <IconStar />}
+            {existing.status === 'applied' ? <IconCheck /> : <IconStar filled />}
             {existing.status === 'applied'
               ? `Already applied · ${existing.appliedAt ? relativeDays(existing.appliedAt) : ''}`
               : `Saved ${existing.savedAt ? relativeDays(existing.savedAt) : 'recently'}`}
@@ -380,9 +387,12 @@ function FillPanel() {
         </button>
       )}
       {!busy && existing?.status !== 'applied' && (
-        <button onClick={saveForLater} className="btn-secondary btn-with-icon">
-          {!existing && <IconStar />}
-          {existing ? 'Update saved entry' : 'Save for later'}
+        <button
+          onClick={existing?.status === 'saved' ? unsave : saveForLater}
+          className={`btn-secondary btn-with-icon${existing?.status === 'saved' ? ' is-saved' : ''}`}
+        >
+          <IconStar filled={existing?.status === 'saved'} />
+          {existing?.status === 'saved' ? 'Saved. Click to remove' : 'Save for later'}
         </button>
       )}
       {status && <StatusLine status={status} />}

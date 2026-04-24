@@ -191,6 +191,23 @@ textarea {
   background: var(--bg-hover);
   border-color: #aab0b7;
 }
+.btn-secondary.is-saved {
+  background: rgba(245, 158, 11, 0.08);
+  border-color: rgba(245, 158, 11, 0.45);
+  color: #b45309;
+}
+.btn-secondary.is-saved:hover:not(:disabled) {
+  background: rgba(245, 158, 11, 0.14);
+  border-color: #f59e0b;
+}
+[data-theme='dark'] .btn-secondary.is-saved {
+  background: rgba(245, 158, 11, 0.14);
+  border-color: rgba(245, 158, 11, 0.5);
+  color: #fbbf24;
+}
+[data-theme='dark'] .btn-secondary.is-saved:hover:not(:disabled) {
+  background: rgba(245, 158, 11, 0.22);
+}
 
 .btn-small {
   background: var(--bg);
