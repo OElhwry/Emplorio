@@ -182,7 +182,7 @@ export function App() {
             </button>
             <button
               onClick={signOut}
-              className="icon-btn"
+              className="icon-btn icon-btn-danger"
               title={`Signed in as ${session.email}. Click to sign out.`}
               aria-label="Sign out"
             >
@@ -210,7 +210,13 @@ export function App() {
       {tab === 'questions' && <QuestionsPanel onNeedKey={goToSettings} />}
       {tab === 'history' && <HistoryPanel onNeedKey={goToSettings} />}
       {tab === 'profile' && <ProfilePanel onNeedKey={goToSettings} />}
-      {tab === 'settings' && <SettingsPanel highlightAi={highlightAi} />}
+      {tab === 'settings' && (
+        <SettingsPanel
+          highlightAi={highlightAi}
+          sessionEmail={session.email}
+          onSignOut={signOut}
+        />
+      )}
     </main>
   );
 }

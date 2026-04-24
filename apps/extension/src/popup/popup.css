@@ -500,6 +500,14 @@ kbd {
   color: var(--accent);
   border-color: transparent;
 }
+.icon-btn-danger {
+  color: var(--danger);
+}
+.icon-btn-danger:hover {
+  background: var(--danger-soft);
+  color: var(--danger);
+  border-color: var(--danger);
+}
 
 .btn-with-icon {
   display: inline-flex;
@@ -903,6 +911,37 @@ kbd {
 .btn-ghost-danger:hover {
   background: var(--danger-soft);
   border-color: var(--danger);
+}
+
+.account-card .account-email {
+  margin-bottom: 10px;
+}
+.btn-signout {
+  background: var(--danger);
+  color: #fff;
+  border: 1px solid var(--danger);
+  padding: 9px 14px;
+  border-radius: var(--radius);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  width: 100%;
+  transition: background 140ms ease, transform 140ms ease, box-shadow 140ms ease;
+}
+.btn-signout:hover {
+  background: #b91c1c;
+  box-shadow: 0 2px 8px rgba(220, 38, 38, 0.25);
+}
+.btn-signout:active {
+  transform: scale(0.98);
+}
+[data-theme='dark'] .btn-signout {
+  background: transparent;
+  color: var(--danger);
+}
+[data-theme='dark'] .btn-signout:hover {
+  background: var(--danger-soft);
+  color: var(--danger);
 }
 
 .helper-success {

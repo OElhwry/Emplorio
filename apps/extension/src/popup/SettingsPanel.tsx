@@ -1,8 +1,16 @@
 import { useEffect, useState } from 'react';
 import { getAnthropicKey, setAnthropicKey } from '../lib/settings.js';
-import { IconCheck, IconEye, IconEyeOff, IconLock, IconSparkles } from './icons.js';
+import { IconCheck, IconEye, IconEyeOff, IconLock, IconPower, IconSparkles } from './icons.js';
 
-export function SettingsPanel({ highlightAi = false }: { highlightAi?: boolean }) {
+export function SettingsPanel({
+  highlightAi = false,
+  sessionEmail,
+  onSignOut,
+}: {
+  highlightAi?: boolean;
+  sessionEmail?: string;
+  onSignOut?: () => void | Promise<void>;
+}) {
   const [key, setKey] = useState('');
   const [saved, setSaved] = useState<string | undefined>(undefined);
   const [show, setShow] = useState(false);
@@ -121,6 +129,20 @@ export function SettingsPanel({ highlightAi = false }: { highlightAi?: boolean }
           </div>
         </div>
       </div>
+
+      {onSignOut && (
+        <div className="card account-card">
+          <div className="section-header">
+            <h3>Account</h3>
+          </div>
+          {sessionEmail && (
+            <p className="field-hint account-email">Signed in as <strong>{sessionEmail}</strong></p>
+          )}
+          <button type="button" onClick={onSignOut} className="btn-signout btn-with-icon">
+            <IconPower size={14} /> Sign out
+          </button>
+        </div>
+      )}
     </section>
   );
 }
