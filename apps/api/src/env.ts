@@ -29,7 +29,7 @@ const envSchema = z.object({
   OWNER_EMAIL: z.string().email().optional(),
   EMPLORIO_API_KEY: z.string().min(16).optional(),
   RESEND_API_KEY: z.string().min(5).optional().or(z.literal('').transform(() => undefined)),
-  EMAIL_FROM: z.string().default('Emplorio <noreply@emplorio.app>'),
+  EMAIL_FROM: z.string().default('Emplorio <noreply@emplorio.co.uk>'),
   R2_ACCOUNT_ID: z.string().optional(),
   R2_ACCESS_KEY_ID: z.string().optional(),
   R2_SECRET_ACCESS_KEY: z.string().optional(),
