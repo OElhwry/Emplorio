@@ -3,7 +3,7 @@ import type { ReactNode } from 'react';
 import Script from 'next/script';
 import './globals.css';
 
-const GA_ID = 'G-D1QK41CP0D';
+const GA_ID = 'G-BM2W75RK7D';
 
 const SITE_URL = 'https://emplorio.co.uk';
 const TITLE = 'Emplorio | Apply once. Send everywhere.';
