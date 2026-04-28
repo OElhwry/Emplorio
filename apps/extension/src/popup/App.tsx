@@ -79,13 +79,22 @@ const TABS: { id: Tab; label: string }[] = [
   { id: 'profile', label: 'Profile' },
 ];
 
+const ACTIVE_TAB_KEY = 'emplorioActiveTab';
+const VALID_TABS: ReadonlySet<Tab> = new Set<Tab>(['fill', 'cover', 'questions', 'history', 'profile', 'settings']);
+
 export function App() {
-  const [tab, setTab] = useState<Tab>('fill');
+  const [tab, setTabState] = useState<Tab>('fill');
+  const [tabReady, setTabReady] = useState(false);
   const [onboarded, setOnboarded] = useState<boolean | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [authReady, setAuthReady] = useState(false);
   const [theme, setTheme] = useState<Theme>('system');
   const [highlightAi, setHighlightAi] = useState(false);
+
+  function setTab(next: Tab) {
+    setTabState(next);
+    void chrome.storage.local.set({ [ACTIVE_TAB_KEY]: next });
+  }
 
   function goToSettings() {
     setHighlightAi(true);
@@ -93,6 +102,11 @@ export function App() {
   }
 
   useEffect(() => {
+    void chrome.storage.local.get(ACTIVE_TAB_KEY).then((r) => {
+      const saved = r[ACTIVE_TAB_KEY] as Tab | undefined;
+      if (saved && VALID_TABS.has(saved)) setTabState(saved);
+      setTabReady(true);
+    });
     void isOnboardingComplete().then(setOnboarded);
     void loadSession().then(async (s) => {
       setSession(s);
@@ -131,7 +145,7 @@ export function App() {
     setOnboarded(false);
   }
 
-  if (onboarded === null || !authReady) {
+  if (onboarded === null || !authReady || !tabReady) {
     return <main style={styles.main} />;
   }
   if (!session) {

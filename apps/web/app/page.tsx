@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import * as Accordion from '@radix-ui/react-accordion';
 
-const CHROME_STORE_URL = '#'; // TODO: replace with Chrome Web Store URL after publish
+const CHROME_STORE_URL = 'https://chromewebstore.google.com/detail/emplorio/gjljbmhpdijnjpphnhfbcfobldbhclfc';
 
 export default function HomePage() {
   useScrollReveal();
@@ -273,7 +273,7 @@ function Nav() {
             );
           })}
           <ThemeToggle />
-          <a href={CHROME_STORE_URL} className="nav-cta">
+          <a href={CHROME_STORE_URL} target="_blank" rel="noreferrer" className="nav-cta">
             <IconChrome /> Install
           </a>
         </nav>
@@ -323,6 +323,8 @@ function Nav() {
             <ThemeToggle />
             <a
               href={CHROME_STORE_URL}
+              target="_blank"
+              rel="noreferrer"
               className="nav-cta"
               onClick={() => setDrawerOpen(false)}
             >
@@ -358,7 +360,7 @@ function Hero() {
             took to apply to one.
           </p>
           <div className="hero-ctas">
-            <a href={CHROME_STORE_URL} className="btn-primary">
+            <a href={CHROME_STORE_URL} target="_blank" rel="noreferrer" className="btn-primary">
               <IconChrome />
               Add to Chrome — it's free
             </a>
@@ -470,22 +472,38 @@ function MockupPreview({ tab, onTabChange }: { tab: MockupTab; onTabChange: (t: 
 function FillPanel() {
   return (
     <>
-      <div className="mockup-banner">
-        <IconCheck /> Already applied · 3d ago
+      <div className="mockup-subtitle">Open a job page, then fill the form.</div>
+      <div className="mockup-tip">
+        <div className="mockup-tip-head">
+          <IconLightbulb /> Profile 92% complete
+        </div>
+        <div className="mockup-tip-body">
+          Add Work authorization in Profile to fill more fields and finish applications faster.
+        </div>
       </div>
       <div className="mockup-btn">Fill this form</div>
-      <div className="mockup-stat">
-        <div>
-          <strong>12</strong>
-          <span>This Week</span>
+      <div className="mockup-btn-ghost">
+        <IconStarSm /> Save for later
+      </div>
+      <div className="mockup-shortcuts">
+        <div className="mockup-shortcuts-title">Keyboard shortcuts</div>
+        <div className="mockup-shortcut-row">
+          <span className="mockup-keys">
+            <kbd>Alt</kbd><kbd>Shift</kbd><kbd>E</kbd>
+          </span>
+          <span className="mockup-shortcut-label">Open Emplorio</span>
         </div>
-        <div>
-          <strong>38</strong>
-          <span>Past 30D</span>
+        <div className="mockup-shortcut-row">
+          <span className="mockup-keys">
+            <kbd>Alt</kbd><kbd>Shift</kbd><kbd>F</kbd>
+          </span>
+          <span className="mockup-shortcut-label">Fill / pause / resume</span>
         </div>
-        <div>
-          <strong>21%</strong>
-          <span>Reply Rate</span>
+        <div className="mockup-shortcut-row">
+          <span className="mockup-keys">
+            <kbd>Alt</kbd><kbd>Shift</kbd><kbd>S</kbd>
+          </span>
+          <span className="mockup-shortcut-label">Save current page</span>
         </div>
       </div>
     </>
@@ -530,38 +548,73 @@ function QuestionsPanel() {
 }
 
 function HistoryPanel() {
-  const rows = [
-    { co: 'Vercel', role: 'Senior Engineer', when: '2d', status: 'replied' as const },
-    { co: 'Linear', role: 'Product Engineer', when: '5d', status: 'pending' as const },
-    { co: 'Stripe', role: 'Frontend', when: '1w', status: 'replied' as const },
-    { co: 'Figma', role: 'UI Engineer', when: '2w', status: 'rejected' as const },
+  const insights: { num: string; label: string }[] = [
+    { num: '12', label: 'This Week' },
+    { num: '38', label: 'Past 30D' },
+    { num: '21%', label: 'Response Rate' },
+    { num: '8%', label: 'Offer Rate' },
+    { num: '3d', label: 'Median Reply' },
+    { num: 'Vercel', label: 'Top Company' },
   ];
+  const counts: { label: string; n: number; tone: 'saved' | 'applied' | 'interview' | 'offer' | 'rejected' }[] = [
+    { label: 'Saved', n: 4, tone: 'saved' },
+    { label: 'Applied', n: 38, tone: 'applied' },
+    { label: 'Interview', n: 6, tone: 'interview' },
+    { label: 'Offer', n: 1, tone: 'offer' },
+    { label: 'Rejected', n: 9, tone: 'rejected' },
+  ];
+  const filters = ['All', 'Saved', 'Applied', 'Interview', 'Offer', 'Rejected'];
   return (
     <>
-      <div className="mockup-history">
-        {rows.map((r) => (
-          <div key={r.co} className="mockup-history-row">
-            <div className="mockup-history-co">
-              <div className="mockup-history-mark" aria-hidden="true">{r.co[0]}</div>
-              <div>
-                <div className="mockup-history-name">{r.co}</div>
-                <div className="mockup-history-role">{r.role} · {r.when}</div>
-              </div>
+      <div className="mockup-insights">
+        <div className="mockup-insights-title">Insights</div>
+        <div className="mockup-insights-grid">
+          {insights.map((s) => (
+            <div key={s.label} className="mockup-insights-cell">
+              <div className="mockup-insights-num">{s.num}</div>
+              <div className="mockup-insights-lbl">{s.label}</div>
             </div>
-            <span className={`mockup-status mockup-status-${r.status}`}>
-              {r.status === 'replied' ? 'Replied' : r.status === 'pending' ? 'Pending' : 'Closed'}
-            </span>
+          ))}
+        </div>
+      </div>
+      <div className="mockup-counts">
+        {counts.map((c) => (
+          <div key={c.label} className="mockup-count-pill">
+            <div className="mockup-count-num">{c.n}</div>
+            <div className="mockup-count-lbl">
+              <span className={`mockup-count-dot mockup-count-dot-${c.tone}`} />
+              {c.label}
+            </div>
           </div>
         ))}
       </div>
-      <div className="mockup-stat">
-        <div>
-          <strong>12</strong>
-          <span>This Week</span>
+      <div className="mockup-action-row">
+        <div className="mockup-btn-ghost">+ Add manually</div>
+        <div className="mockup-btn-ghost">↓ Export CSV</div>
+      </div>
+      <div className="mockup-filters">
+        {filters.map((f, i) => (
+          <span key={f} className={`mockup-filter${i === 0 ? ' active' : ''}`}>{f}</span>
+        ))}
+      </div>
+      <div className="mockup-app-card">
+        <div className="mockup-app-head">
+          <div>
+            <div className="mockup-app-title">Senior Engineer · Vercel (Remote)</div>
+            <div className="mockup-app-company">Vercel</div>
+          </div>
+          <div className="mockup-app-edit">
+            <span>Edit</span>
+            <span className="mockup-app-delete">Delete</span>
+          </div>
         </div>
-        <div>
-          <strong>21%</strong>
-          <span>Reply Rate</span>
+        <div className="mockup-app-meta">
+          <span className="mockup-count-dot mockup-count-dot-applied" />
+          Applied · Applied 2d ago
+        </div>
+        <div className="mockup-app-foot">
+          <span className="mockup-app-open">↗ Open</span>
+          <span className="mockup-app-select">applied <span className="mockup-app-caret">▾</span></span>
         </div>
       </div>
     </>
@@ -705,7 +758,7 @@ function Pricing() {
               <li><IconCheck /> Insights &amp; CSV export</li>
               <li><IconCheck /> Sync across devices</li>
             </ul>
-            <a href={CHROME_STORE_URL} className="btn-secondary" style={{ width: '100%', justifyContent: 'center' }}>
+            <a href={CHROME_STORE_URL} target="_blank" rel="noreferrer" className="btn-secondary" style={{ width: '100%', justifyContent: 'center' }}>
               <IconChrome /> Add to Chrome
             </a>
           </div>
@@ -803,7 +856,7 @@ function FinalCTA() {
             Free to install. Set up in under two minutes. Cancel any time — there's nothing to
             cancel.
           </p>
-          <a href={CHROME_STORE_URL} className="btn-primary">
+          <a href={CHROME_STORE_URL} target="_blank" rel="noreferrer" className="btn-primary">
             <IconChrome />
             Add Emplorio to Chrome
           </a>
@@ -1106,6 +1159,22 @@ function IconX() {
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
       <line x1="6" y1="6" x2="18" y2="18" />
       <line x1="18" y1="6" x2="6" y2="18" />
+    </svg>
+  );
+}
+function IconLightbulb() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M9 18h6" />
+      <path d="M10 22h4" />
+      <path d="M12 2a7 7 0 0 0-4 12.7c.6.5 1 1.2 1 2V17h6v-.3c0-.8.4-1.5 1-2A7 7 0 0 0 12 2z" />
+    </svg>
+  );
+}
+function IconStarSm() {
+  return (
+    <svg viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" aria-hidden="true">
+      <polygon points="12 2 15 9 22 9.5 17 14 18.5 21 12 17.5 5.5 21 7 14 2 9.5 9 9 12 2" />
     </svg>
   );
 }

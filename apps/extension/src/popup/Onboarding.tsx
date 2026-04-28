@@ -1,9 +1,10 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import type { Profile } from '@emplorio/shared';
 import { loadProfile, saveProfile } from '../lib/storage.js';
 import { extractPdfText, fileToDataUrl } from '../lib/cv.js';
 import { apiFetch } from '../lib/api.js';
-import { IconPartyPopper, IconSparkles, IconSpinner } from './icons.js';
+import { getAnthropicKey, setAnthropicKey } from '../lib/settings.js';
+import { IconEye, IconEyeOff, IconPartyPopper, IconSparkles, IconSpinner } from './icons.js';
 
 const ONBOARDING_KEY = 'emplorioOnboardingComplete';
 
@@ -18,7 +19,7 @@ export async function markOnboardingComplete() {
   await chrome.storage.local.set({ [ONBOARDING_KEY]: true });
 }
 
-type Step = 'welcome' | 'cv' | 'extract' | 'basics' | 'done';
+type Step = 'welcome' | 'cv' | 'ai' | 'basics' | 'done';
 
 export function Onboarding({ onDone }: { onDone: () => void }) {
   const [step, setStep] = useState<Step>('welcome');
@@ -26,7 +27,16 @@ export function Onboarding({ onDone }: { onDone: () => void }) {
   const [cvStatus, setCvStatus] = useState('');
   const [extractStatus, setExtractStatus] = useState('');
   const [busy, setBusy] = useState(false);
+  const [aiKey, setAiKey] = useState('');
+  const [showKey, setShowKey] = useState(false);
+  const [keyStatus, setKeyStatus] = useState('');
   const fileRef = useRef<HTMLInputElement | null>(null);
+
+  useEffect(() => {
+    void getAnthropicKey().then((k) => {
+      if (k) setAiKey(k);
+    });
+  }, []);
 
   async function handleCv(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -58,7 +68,14 @@ export function Onboarding({ onDone }: { onDone: () => void }) {
     }
   }
 
-  async function runExtract() {
+  async function saveKeyAndExtract() {
+    const trimmed = aiKey.trim();
+    if (trimmed && !trimmed.startsWith('sk-ant-')) {
+      setKeyStatus('Anthropic keys start with "sk-ant-". Double-check what you pasted.');
+      return;
+    }
+    setKeyStatus('');
+    if (trimmed) await setAnthropicKey(trimmed);
     if (!profile.baseCvText) {
       setStep('basics');
       return;
@@ -71,13 +88,11 @@ export function Onboarding({ onDone }: { onDone: () => void }) {
         body: JSON.stringify({ cvText: profile.baseCvText }),
       });
       if (res.status === 402) {
-        setExtractStatus(
-          'No AI key set yet — skip this step and add your Anthropic key in Settings later to use CV extract.',
-        );
+        setExtractStatus('No AI key on file — paste your key above to extract, or skip and fill manually.');
         return;
       }
       if (!res.ok) {
-        setExtractStatus(`API error: ${res.status} — you can fill the rest manually later.`);
+        setExtractStatus(`API error: ${res.status} — you can fill the rest manually.`);
         return;
       }
       const data = await res.json();
@@ -117,12 +132,13 @@ export function Onboarding({ onDone }: { onDone: () => void }) {
     onDone();
   }
 
-  const ORDER: Step[] = ['welcome', 'cv', 'extract', 'basics', 'done'];
+  const ORDER: Step[] = ['welcome', 'cv', 'ai', 'basics', 'done'];
   function goBack() {
     const i = ORDER.indexOf(step);
     if (i > 0) {
       setCvStatus('');
       setExtractStatus('');
+      setKeyStatus('');
       setStep(ORDER[i - 1] as Step);
     }
   }
@@ -140,7 +156,7 @@ export function Onboarding({ onDone }: { onDone: () => void }) {
           </button>
         ) : <span />}
         <div className="onb-progress">
-          {(['welcome', 'cv', 'extract', 'basics', 'done'] as Step[]).map((s, i) => (
+          {(['welcome', 'cv', 'ai', 'basics', 'done'] as Step[]).map((s, i) => (
             <span
               key={s}
               className={`onb-dot ${s === step ? 'active' : ''} ${stepIndex(step) > i ? 'done' : ''}`}
@@ -158,7 +174,7 @@ export function Onboarding({ onDone }: { onDone: () => void }) {
           </p>
           <ul className="onb-list onb-list-icons">
             <li><span className="onb-step-num">1</span> Upload your CV</li>
-            <li><span className="onb-step-num">2</span> Let AI extract your work history</li>
+            <li><span className="onb-step-num">2</span> Add an Anthropic key (optional, for AI features)</li>
             <li><span className="onb-step-num">3</span> Confirm the basics</li>
           </ul>
           <div className="onb-actions">
@@ -183,9 +199,9 @@ export function Onboarding({ onDone }: { onDone: () => void }) {
           />
           {cvStatus && <p className="helper">{cvStatus}</p>}
           <div className="onb-actions">
-            <button onClick={() => setStep('basics')} className="btn-link">Skip CV</button>
+            <button onClick={() => setStep('ai')} className="btn-link">Skip CV</button>
             <button
-              onClick={() => setStep(profile.baseCvText ? 'extract' : 'basics')}
+              onClick={() => setStep('ai')}
               className="btn-primary"
               disabled={!profile.cvFile}
             >
@@ -195,19 +211,58 @@ export function Onboarding({ onDone }: { onDone: () => void }) {
         </>
       )}
 
-      {step === 'extract' && (
+      {step === 'ai' && (
         <>
-          <h2 className="onb-title">Step 2 · Extract details</h2>
+          <h2 className="onb-title">Step 2 · Add your AI key</h2>
           <p className="onb-body">
-            Claude reads your CV and pulls out work history, education, skills, and websites. One AI call
-            saves you from typing it all in.
+            Emplorio uses your own Anthropic key for cover letters, question drafts, follow-ups, and
+            CV extraction. It stays on your device and is sent only with AI requests.
           </p>
+          <p className="onb-body onb-body-muted">
+            No key? Get one at{' '}
+            <a href="https://console.anthropic.com/settings/keys" target="_blank" rel="noreferrer">
+              console.anthropic.com/settings/keys
+            </a>
+            . You can also add it later from Settings.
+          </p>
+          <label className="field">
+            <span className="field-label">Anthropic API key</span>
+            <div className="key-input-wrap">
+              <input
+                type={showKey ? 'text' : 'password'}
+                value={aiKey}
+                onChange={(e) => setAiKey(e.target.value)}
+                placeholder="sk-ant-..."
+                spellCheck={false}
+                autoComplete="off"
+                className="key-input"
+              />
+              <button
+                type="button"
+                onClick={() => setShowKey((v) => !v)}
+                className="key-toggle"
+                aria-label={showKey ? 'Hide key' : 'Show key'}
+                title={showKey ? 'Hide key' : 'Show key'}
+              >
+                {showKey ? <IconEyeOff size={15} /> : <IconEye size={15} />}
+              </button>
+            </div>
+          </label>
+          {keyStatus && <p className="helper">{keyStatus}</p>}
           {extractStatus && <p className="helper">{extractStatus}</p>}
           <div className="onb-actions">
-            <button onClick={() => setStep('basics')} className="btn-link">Skip — fill manually</button>
-            <button onClick={runExtract} disabled={busy} className="btn-primary btn-with-icon">
+            <button onClick={() => setStep('basics')} className="btn-link">Skip for now</button>
+            <button onClick={saveKeyAndExtract} disabled={busy} className="btn-primary btn-with-icon">
               {busy ? <IconSpinner /> : <IconSparkles />}
-              {busy ? 'Extracting…' : 'Extract with AI'}
+              {busy
+                ? 'Extracting…'
+                : profile.baseCvText
+                ? aiKey.trim()
+                  ? 'Save key & extract'
+                  : 'Continue without key'
+                : aiKey.trim()
+                ? 'Save key'
+                : 'Continue'}
             </button>
           </div>
         </>

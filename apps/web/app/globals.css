@@ -1115,23 +1115,6 @@ button {
 @media (prefers-reduced-motion: reduce) {
   .mockup-body { animation: none; }
 }
-.mockup-banner {
-  background: var(--success-bg);
-  border: 1px solid var(--success-border);
-  border-radius: 8px;
-  padding: 10px 12px;
-  font-size: 12px;
-  color: #047857;
-  font-weight: 500;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-.mockup-banner svg {
-  width: 14px;
-  height: 14px;
-  flex-shrink: 0;
-}
 .mockup-btn {
   background: linear-gradient(135deg, var(--accent), var(--accent-2));
   color: #fff;
@@ -1140,34 +1123,6 @@ button {
   border-radius: 10px;
   font-size: 13px;
   font-weight: 600;
-}
-.mockup-stat {
-  display: flex;
-  gap: 6px;
-}
-.mockup-stat > div {
-  flex: 1;
-  background: var(--bg-soft);
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  padding: 10px 4px;
-  text-align: center;
-}
-.mockup-stat strong {
-  display: block;
-  font-size: 17px;
-  font-weight: 800;
-  color: var(--text);
-  font-feature-settings: 'tnum';
-}
-.mockup-stat span {
-  font-size: 9.5px;
-  color: var(--text-subtle);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  font-weight: 600;
-  margin-top: 2px;
-  display: inline-block;
 }
 
 /* Floating decoration around mockup */
@@ -1328,72 +1283,284 @@ button {
   gap: 6px;
 }
 
-.mockup-history {
+/* Fill panel */
+.mockup-subtitle {
+  font-size: 11.5px;
+  color: var(--text-subtle);
+  margin-top: -2px;
+}
+.mockup-tip {
+  background: var(--bg-soft);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.mockup-tip-head {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--accent);
+}
+.mockup-tip-head svg {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+}
+.mockup-tip-body {
+  font-size: 11px;
+  line-height: 1.5;
+  color: var(--text-muted);
+}
+.mockup-btn-ghost {
+  background: var(--bg-soft);
+  border: 1px solid var(--border);
+  color: var(--text);
+  text-align: center;
+  padding: 10px;
+  border-radius: 10px;
+  font-size: 12.5px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+.mockup-btn-ghost svg {
+  width: 12px;
+  height: 12px;
+  color: var(--text-subtle);
+}
+.mockup-shortcuts {
+  background: var(--bg-soft);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 10px 12px;
   display: flex;
   flex-direction: column;
   gap: 6px;
 }
-.mockup-history-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  background: var(--bg-soft);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 7px 9px;
-}
-.mockup-history-co {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  min-width: 0;
-}
-.mockup-history-mark {
-  width: 22px;
-  height: 22px;
-  border-radius: 6px;
-  background: linear-gradient(135deg, var(--accent), var(--accent-2));
-  color: #fff;
-  display: grid;
-  place-items: center;
-  font-size: 10.5px;
-  font-weight: 700;
-  flex-shrink: 0;
-}
-.mockup-history-name {
-  font-size: 11.5px;
-  font-weight: 600;
-  color: var(--text);
-  line-height: 1.2;
-}
-.mockup-history-role {
-  font-size: 10px;
-  color: var(--text-subtle);
-  line-height: 1.3;
-}
-.mockup-status {
+.mockup-shortcuts-title {
   font-size: 9.5px;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
-  padding: 3px 7px;
-  border-radius: 999px;
-  flex-shrink: 0;
-}
-.mockup-status-replied {
-  background: var(--success-bg);
-  color: var(--success);
-  border: 1px solid var(--success-border);
-}
-.mockup-status-pending {
-  background: var(--bg-card);
+  letter-spacing: 0.06em;
   color: var(--text-subtle);
+  margin-bottom: 2px;
+}
+.mockup-shortcut-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+.mockup-keys {
+  display: inline-flex;
+  gap: 4px;
+}
+.mockup-keys kbd {
+  display: inline-block;
+  font-family: inherit;
+  font-size: 9.5px;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  color: var(--text);
+  line-height: 1.2;
+}
+.mockup-shortcut-label {
+  font-size: 10.5px;
+  color: var(--text-subtle);
+}
+
+/* History panel */
+.mockup-insights {
+  background: var(--bg-soft);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.mockup-insights-title {
+  font-size: 9.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-subtle);
+}
+.mockup-insights-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+}
+.mockup-insights-cell {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px 4px;
+  text-align: center;
+}
+.mockup-insights-num {
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--text);
+  font-feature-settings: 'tnum';
+  line-height: 1.1;
+}
+.mockup-insights-lbl {
+  font-size: 8.5px;
+  color: var(--text-subtle);
+  font-weight: 600;
+  margin-top: 2px;
+  letter-spacing: 0.02em;
+}
+.mockup-counts {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 4px;
+}
+.mockup-count-pill {
+  background: var(--bg-soft);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 6px 4px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+.mockup-count-num {
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--text);
+  line-height: 1;
+}
+.mockup-count-lbl {
+  font-size: 8.5px;
+  font-weight: 600;
+  color: var(--text-subtle);
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+}
+.mockup-count-dot {
+  display: inline-block;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--text-subtle);
+}
+.mockup-count-dot-saved { background: var(--text-subtle); }
+.mockup-count-dot-applied { background: var(--accent); }
+.mockup-count-dot-interview { background: #f59e0b; }
+.mockup-count-dot-offer { background: var(--success); }
+.mockup-count-dot-rejected { background: #f43f5e; }
+.mockup-action-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+}
+.mockup-filters {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+.mockup-filter {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--text-subtle);
+  padding: 4px 9px;
+  border-radius: 999px;
+  background: var(--bg-soft);
   border: 1px solid var(--border);
 }
-.mockup-status-rejected {
-  background: rgba(244, 63, 94, 0.08);
-  color: #f43f5e;
-  border: 1px solid rgba(244, 63, 94, 0.2);
+.mockup-filter.active {
+  background: var(--text);
+  color: var(--bg);
+  border-color: var(--text);
+}
+.mockup-app-card {
+  background: var(--bg-soft);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.mockup-app-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 8px;
+}
+.mockup-app-title {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1.3;
+}
+.mockup-app-company {
+  font-size: 10.5px;
+  color: var(--text-subtle);
+  margin-top: 2px;
+}
+.mockup-app-edit {
+  display: inline-flex;
+  gap: 8px;
+  font-size: 10.5px;
+  font-weight: 600;
+  color: var(--accent);
+  flex-shrink: 0;
+}
+.mockup-app-delete { color: #f43f5e; }
+.mockup-app-meta {
+  font-size: 10.5px;
+  color: var(--text-muted);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.mockup-app-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.mockup-app-open {
+  font-size: 10.5px;
+  font-weight: 600;
+  color: var(--text);
+  padding: 5px 10px;
+  border-radius: 6px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+}
+.mockup-app-select {
+  font-size: 10.5px;
+  font-weight: 600;
+  color: var(--text);
+  padding: 5px 10px;
+  border-radius: 6px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  text-transform: capitalize;
+}
+.mockup-app-caret {
+  color: var(--text-subtle);
+  font-size: 9px;
 }
 
 /* ---------- Bento (what-it-does) ---------- */
