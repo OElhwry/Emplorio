@@ -4,7 +4,7 @@ export default defineManifest({
   manifest_version: 3,
   name: 'Emplorio',
   description: 'Apply once. Send everywhere.',
-  version: '1.0.1',
+  version: '1.0.2',
   icons: {
     '16': 'icon16.png',
     '32': 'icon32.png',
