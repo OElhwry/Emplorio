@@ -76,7 +76,7 @@ export function Onboarding({ onDone }: { onDone: () => void }) {
     }
     setKeyStatus('');
     if (trimmed) await setAnthropicKey(trimmed);
-    if (!profile.baseCvText) {
+    if (!trimmed || !profile.baseCvText) {
       setStep('basics');
       return;
     }
@@ -337,7 +337,7 @@ export function Onboarding({ onDone }: { onDone: () => void }) {
 }
 
 function stepIndex(s: Step): number {
-  return ['welcome', 'cv', 'extract', 'basics', 'done'].indexOf(s);
+  return ['welcome', 'cv', 'ai', 'basics', 'done'].indexOf(s);
 }
 
 function Field({ label, children }: { label: string; children: React.ReactNode }) {

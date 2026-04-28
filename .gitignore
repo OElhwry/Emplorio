@@ -6,9 +6,8 @@ build
 .cache
 coverage
 
-.env
-.env.*.local
-.env.local
+# Env files — ignore all variants to prevent accidental secret commits
+.env*
 
 *.log
 .DS_Store
@@ -23,6 +22,18 @@ apps/web/.next
 packages/db/drizzle
 
 *.tsbuildinfo
+
+# Private keys and certificates
+*.pem
+*.key
+*.p12
+*.pfx
+*.cert
+*.cer
+
+# Package manager auth
+.npmrc
+.yarnrc.yml
 
 .claude/settings.local.json
 .claude/skills/

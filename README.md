@@ -241,8 +241,8 @@ emplorio/
 pnpm install
 
 # 2. Environment
-cp .env.example .env
-# fill DATABASE_URL, JWT_SECRET, RESEND_API_KEY, etc.
+# create a .env in the repo root with DATABASE_URL, JWT_SECRET, RESEND_API_KEY,
+# ANTHROPIC_API_KEY, REDIS_URL, etc. See apps/api/src/env.ts for the full schema.
 
 # 3. Database
 pnpm db:migrate

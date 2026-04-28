@@ -31,7 +31,6 @@ pnpm-debug.log*
 # Env (never ship secrets into the image)
 .env
 .env.*
-!.env.example
 
 # Local
 *.local
