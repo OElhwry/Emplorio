@@ -1,8 +1,9 @@
 <p align="center">
   <a href="https://emplorio.co.uk">
-    <img src="store-assets/marquee.png" width="800" alt="Emplorio — Apply once. Send everywhere." width="820">
+    <img src="store-assets/marquee.png" width="800" alt="Emplorio — Apply once. Send everywhere.">
   </a>
 </p>
+
 <h1 align="center">
   Emplorio
 </h1>
@@ -10,13 +11,13 @@
 <p align="center">
   <b>Apply once. Send everywhere.</b><br>
   An AI-powered Chrome extension that auto-fills job applications across every major ATS,<br>
-  drafts tailored cover letters with Claude, and tracks every application — in seconds, not minutes.
+  drafts tailored cover letters with Claude, and tracks every application, in seconds, not minutes.
 </p>
 
 <p align="center">
   <a href="https://emplorio.co.uk"><img src="https://img.shields.io/badge/website-emplorio.co.uk-4f46e5?style=for-the-badge" alt="Website"></a>
-  <img src="https://img.shields.io/badge/version-1.0.1-818cf8?style=for-the-badge" alt="Version 1.0.1">
-  <img src="https://img.shields.io/badge/chrome%20web%20store-in%20review-yellow?style=for-the-badge&logo=googlechrome&logoColor=white" alt="CWS in review">
+  <img src="https://img.shields.io/badge/version-1.1.0-818cf8?style=for-the-badge" alt="Version 1.1.0">
+  <a href="https://chromewebstore.google.com/detail/emplorio/gjljbmhpdijnjpphnhfbcfobldbhclfc"><img src="https://img.shields.io/badge/chrome%20web%20store-live-4f46e5?style=for-the-badge&logo=googlechrome&logoColor=white" alt="Live on Chrome Web Store"></a>
   <img src="https://img.shields.io/badge/license-proprietary-737373?style=for-the-badge" alt="Proprietary">
 </p>
 
@@ -32,11 +33,11 @@
   <img src="https://img.shields.io/badge/built%20with-claude-D97757?style=flat-square&logo=anthropic&logoColor=white" alt="Built with Claude">
 </p>
 
-
 <p align="center">
   <a href="#what-it-does">What it does</a> ·
   <a href="#supported-ats-platforms">Supported ATSes</a> ·
   <a href="#tech-stack">Tech stack</a> ·
+  <a href="#install">Install</a> ·
   <a href="#getting-started">Getting started</a> ·
   <a href="#privacy--data">Privacy</a> ·
   <a href="#design--tooling">Design</a> ·
@@ -51,7 +52,7 @@ Serious job hunters fill the same 20 fields, name, email, phone, work authorisat
 
 ## The solution
 
-A Chrome extension that knows your profile and fills any job application form on detection, plus a small sync service that keeps your profile, applications, and AI drafts in step across devices. The LLM (Claude) is grounded in your real CV, it rewrites and emphasises; it never invents.
+A Chrome extension that knows your profile and fills any job application form on detection, plus a small sync service that keeps your profile, applications, and AI drafts in step across devices. The LLM (Claude) is grounded in your real CV — it rewrites and emphasises; it never invents.
 
 ---
 
@@ -220,6 +221,18 @@ emplorio/
 
 ---
 
+---
+
+## Install
+
+**[→ Add Emplorio to Chrome](https://chromewebstore.google.com/detail/emplorio/gjljbmhpdijnjpphnhfbcfobldbhclfc)**
+
+No build step needed, install, pin the extension, open a job application, and you're filling forms.
+
+See [releases](https://github.com/OElhwry/Emplorio/releases) for the full changelog, including the latest [v1.1.0](https://github.com/OElhwry/Emplorio/releases/tag/v1.1.0).
+
+---
+
 ## Getting started
 
 ### Prerequisites
@@ -324,17 +337,13 @@ The visual language, brand mark, marketing site, and Chrome Web Store assets wer
 
 Brand identity: indigo `#4f46e5` → violet `#818cf8` gradient on a warm dark `#0b0a18` canvas. Dark mode is the default; light mode is hand-tuned with warm-ink shadows rather than flat slate.
 
-### Built with Claude
-
-This project — every line of TypeScript, the Drizzle schema, the Fastify routes, the Next.js marketing site, the autofill engine, the 9 ATS adapters, the popup UI, the brand identity prompts, the CSS, the CWS submission copy, even this README — was paired with **[Claude](https://claude.ai)** ([Anthropic](https://www.anthropic.com)) using **[Claude Code](https://www.anthropic.com/claude-code)**. Months of solo work compressed into weeks. Couldn't have shipped this alone — full credit where it's due.
-
 ---
 
 ## Roadmap
 
 - [x] **MV1** — Greenhouse + Lever adapters, profile editor, local storage
 - [x] **v1.0** — 9 ATS adapters · API + auth + cloud sync · AI cover letters / answers / follow-ups · CV extraction · application tracking · marketing site · privacy/terms · Chrome Web Store submission
-- [ ] **v1.1** — Auto-Apply mode (opt-in, rate-limited) · response-rate analytics per CV variant · more ATS adapters
+- [x] **[v1.1.0](https://github.com/OElhwry/Emplorio/releases/tag/v1.1.0)** — Auto-Apply mode (opt-in, rate-limited) · response-rate analytics per CV variant · additional ATS adapters
 - [ ] **v2** — Smart job matching (Adzuna / JSearch APIs) · tailored CV PDF export · team / agency mode
 
 ---
