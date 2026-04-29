@@ -1,10 +1,9 @@
-<h1 align="center">
 <p align="center">
   <a href="https://emplorio.co.uk">
     <img src="store-assets/marquee.png" alt="Emplorio — Apply once. Send everywhere." width="820">
   </a>
 </p>
-  <br>
+<h1 align="center">
   Emplorio
 </h1>
 
@@ -48,11 +47,11 @@
 
 ## The problem
 
-Serious job hunters fill the same 20 fields — name, email, phone, work authorisation, previous roles, EEO questions — across 10+ applications a day. Each one takes 20–40 minutes of copy-paste tedium, *before* writing a custom cover letter or reshaping the CV. Applying to 100 roles costs 40+ hours of pure form-filling.
+Serious job hunters fill the same 20 fields, name, email, phone, work authorisation, previous roles, EEO questions, across 10+ applications a day. Each one takes 20–40 minutes of copy-paste tedium, *before* writing a custom cover letter or reshaping the CV. Applying to 100 roles costs 40+ hours of pure form-filling.
 
 ## The solution
 
-A Chrome extension that knows your profile and fills any job application form on detection, plus a small sync service that keeps your profile, applications, and AI drafts in step across devices. The LLM (Claude) is grounded in your real CV — it rewrites and emphasises; it never invents.
+A Chrome extension that knows your profile and fills any job application form on detection, plus a small sync service that keeps your profile, applications, and AI drafts in step across devices. The LLM (Claude) is grounded in your real CV, it rewrites and emphasises; it never invents.
 
 ---
 
