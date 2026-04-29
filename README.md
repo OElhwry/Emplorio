@@ -1,6 +1,6 @@
 <p align="center">
   <a href="https://emplorio.co.uk">
-    <img src="store-assets/marquee.png" alt="Emplorio — Apply once. Send everywhere." width="820">
+    <img src="store-assets/marquee.png" width="800" alt="Emplorio — Apply once. Send everywhere." width="820">
   </a>
 </p>
 <h1 align="center">
