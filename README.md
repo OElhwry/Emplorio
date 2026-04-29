@@ -1,8 +1,9 @@
 <h1 align="center">
+<p align="center">
   <a href="https://emplorio.co.uk">
-    <img src="apps/web/public/emplorio-mark-light.png#gh-light-mode-only" width="64" alt="Emplorio">
-    <img src="apps/web/public/emplorio-mark-dark.png#gh-dark-mode-only" width="64" alt="Emplorio">
+    <img src="store-assets/marquee.png" alt="Emplorio — Apply once. Send everywhere." width="820">
   </a>
+</p>
   <br>
   Emplorio
 </h1>
@@ -32,11 +33,6 @@
   <img src="https://img.shields.io/badge/built%20with-claude-D97757?style=flat-square&logo=anthropic&logoColor=white" alt="Built with Claude">
 </p>
 
-<p align="center">
-  <a href="https://emplorio.co.uk">
-    <img src="store-assets/marquee.png" alt="Emplorio — Apply once. Send everywhere." width="820">
-  </a>
-</p>
 
 <p align="center">
   <a href="#what-it-does">What it does</a> ·
