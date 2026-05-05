@@ -4,7 +4,7 @@ export default defineManifest({
   manifest_version: 3,
   name: 'Emplorio: Autofill Job Applications, AI Cover Letters & Tracker',
   description: 'Apply faster. Autofill job forms, generate AI cover letters and tailored answers, and track every application from saved to offer.',
-  version: '1.0.2',
+  version: '1.0.3',
   icons: {
     '16': 'icon16.png',
     '32': 'icon32.png',
