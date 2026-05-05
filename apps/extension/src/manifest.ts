@@ -2,8 +2,8 @@ import { defineManifest } from '@crxjs/vite-plugin';
 
 export default defineManifest({
   manifest_version: 3,
-  name: 'Emplorio',
-  description: 'Apply once. Send everywhere.',
+  name: 'Emplorio: Autofill Job Applications, AI Cover Letters & Tracker',
+  description: 'Apply faster. Autofill job forms, generate AI cover letters and tailored answers, and track every application from saved to offer.',
   version: '1.0.2',
   icons: {
     '16': 'icon16.png',
