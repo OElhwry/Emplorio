@@ -1,0 +1,124 @@
+.shell {
+  min-height: 100vh;
+  color: var(--text);
+  background-color: var(--bg);
+  background-image:
+    radial-gradient(55% 45% at 12% 0%, var(--accent-glow), transparent 60%),
+    radial-gradient(45% 45% at 88% 8%, rgba(129, 140, 248, 0.12), transparent 65%);
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+}
+
+.nav {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  backdrop-filter: saturate(160%) blur(12px);
+  background: var(--nav-bg);
+  border-bottom: 1px solid var(--nav-border);
+}
+.navInner {
+  max-width: var(--max);
+  margin: 0 auto;
+  padding: 0 1.5rem;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  font-weight: 700;
+  font-size: 1.05rem;
+  color: var(--text);
+  text-decoration: none;
+  letter-spacing: -0.01em;
+}
+.markImg {
+  width: 26px;
+  height: 26px;
+  object-fit: contain;
+  display: block;
+}
+.markDark {
+  display: none;
+}
+:global([data-theme='dark']) .markLight {
+  display: none;
+}
+:global([data-theme='dark']) .markDark {
+  display: block;
+}
+.links {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+.link,
+.linkActive {
+  padding: 0.45rem 0.7rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.9rem;
+  font-weight: 500;
+  text-decoration: none;
+  color: var(--text-muted);
+  transition: color 140ms var(--ease), background 140ms var(--ease);
+}
+.link:hover {
+  color: var(--text);
+  background: var(--accent-soft);
+}
+.linkActive {
+  color: var(--accent);
+  background: var(--accent-soft);
+}
+.email {
+  font-size: 0.82rem;
+  color: var(--text-subtle);
+  margin-left: 0.4rem;
+  max-width: 180px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.theme,
+.signout {
+  border: 1px solid var(--border);
+  background: var(--bg-card);
+  color: var(--text-muted);
+  border-radius: var(--radius-sm);
+  padding: 0.4rem 0.7rem;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 140ms var(--ease);
+}
+.theme {
+  width: 36px;
+  padding: 0.4rem 0;
+}
+.theme:hover,
+.signout:hover {
+  color: var(--text);
+  border-color: var(--border-strong);
+}
+.main {
+  max-width: var(--max);
+  margin: 0 auto;
+  padding: 1.5rem;
+}
+
+@media (max-width: 640px) {
+  .email {
+    display: none;
+  }
+  .links {
+    gap: 0.15rem;
+  }
+  .link,
+  .linkActive {
+    padding: 0.4rem 0.5rem;
+    font-size: 0.82rem;
+  }
+}

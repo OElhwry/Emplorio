@@ -15,13 +15,22 @@ export function SettingsPanel({
   const [saved, setSaved] = useState<string | undefined>(undefined);
   const [show, setShow] = useState(false);
   const [status, setStatus] = useState('');
+  const [panelEnabled, setPanelEnabled] = useState(true);
 
   useEffect(() => {
     void getAnthropicKey().then((k) => {
       setSaved(k);
       setKey(k ?? '');
     });
+    void chrome.storage.local.get('emplorioPanelEnabled').then((r) => {
+      setPanelEnabled(r.emplorioPanelEnabled !== false);
+    });
   }, []);
+
+  async function togglePanel(next: boolean) {
+    setPanelEnabled(next);
+    await chrome.storage.local.set({ emplorioPanelEnabled: next });
+  }
 
   async function save() {
     const trimmed = key.trim();
@@ -97,6 +106,27 @@ export function SettingsPanel({
             </button>
           </div>
         </div>
+      </div>
+
+      <div className="card">
+        <div className="section-header">
+          <h3>On-page assistant</h3>
+        </div>
+        <p className="field-hint">
+          Show the Emplorio panel automatically on job application pages, so you can fill without
+          opening the popup. It never fills anything until you click.
+        </p>
+        <label className="checkbox-row">
+          <input
+            type="checkbox"
+            checked={panelEnabled}
+            onChange={(e) => void togglePanel(e.target.checked)}
+          />
+          Show the panel on application pages
+        </label>
+        <p className="field-hint">
+          Use the minimise button on the panel to tuck it into a pill on any page.
+        </p>
       </div>
 
       <div className="card feature-card">

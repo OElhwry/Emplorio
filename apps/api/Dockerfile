@@ -23,4 +23,9 @@ COPY packages/db ./packages/db
 COPY tsconfig.base.json ./
 WORKDIR /repo/apps/api
 EXPOSE 3001
-CMD ["pnpm", "start"]
+# Run tsx directly via node instead of `pnpm start`. Invoking pnpm here makes
+# corepack download pnpm 11 (the root packageManager pin isn't in this stage),
+# which then runs `pnpm install` before the script (verify-deps-before-run) and
+# fails: the workspace root manifests aren't present, so @emplorio/db can't be
+# resolved and the machine crash-loops. node_modules is already baked in above.
+CMD ["node", "--import", "tsx", "src/index.ts"]

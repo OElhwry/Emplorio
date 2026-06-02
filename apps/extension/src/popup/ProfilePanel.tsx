@@ -1,11 +1,12 @@
 import { useEffect, useRef, useState } from 'react';
-import type { Profile } from '@emplorio/shared';
+import type { EducationEntry, Profile, WorkHistoryEntry } from '@emplorio/shared';
 import { loadProfile, saveProfile } from '../lib/storage.js';
 import { extractPdfText, fileToDataUrl } from '../lib/cv.js';
 import { apiFetch } from '../lib/api.js';
 
 const GENDER_OPTIONS = ['Man', 'Woman', 'Non-Binary', 'Another Gender Identity', 'I prefer not to answer'];
 const YES_NO_PREF = ['Yes', 'No', 'I prefer not to answer'];
+const SPONSORSHIP_OPTIONS = ['No', 'Yes'];
 
 const BASIC_FIELDS: Array<[keyof Profile, string, string?]> = [
   ['firstName', 'First name'],
@@ -73,10 +74,6 @@ export function ProfilePanel({ onNeedKey }: { onNeedKey?: () => void } = {}) {
           uploadedAt: Date.now(),
         },
         baseCvText: text || profile.baseCvText,
-        websites: [],
-        workHistory: [],
-        education: [],
-        skills: [],
       };
       setProfile(next);
       await saveProfile(next);
@@ -91,10 +88,6 @@ export function ProfilePanel({ onNeedKey }: { onNeedKey?: () => void } = {}) {
       ...profile,
       cvFile: undefined,
       baseCvText: undefined,
-      websites: [],
-      workHistory: [],
-      education: [],
-      skills: [],
     };
     setProfile(next);
     await saveProfile(next);
@@ -173,6 +166,59 @@ export function ProfilePanel({ onNeedKey }: { onNeedKey?: () => void } = {}) {
           </Field>
         ))}
       </div>
+
+      <SectionHeader title="Work eligibility" />
+      <div className="card field-group">
+        <Field label="Work authorization" hint="e.g. UK citizen, US Green Card, requires Tier 2">
+          <input
+            type="text"
+            value={profile.workAuthorization ?? ''}
+            onChange={(e) => update('workAuthorization', e.target.value)}
+            placeholder="e.g. UK citizen"
+          />
+        </Field>
+        <SelectField
+          label="Requires visa sponsorship?"
+          value={profile.requiresSponsorship == null ? '' : profile.requiresSponsorship ? 'Yes' : 'No'}
+          options={SPONSORSHIP_OPTIONS}
+          onChange={(v) => update('requiresSponsorship', v === '' ? undefined : v === 'Yes')}
+        />
+        <Field label="Years of experience">
+          <input
+            type="number"
+            min={0}
+            value={profile.yearsExperience ?? ''}
+            onChange={(e) => update('yearsExperience', e.target.value === '' ? undefined : Number(e.target.value))}
+            placeholder="e.g. 5"
+          />
+        </Field>
+        <Field label="Desired salary">
+          <input
+            type="text"
+            value={profile.desiredSalary ?? ''}
+            onChange={(e) => update('desiredSalary', e.target.value)}
+            placeholder="e.g. £65,000"
+          />
+        </Field>
+      </div>
+
+      <SectionHeader title="Experience" />
+      <WorkHistoryEditor
+        items={profile.workHistory ?? []}
+        onChange={(v) => update('workHistory', v)}
+      />
+
+      <SectionHeader title="Education" />
+      <EducationEditor
+        items={profile.education ?? []}
+        onChange={(v) => update('education', v)}
+      />
+
+      <SectionHeader title="Skills" />
+      <SkillsEditor skills={profile.skills ?? []} onChange={(v) => update('skills', v)} />
+
+      <SectionHeader title="Websites" />
+      <WebsitesEditor sites={profile.websites ?? []} onChange={(v) => update('websites', v)} />
 
       <SectionHeader title="Availability" />
       <div className="card field-group">
@@ -398,5 +444,185 @@ function SelectField({
         ))}
       </select>
     </Field>
+  );
+}
+
+function WorkHistoryEditor({
+  items,
+  onChange,
+}: {
+  items: WorkHistoryEntry[];
+  onChange: (v: WorkHistoryEntry[]) => void;
+}) {
+  function upd(i: number, patch: Partial<WorkHistoryEntry>) {
+    onChange(items.map((e, idx) => (idx === i ? { ...e, ...patch } : e)));
+  }
+  function add() {
+    onChange([
+      ...items,
+      { id: crypto.randomUUID(), company: '', title: '', startDate: '', endDate: null, current: false, location: '', bullets: [] },
+    ]);
+  }
+  function remove(i: number) {
+    onChange(items.filter((_, idx) => idx !== i));
+  }
+  return (
+    <>
+      {items.map((e, i) => (
+        <div key={e.id ?? i} className="card field-group">
+          <div className="entry-head">
+            <h3>{e.title || e.company || `Role ${i + 1}`}</h3>
+            <button onClick={() => remove(i)} className="btn-link danger">Remove</button>
+          </div>
+          <Field label="Job title">
+            <input value={e.title} onChange={(ev) => upd(i, { title: ev.target.value })} />
+          </Field>
+          <Field label="Company">
+            <input value={e.company} onChange={(ev) => upd(i, { company: ev.target.value })} />
+          </Field>
+          <Field label="Location">
+            <input value={e.location ?? ''} onChange={(ev) => upd(i, { location: ev.target.value })} />
+          </Field>
+          <Field label="Start (YYYY-MM)">
+            <input value={e.startDate} placeholder="2022-01" onChange={(ev) => upd(i, { startDate: ev.target.value })} />
+          </Field>
+          {!e.current && (
+            <Field label="End (YYYY-MM)">
+              <input value={e.endDate ?? ''} placeholder="2024-06" onChange={(ev) => upd(i, { endDate: ev.target.value || null })} />
+            </Field>
+          )}
+          <label className="checkbox-row">
+            <input
+              type="checkbox"
+              checked={!!e.current}
+              onChange={(ev) => upd(i, { current: ev.target.checked, endDate: ev.target.checked ? null : e.endDate })}
+            />
+            <span>I currently work here</span>
+          </label>
+          <Field label="Highlights (one per line)">
+            <textarea
+              rows={3}
+              value={(e.bullets ?? []).join('\n')}
+              onChange={(ev) => upd(i, { bullets: ev.target.value.split('\n').filter((b) => b.trim() !== '') })}
+            />
+          </Field>
+        </div>
+      ))}
+      <button onClick={add} className="btn-secondary">+ Add experience</button>
+    </>
+  );
+}
+
+function EducationEditor({
+  items,
+  onChange,
+}: {
+  items: EducationEntry[];
+  onChange: (v: EducationEntry[]) => void;
+}) {
+  function upd(i: number, patch: Partial<EducationEntry>) {
+    onChange(items.map((e, idx) => (idx === i ? { ...e, ...patch } : e)));
+  }
+  function add() {
+    onChange([
+      ...items,
+      { id: crypto.randomUUID(), institution: '', degree: '', fieldOfStudy: '', startDate: '', endDate: '', gpa: '' },
+    ]);
+  }
+  function remove(i: number) {
+    onChange(items.filter((_, idx) => idx !== i));
+  }
+  return (
+    <>
+      {items.map((e, i) => (
+        <div key={e.id ?? i} className="card field-group">
+          <div className="entry-head">
+            <h3>{e.institution || `Education ${i + 1}`}</h3>
+            <button onClick={() => remove(i)} className="btn-link danger">Remove</button>
+          </div>
+          <Field label="School / Institution">
+            <input value={e.institution} onChange={(ev) => upd(i, { institution: ev.target.value })} />
+          </Field>
+          <Field label="Degree">
+            <input value={e.degree ?? ''} placeholder="BSc" onChange={(ev) => upd(i, { degree: ev.target.value })} />
+          </Field>
+          <Field label="Field of study">
+            <input value={e.fieldOfStudy ?? ''} placeholder="Computer Science" onChange={(ev) => upd(i, { fieldOfStudy: ev.target.value })} />
+          </Field>
+          <Field label="Start (YYYY-MM)">
+            <input value={e.startDate ?? ''} placeholder="2018-09" onChange={(ev) => upd(i, { startDate: ev.target.value })} />
+          </Field>
+          <Field label="End (YYYY-MM)">
+            <input value={e.endDate ?? ''} placeholder="2021-06" onChange={(ev) => upd(i, { endDate: ev.target.value })} />
+          </Field>
+          <Field label="GPA / Grade">
+            <input value={e.gpa ?? ''} onChange={(ev) => upd(i, { gpa: ev.target.value })} />
+          </Field>
+        </div>
+      ))}
+      <button onClick={add} className="btn-secondary">+ Add education</button>
+    </>
+  );
+}
+
+function SkillsEditor({ skills, onChange }: { skills: string[]; onChange: (v: string[]) => void }) {
+  const [draft, setDraft] = useState('');
+  function add() {
+    const v = draft.trim();
+    if (!v || skills.includes(v)) {
+      setDraft('');
+      return;
+    }
+    onChange([...skills, v]);
+    setDraft('');
+  }
+  return (
+    <div className="card field-group">
+      <div className="tag-list">
+        {skills.map((s, i) => (
+          <span key={`${s}-${i}`} className="tag">
+            {s}
+            <button onClick={() => onChange(skills.filter((_, idx) => idx !== i))} aria-label={`Remove ${s}`}>✕</button>
+          </span>
+        ))}
+        {skills.length === 0 && <span className="helper">No skills yet. Add some below.</span>}
+      </div>
+      <div className="history-actions">
+        <input
+          value={draft}
+          placeholder="Type a skill, press Enter"
+          onChange={(e) => setDraft(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') {
+              e.preventDefault();
+              add();
+            }
+          }}
+        />
+        <button onClick={add} className="btn-secondary">Add</button>
+      </div>
+    </div>
+  );
+}
+
+function WebsitesEditor({ sites, onChange }: { sites: string[]; onChange: (v: string[]) => void }) {
+  return (
+    <div className="card field-group">
+      {sites.map((w, i) => (
+        <div key={i} className="history-actions">
+          <input
+            value={w}
+            placeholder="https://…"
+            onChange={(e) => {
+              const next = [...sites];
+              next[i] = e.target.value;
+              onChange(next);
+            }}
+          />
+          <button onClick={() => onChange(sites.filter((_, idx) => idx !== i))} className="btn-link danger">Remove</button>
+        </div>
+      ))}
+      <button onClick={() => onChange([...sites, ''])} className="btn-secondary">+ Add website</button>
+    </div>
   );
 }

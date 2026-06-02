@@ -1,8 +1,35 @@
 import { upsertApplication } from '../lib/storage.js';
+import { apiFetch } from '../lib/api.js';
 
 chrome.runtime.onInstalled.addListener(() => {
   console.log('[emplorio] installed');
 });
+
+/** Reads a /generate SSE stream to completion and returns the joined text. */
+async function readSseText(res: Response): Promise<string> {
+  if (!res.body) return '';
+  const reader = res.body.getReader();
+  const decoder = new TextDecoder();
+  let buffer = '';
+  let text = '';
+  for (;;) {
+    const { value, done } = await reader.read();
+    if (done) break;
+    buffer += decoder.decode(value, { stream: true });
+    const lines = buffer.split('\n');
+    buffer = lines.pop() ?? '';
+    for (const line of lines) {
+      if (!line.startsWith('data:')) continue;
+      try {
+        const evt = JSON.parse(line.slice(5).trim());
+        if (evt.delta) text += evt.delta;
+      } catch {
+        // skip malformed events
+      }
+    }
+  }
+  return text;
+}
 
 function flashBadge(tabId: number, text: string, color: string) {
   chrome.action.setBadgeText({ text, tabId });
@@ -13,6 +40,40 @@ function flashBadge(tabId: number, text: string, color: string) {
 chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
   if (msg?.type === 'PING') {
     sendResponse({ type: 'PONG' });
+    return true;
+  }
+  if (msg?.type === 'GENERATE_COVER') {
+    void (async () => {
+      try {
+        const res = await apiFetch('/generate/cover-letter', {
+          method: 'POST',
+          body: JSON.stringify(msg.payload),
+        });
+        if (res.status === 402) return sendResponse({ needsKey: true });
+        if (!res.ok) return sendResponse({ error: `API ${res.status}` });
+        const text = await readSseText(res);
+        sendResponse(text ? { text } : { error: 'empty' });
+      } catch (err) {
+        sendResponse({ error: (err as Error).message });
+      }
+    })();
+    return true;
+  }
+  if (msg?.type === 'GENERATE_ANSWERS') {
+    void (async () => {
+      try {
+        const res = await apiFetch('/generate/answer-questions', {
+          method: 'POST',
+          body: JSON.stringify(msg.payload),
+        });
+        if (res.status === 402) return sendResponse({ needsKey: true });
+        if (!res.ok) return sendResponse({ error: `API ${res.status}` });
+        const data = (await res.json()) as { answers?: string[] };
+        sendResponse({ answers: data.answers ?? [] });
+      } catch (err) {
+        sendResponse({ error: (err as Error).message });
+      }
+    })();
     return true;
   }
   if (msg?.type === 'TRACK_APPLIED') {
