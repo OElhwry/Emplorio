@@ -94,11 +94,18 @@ export async function parseCv(cvText: string): Promise<ParsedCv | 'needsKey'> {
 
 /* ---------- Auth ---------- */
 
-export async function requestCode(email: string): Promise<void> {
-  await apiFetch('/auth/request-code', {
+/** Returns a dev code only in non-production (so local sign-in works without email). */
+export async function requestCode(email: string): Promise<{ devCode?: string }> {
+  const res = await apiFetch('/auth/request-code', {
     method: 'POST',
     body: JSON.stringify({ email }),
   });
+  if (!res.ok) {
+    const data = (await res.json().catch(() => ({}))) as { error?: string };
+    throw new Error(data.error ?? 'Could not send a code. Please try again.');
+  }
+  const data = (await res.json().catch(() => ({}))) as { devCode?: string };
+  return { devCode: data.devCode };
 }
 
 export async function verifyCode(email: string, code: string): Promise<Session> {

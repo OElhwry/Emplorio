@@ -202,6 +202,14 @@ export function ProfilePanel({ onNeedKey }: { onNeedKey?: () => void } = {}) {
             placeholder="e.g. 5"
           />
         </Field>
+        <Field label="Role interest" hint="e.g. Software Engineering">
+          <input
+            type="text"
+            value={profile.roleInterest ?? ''}
+            onChange={(e) => update('roleInterest', e.target.value)}
+            placeholder="e.g. Software Engineering"
+          />
+        </Field>
         <Field label="Desired salary">
           <input
             type="text"

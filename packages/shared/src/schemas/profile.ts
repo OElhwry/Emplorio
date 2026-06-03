@@ -45,6 +45,7 @@ export const profileSchema = z.object({
   yearsExperience: z.number().int().nonnegative().optional(),
   currentTitle: z.string().optional(),
   currentCompany: z.string().optional(),
+  roleInterest: z.string().optional(),
   desiredSalary: z.string().optional(),
   availableStartDate: z.string().optional(),
   noticePeriod: z.string().optional(),

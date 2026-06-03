@@ -7,12 +7,19 @@ export async function authRoutes(app: FastifyInstance) {
   app.post('/request-code', { schema: { body: requestCodeSchema } }, async (req, reply) => {
     const { email } = req.body as { email: string };
     try {
-      await requestLoginCode(email);
+      const result = await requestLoginCode(email);
+      // A real transport failure (e.g. unverified Resend domain) is a server
+      // problem, not email-existence disclosure, so surface it in production.
+      if (result.sendFailed && env.NODE_ENV === 'production') {
+        return reply.code(502).send({ ok: false, error: 'Could not send the email. Please try again shortly.' });
+      }
+      // 202 either way; the code is only included outside production.
+      return reply.code(202).send({ ok: true, devCode: result.devCode });
     } catch (err) {
       req.log.error({ err }, 'request-code failed');
+      // Never disclose whether the email exists on unexpected errors.
+      return reply.code(202).send({ ok: true });
     }
-    // Always 202 — never disclose whether the email exists
-    return reply.code(202).send({ ok: true });
   });
 
   app.post('/verify', { schema: { body: verifyCodeSchema } }, async (req, reply) => {

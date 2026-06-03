@@ -107,7 +107,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 3rem;
+  padding: 3rem 3rem 5rem;
   color: #fff;
   background: transparent;
 }
@@ -310,11 +310,13 @@
 
 /* ---------- ATS marquee (pinned to the bottom, always visible) ---------- */
 .marqueeWrap {
-  position: relative;
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 1.75rem;
   z-index: 1;
-  width: 100%;
   overflow: hidden;
-  mask-image: linear-gradient(90deg, #000 82%, transparent);
+  mask-image: linear-gradient(90deg, #000 88%, transparent);
 }
 .marquee {
   display: flex;

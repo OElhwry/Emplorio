@@ -20,7 +20,9 @@ function generateCode(): string {
   return String(randomInt(0, 1_000_000)).padStart(6, '0');
 }
 
-export async function requestLoginCode(rawEmail: string): Promise<{ ok: true; throttled?: boolean }> {
+export async function requestLoginCode(
+  rawEmail: string,
+): Promise<{ ok: true; throttled?: boolean; devCode?: string; sendFailed?: boolean }> {
   const email = rawEmail.trim().toLowerCase();
 
   const recent = await db
@@ -39,15 +41,19 @@ export async function requestLoginCode(rawEmail: string): Promise<{ ok: true; th
 
   await db.insert(magicLinks).values({ email, tokenHash, expiresAt });
 
+  let sendFailed = false;
   try {
     await sendLoginCode(email, code);
   } catch (err) {
     logger.error({ err, email }, 'failed to send login code');
+    sendFailed = true;
   }
-  if (env.NODE_ENV !== 'production') {
+  const isDev = env.NODE_ENV !== 'production';
+  if (isDev) {
     logger.info({ email, code }, '[auth] dev login code');
   }
-  return { ok: true };
+  // Only ever expose the code outside production.
+  return { ok: true, sendFailed, ...(isDev ? { devCode: code } : {}) };
 }
 
 export interface VerifyResult {

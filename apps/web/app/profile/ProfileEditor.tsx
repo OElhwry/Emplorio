@@ -846,6 +846,7 @@ function WorkAuthSection({ profile, set }: SectionProps) {
         </label>
       </div>
 
+      <Text label="Role interest" value={profile.roleInterest} placeholder="e.g. Software Engineering" onChange={(v) => set('roleInterest', v)} />
       <Text label="Desired salary" value={profile.desiredSalary} placeholder="£65,000" onChange={(v) => set('desiredSalary', v)} />
       <Text label="Current title" value={profile.currentTitle} onChange={(v) => set('currentTitle', v)} />
       <Text label="Current company" value={profile.currentCompany} onChange={(v) => set('currentCompany', v)} />

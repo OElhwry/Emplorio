@@ -149,6 +149,7 @@ export default function LoginPage() {
   const [code, setCode] = useState('');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
+  const [devHint, setDevHint] = useState(false);
 
   useEffect(() => {
     document.title = 'Emplorio · Sign in';
@@ -159,10 +160,14 @@ export default function LoginPage() {
     setError('');
     setBusy(true);
     try {
-      await requestCode(email.trim());
+      const { devCode } = await requestCode(email.trim());
+      if (devCode) {
+        setCode(devCode); // dev: prefill so you can sign in without email
+        setDevHint(true);
+      }
       setStep('code');
-    } catch {
-      setError('Could not send a code. Check your connection and try again.');
+    } catch (err) {
+      setError((err as Error).message || 'Could not send a code. Check your connection and try again.');
     } finally {
       setBusy(false);
     }
@@ -176,7 +181,8 @@ export default function LoginPage() {
       await verifyCode(email.trim(), code.trim());
       const profile = await fetchProfile().catch(() => null);
       const pct = profileCompletionPct(profile);
-      router.push(pct < 20 ? '/profile?welcome=1' : '/dashboard');
+      // New / nearly-empty accounts go through the guided onboarding first.
+      router.push(pct < 20 ? '/get-started' : '/dashboard');
     } catch (err) {
       setError((err as Error).message);
     } finally {
@@ -210,15 +216,15 @@ export default function LoginPage() {
             <p className={styles.brandSub}>Click fill, and watch the whole application complete itself.</p>
             <Mockup />
           </div>
+        </div>
 
-          <div className={styles.marqueeWrap}>
-            <div className={styles.marquee}>
-              {[...ATS_PLATFORMS, ...ATS_PLATFORMS].map((p, i) => (
-                <span className={styles.marqueeItem} key={`${p}-${i}`}>
-                  {p}
-                </span>
-              ))}
-            </div>
+        <div className={styles.marqueeWrap}>
+          <div className={styles.marquee}>
+            {[...ATS_PLATFORMS, ...ATS_PLATFORMS].map((p, i) => (
+              <span className={styles.marqueeItem} key={`${p}-${i}`}>
+                {p}
+              </span>
+            ))}
           </div>
         </div>
       </section>
@@ -266,6 +272,9 @@ export default function LoginPage() {
               <p className={styles.sub}>
                 We sent a 6-digit code to <strong>{email}</strong>.
               </p>
+              {devHint && (
+                <p className={styles.fine}>Dev mode: code prefilled, no email needed locally.</p>
+              )}
               <form onSubmit={submitCode} className={styles.form}>
                 <label className={styles.field}>
                   <span className={styles.label}>6-digit code</span>
