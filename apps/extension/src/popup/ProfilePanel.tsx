@@ -149,6 +149,16 @@ export function ProfilePanel({ onNeedKey }: { onNeedKey?: () => void } = {}) {
 
   return (
     <section className="profile-panel">
+      <div className="web-link-row">
+        <span className="helper">More room to edit on the web</span>
+        <button
+          type="button"
+          className="btn-link"
+          onClick={() => chrome.tabs.create({ url: 'https://emplorio.co.uk/profile' })}
+        >
+          Open full editor ↗
+        </button>
+      </div>
       <div className="save-bar save-bar-top">
         <button onClick={save} className="btn-primary save-btn">
           {saved ? 'Saved ✓' : 'Save profile'}

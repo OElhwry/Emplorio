@@ -182,6 +182,14 @@ export function App() {
           <h1 style={styles.title}>Emplorio</h1>
           <div style={styles.headerActions}>
             <button
+              onClick={() => chrome.tabs.create({ url: 'https://emplorio.co.uk/dashboard' })}
+              className="icon-btn"
+              title="Open Emplorio on the web"
+              aria-label="Open Emplorio on the web"
+            >
+              <IconExternal />
+            </button>
+            <button
               onClick={() => {
                 setTab('settings');
                 setHighlightAi(false);

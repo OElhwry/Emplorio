@@ -16,7 +16,7 @@ export default function DashboardPage() {
 
   if (status !== 'authed') {
     return (
-      <AppShell active="dashboard">
+      <AppShell active="dashboard" title="Dashboard">
         <p style={{ color: 'var(--text-muted)', padding: '2rem 0' }}>
           {status === 'loading' ? 'Loading…' : 'Redirecting to sign in…'}
         </p>
@@ -25,13 +25,13 @@ export default function DashboardPage() {
   }
 
   return (
-    <AppShell active="dashboard" email={email} onSignOut={signOut}>
-      <div style={{ marginBottom: '1.25rem' }}>
-        <h1 style={{ margin: 0, fontSize: '1.6rem', letterSpacing: '-0.02em' }}>Dashboard</h1>
-        <p style={{ margin: '0.25rem 0 0', color: 'var(--text-muted)', fontSize: '0.92rem' }}>
-          Every application you&apos;ve saved or applied to, synced from the extension.
-        </p>
-      </div>
+    <AppShell
+      active="dashboard"
+      title="Dashboard"
+      subtitle="Every application you've saved or applied to, synced from the extension."
+      email={email}
+      onSignOut={signOut}
+    >
       <ApplicationsHub showInsights />
     </AppShell>
   );

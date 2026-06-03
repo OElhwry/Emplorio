@@ -3,9 +3,10 @@
 /** Extract plain text from a PDF in the browser. pdfjs is imported lazily so it
  *  never runs during SSR and stays out of the initial bundle. */
 export async function extractPdfText(file: File): Promise<string> {
-  const pdfjs = await import('pdfjs-dist');
-  // Use a CDN worker matching the installed version, avoiding bundler worker setup.
-  pdfjs.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
+  // The "legacy" build initialises reliably under Next/webpack; the modern build
+  // can throw "Object.defineProperty called on non-object" from its worker setup.
+  const pdfjs = (await import('pdfjs-dist/legacy/build/pdf.mjs')) as typeof import('pdfjs-dist');
+  pdfjs.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjs.version}/legacy/build/pdf.worker.min.mjs`;
 
   const buf = await file.arrayBuffer();
   const pdf = await pdfjs.getDocument({ data: buf }).promise;

@@ -410,6 +410,18 @@ kbd {
   line-height: 1.45;
 }
 
+.web-link-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 6px 10px;
+  margin-bottom: 8px;
+  background: var(--accent-soft);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
 .tag-list {
   display: flex;
   flex-wrap: wrap;

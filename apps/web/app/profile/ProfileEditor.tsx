@@ -34,6 +34,19 @@ const TABS: { id: TabId; label: string }[] = [
   { id: 'links', label: 'Links' },
 ];
 
+/** Whether a section has enough in it to count as done. EEO is voluntary, so it
+ *  never counts as "missing". */
+const SECTION_DONE: Record<TabId, (p: Partial<Profile>) => boolean> = {
+  cv: (p) => !!(p.cvFile || p.baseCvText),
+  personal: (p) => !!(p.firstName && p.lastName && p.email && p.phone && p.city && p.country),
+  experience: (p) => (p.workHistory?.length ?? 0) > 0,
+  education: (p) => (p.education?.length ?? 0) > 0,
+  skills: (p) => (p.skills?.length ?? 0) > 0,
+  work: (p) => !!p.workAuthorization,
+  links: (p) => !!(p.linkedinUrl || p.githubUrl || p.portfolioUrl),
+  eeo: () => true,
+};
+
 /** Files at or under this size also get stored as a blob for cross-device sync;
  *  larger ones keep only the parsed text to stay under the API body limit. */
 const STORE_BLOB_MAX = 600 * 1024;
@@ -190,6 +203,7 @@ export function ProfileEditor() {
   }
 
   const completion = useMemo(() => profileCompletionPct(profile), [profile]);
+  const incomplete = TABS.filter((t) => t.id !== 'eeo' && !SECTION_DONE[t.id](profile));
 
   if (!loaded) {
     return <p className={styles.loading}>Loading your profile…</p>;
@@ -203,36 +217,41 @@ export function ProfileEditor() {
           every application for you. The quickest start: drop your resume into the Resume tab.
         </div>
       )}
-      <header className={styles.header}>
-        <div>
-          <h1 className={styles.title}>Your profile</h1>
-          <p className={styles.subtitle}>
-            This is what Emplorio uses to autofill applications. Fill it once, apply everywhere.
-          </p>
-        </div>
-        <SaveIndicator state={saveState} />
-      </header>
-
       <div className={styles.progress}>
-        <div className={styles.progressHead}>
-          <span>Profile {completion}% complete</span>
+        <div className={styles.progressTop}>
+          <span className={styles.progressHead}>Profile {completion}% complete</span>
+          <SaveIndicator state={saveState} />
         </div>
         <div className={styles.bar}>
           <span style={{ width: `${completion}%` }} />
         </div>
+        {incomplete.length > 0 && (
+          <div className={styles.missing}>
+            <span>Still to fill:</span>
+            {incomplete.map((t) => (
+              <button key={t.id} type="button" className={styles.missingLink} onClick={() => setTab(t.id)}>
+                {t.label}
+              </button>
+            ))}
+          </div>
+        )}
       </div>
 
       <nav className={styles.tabs}>
-        {TABS.map((t) => (
-          <button
-            key={t.id}
-            type="button"
-            className={tab === t.id ? styles.tabActive : styles.tab}
-            onClick={() => setTab(t.id)}
-          >
-            {t.label}
-          </button>
-        ))}
+        {TABS.map((t) => {
+          const done = SECTION_DONE[t.id](profile);
+          return (
+            <button
+              key={t.id}
+              type="button"
+              className={tab === t.id ? styles.tabActive : styles.tab}
+              onClick={() => setTab(t.id)}
+            >
+              {t.label}
+              {!done && t.id !== 'eeo' && <span className={styles.tabDot} aria-hidden="true" />}
+            </button>
+          );
+        })}
       </nav>
 
       <section className={styles.panel}>

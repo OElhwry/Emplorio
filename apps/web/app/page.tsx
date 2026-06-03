@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import * as Accordion from '@radix-ui/react-accordion';
+import { getToken } from './lib/api';
 
 const CHROME_STORE_URL = 'https://chromewebstore.google.com/detail/emplorio/gjljbmhpdijnjpphnhfbcfobldbhclfc';
 
@@ -17,12 +18,63 @@ export default function HomePage() {
         <WhatItDoes />
         <HowItWorks />
         <Stats />
+        <Testimonials />
         <Pricing />
         <FAQ />
         <FinalCTA />
       </main>
       <Footer />
     </>
+  );
+}
+
+// NOTE: placeholder testimonials — replace the quotes/names with real ones
+// before relying on them as social proof.
+const TESTIMONIALS: { quote: string; name: string; role: string }[] = [
+  {
+    quote: 'I applied to 12 roles in an evening. The autofill alone gave me my weekends back.',
+    name: 'Priya',
+    role: 'Software Engineer',
+  },
+  {
+    quote: 'The cover letters actually sound like me, because they are built from my real CV.',
+    name: 'Daniel',
+    role: 'Product Manager',
+  },
+  {
+    quote: 'One profile, every application form filled. It is the spreadsheet I always wished I had.',
+    name: 'Amara',
+    role: 'Recent Graduate',
+  },
+];
+
+function Testimonials() {
+  return (
+    <section className="testimonials reveal">
+      <div className="container">
+        <div className="section-eyebrow">Loved by job hunters</div>
+        <h2 className="testimonials-title">Built by someone who was tired of the grind</h2>
+        <div className="testimonial-grid">
+          {TESTIMONIALS.map((t) => (
+            <figure className="testimonial-card" key={t.name}>
+              <div className="testimonial-stars" aria-hidden="true">
+                {'★★★★★'}
+              </div>
+              <blockquote className="testimonial-quote">“{t.quote}”</blockquote>
+              <figcaption className="testimonial-by">
+                <span className="testimonial-avatar" aria-hidden="true">
+                  {t.name.slice(0, 1)}
+                </span>
+                <span className="testimonial-meta">
+                  <strong>{t.name}</strong>
+                  <span className="testimonial-role">{t.role}</span>
+                </span>
+              </figcaption>
+            </figure>
+          ))}
+        </div>
+      </div>
+    </section>
   );
 }
 
@@ -232,10 +284,28 @@ function useActiveSection(ids: string[]): string | null {
   return active;
 }
 
+/** Optimistic logged-in check from the stored token (nav only, no validation). */
+function useAuthed(): boolean {
+  const [authed, setAuthed] = useState(false);
+  useEffect(() => {
+    setAuthed(!!getToken());
+  }, []);
+  return authed;
+}
+
 function Nav() {
   const ids = NAV_LINKS.map((l) => l.id);
   const active = useActiveSection(ids);
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  const authed = useAuthed();
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 8);
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
 
   useEffect(() => {
     if (!drawerOpen) return;
@@ -249,7 +319,7 @@ function Nav() {
   }, [drawerOpen]);
 
   return (
-    <header className="nav">
+    <header className={`nav${scrolled ? ' scrolled' : ''}`}>
       <div className="nav-inner">
         <a href="#" className="brand" aria-label="Emplorio home">
           <span className="brand-mark" aria-hidden="true">
@@ -273,9 +343,16 @@ function Nav() {
             );
           })}
           <ThemeToggle />
-          <a href={CHROME_STORE_URL} target="_blank" rel="noreferrer" className="nav-cta">
-            <IconChrome /> Install
-          </a>
+          {authed ? (
+            <a href="/dashboard" className="nav-cta">Dashboard</a>
+          ) : (
+            <>
+              <a href="/login">Sign in</a>
+              <a href={CHROME_STORE_URL} target="_blank" rel="noreferrer" className="nav-cta">
+                <IconChrome /> Add to Chrome
+              </a>
+            </>
+          )}
         </nav>
         <button
           type="button"
@@ -321,15 +398,24 @@ function Nav() {
           </nav>
           <div className="nav-drawer-foot">
             <ThemeToggle />
-            <a
-              href={CHROME_STORE_URL}
-              target="_blank"
-              rel="noreferrer"
-              className="nav-cta"
-              onClick={() => setDrawerOpen(false)}
-            >
-              <IconChrome /> Install
-            </a>
+            {authed ? (
+              <a href="/dashboard" className="nav-cta" onClick={() => setDrawerOpen(false)}>
+                Go to dashboard
+              </a>
+            ) : (
+              <>
+                <a href="/login" onClick={() => setDrawerOpen(false)}>Sign in</a>
+                <a
+                  href={CHROME_STORE_URL}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="nav-cta"
+                  onClick={() => setDrawerOpen(false)}
+                >
+                  <IconChrome /> Add to Chrome
+                </a>
+              </>
+            )}
           </div>
         </div>
       </div>
@@ -343,6 +429,7 @@ type MockupTab = 'fill' | 'cover' | 'questions' | 'history';
 
 function Hero() {
   const [tab, setTab] = useState<MockupTab>('fill');
+  const authed = useAuthed();
   return (
     <section className="hero">
       <div className="container hero-inner">
@@ -352,7 +439,24 @@ function Hero() {
             Apply once. Send everywhere.
           </span>
           <h1>
-            Stop retyping your CV into <span className="accent">every job form.</span>
+            Stop retyping your CV into{' '}
+            <span className="accent-wrap">
+              <span className="accent">every job form.</span>
+              <svg
+                className="accent-squiggle"
+                viewBox="0 0 300 9"
+                fill="none"
+                preserveAspectRatio="none"
+                aria-hidden="true"
+              >
+                <path
+                  d="M2 6C50 2.5 110 1.5 170 3.5C220 5 270 6.5 298 3.5"
+                  stroke="currentColor"
+                  strokeWidth="4"
+                  strokeLinecap="round"
+                />
+              </svg>
+            </span>
           </h1>
           <p className="hero-sub">
             Emplorio is a Chrome extension that auto-fills job applications, drafts tailored cover
@@ -360,14 +464,28 @@ function Hero() {
             took to apply to one.
           </p>
           <div className="hero-ctas">
-            <a href={CHROME_STORE_URL} target="_blank" rel="noreferrer" className="btn-primary">
-              <IconChrome />
-              Add to Chrome — it's free
-            </a>
-            <a href="#how" className="btn-secondary">
-              See how it works
-              <IconArrowRight />
-            </a>
+            {authed ? (
+              <>
+                <a href="/dashboard" className="btn-primary">
+                  Go to your dashboard
+                  <IconArrowRight />
+                </a>
+                <a href="/profile" className="btn-secondary">
+                  Edit your profile
+                </a>
+              </>
+            ) : (
+              <>
+                <a href={CHROME_STORE_URL} target="_blank" rel="noreferrer" className="btn-primary">
+                  <IconChrome />
+                  Add to Chrome — it's free
+                </a>
+                <a href="#how" className="btn-secondary">
+                  See how it works
+                  <IconArrowRight />
+                </a>
+              </>
+            )}
           </div>
           <div className="hero-meta" aria-label="Highlights">
             <span className="hero-meta-item">

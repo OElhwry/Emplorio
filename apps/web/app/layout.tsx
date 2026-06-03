@@ -6,7 +6,7 @@ import './globals.css';
 const GA_ID = 'G-BM2W75RK7D';
 
 const SITE_URL = 'https://emplorio.co.uk';
-const TITLE = 'Emplorio | Apply once. Send everywhere.';
+const TITLE = 'Emplorio · Apply Once. Send Everywhere.';
 const DESCRIPTION =
   'Free Chrome extension that auto-fills job applications on Greenhouse, Lever, Workday, Ashby, LinkedIn, and Indeed. Generate tailored cover letters with AI, draft answers to open-ended questions, and track every application in one place.';
 const SHORT_DESCRIPTION =
@@ -16,7 +16,7 @@ export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
     default: TITLE,
-    template: '%s | Emplorio',
+    template: 'Emplorio · %s',
   },
   description: DESCRIPTION,
   applicationName: 'Emplorio',

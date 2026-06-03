@@ -44,6 +44,12 @@
   flex-direction: column;
   gap: 0.4rem;
 }
+.progressTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
 .progressHead {
   font-size: 0.82rem;
   color: var(--text-muted);
@@ -82,6 +88,12 @@
   cursor: pointer;
   transition: all 140ms var(--ease);
 }
+.tab,
+.tabActive {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
 .tab:hover {
   color: var(--text);
   background: var(--accent-soft);
@@ -90,6 +102,37 @@
   color: var(--accent);
   background: var(--accent-soft);
   border-color: color-mix(in srgb, var(--accent) 30%, transparent);
+}
+.tabDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--warn);
+  flex-shrink: 0;
+}
+
+.missing {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin-top: 0.2rem;
+}
+.missingLink {
+  background: var(--warn-bg);
+  border: 1px solid color-mix(in srgb, var(--warn) 35%, transparent);
+  color: var(--warn);
+  border-radius: 999px;
+  padding: 0.15rem 0.55rem;
+  font-size: 0.78rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: filter 140ms var(--ease);
+}
+.missingLink:hover {
+  filter: brightness(1.05);
 }
 
 .welcome {

@@ -16,7 +16,7 @@ export default function ProfilePage() {
 
   if (status !== 'authed') {
     return (
-      <AppShell active="profile">
+      <AppShell active="profile" title="Profile">
         <p style={{ color: 'var(--text-muted)', padding: '2rem 0' }}>
           {status === 'loading' ? 'Loading…' : 'Redirecting to sign in…'}
         </p>
@@ -25,7 +25,13 @@ export default function ProfilePage() {
   }
 
   return (
-    <AppShell active="profile" email={email} onSignOut={signOut}>
+    <AppShell
+      active="profile"
+      title="Profile"
+      subtitle="Fill it once. Emplorio autofills every application for you."
+      email={email}
+      onSignOut={signOut}
+    >
       <ProfileEditor />
     </AppShell>
   );

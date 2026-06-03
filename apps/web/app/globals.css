@@ -103,6 +103,9 @@ body {
   font-size: 16px;
   line-height: 1.6;
   text-rendering: optimizeLegibility;
+  /* The drifting shapes can nudge past the right edge; clip horizontal overflow
+     without creating a scroll container (so sticky nav/sidebar still work). */
+  overflow-x: clip;
 }
 section[id] { scroll-margin-top: 96px; }
 
@@ -410,24 +413,27 @@ button {
 /* ---------- Nav (glassy, floating) ---------- */
 .nav {
   position: sticky;
-  top: 12px;
+  top: 0;
   z-index: 50;
-  margin: 12px auto 0;
-  max-width: calc(var(--max) - 16px);
-  padding: 0 24px;
+  width: 100%;
+  border-bottom: 1px solid transparent;
+  transition: background 220ms var(--ease), border-color 220ms var(--ease),
+    backdrop-filter 220ms var(--ease);
+}
+.nav.scrolled {
+  background: var(--nav-bg);
+  backdrop-filter: saturate(180%) blur(20px);
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
+  border-bottom-color: var(--nav-border);
 }
 .nav-inner {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  height: 60px;
-  padding: 0 16px 0 20px;
-  background: var(--nav-bg);
-  backdrop-filter: saturate(180%) blur(20px);
-  -webkit-backdrop-filter: saturate(180%) blur(20px);
-  border: 1px solid var(--nav-border);
-  border-radius: 999px;
-  box-shadow: 0 4px 24px rgba(15, 23, 42, 0.04);
+  height: 64px;
+  max-width: var(--max);
+  margin: 0 auto;
+  padding: 0 24px;
 }
 .brand {
   display: inline-flex;
@@ -957,6 +963,99 @@ button {
 }
 @media (prefers-reduced-motion: reduce) {
   .hero h1 .accent { animation: none; }
+}
+.testimonials {
+  max-width: var(--max);
+  margin: 0 auto;
+  padding: 64px 24px;
+  text-align: center;
+}
+.testimonials-title {
+  font-size: clamp(28px, 4vw, 42px);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  margin: 10px auto 36px;
+  max-width: 18ch;
+}
+.testimonial-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+.testimonial-card {
+  margin: 0;
+  text-align: left;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 22px;
+  box-shadow: var(--shadow-md);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  backdrop-filter: blur(8px);
+}
+.testimonial-stars {
+  color: #f5a623;
+  letter-spacing: 2px;
+  font-size: 15px;
+}
+.testimonial-quote {
+  margin: 0;
+  font-size: 16px;
+  line-height: 1.55;
+  color: var(--text);
+  flex: 1;
+}
+.testimonial-by {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.testimonial-avatar {
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 17px;
+}
+.testimonial-meta {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.3;
+}
+.testimonial-role {
+  font-size: 13px;
+  color: var(--text-muted);
+}
+@media (max-width: 860px) {
+  .testimonial-grid {
+    grid-template-columns: 1fr;
+    max-width: 420px;
+    margin: 0 auto;
+  }
+}
+
+.accent-wrap {
+  position: relative;
+  display: inline-block;
+}
+.accent-squiggle {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -0.16em;
+  width: 100%;
+  height: 0.28em;
+  color: var(--accent-2);
+  opacity: 0.85;
+  z-index: -1;
 }
 .hero-sub {
   font-size: 19px;

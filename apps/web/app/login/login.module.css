@@ -1,121 +1,469 @@
-.wrap {
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 1.5rem;
+.page {
+  position: relative;
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   color: var(--text);
-  background-color: var(--bg);
-  background-image:
-    radial-gradient(50% 45% at 20% 12%, var(--accent-glow), transparent 60%),
-    radial-gradient(45% 45% at 82% 84%, rgba(129, 140, 248, 0.14), transparent 65%);
-  background-repeat: no-repeat;
+  background: var(--bg);
 }
-.markImg {
-  width: 24px;
-  height: 24px;
-  object-fit: contain;
-  display: block;
+.page > * {
+  min-height: 0;
 }
-.markDark {
-  display: none;
+
+/* Bottom layer: indigo gradient on the left, purple-tinted app background on the
+   right (violet glows over the theme background, so the form stays readable). */
+.bgLayer {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background:
+    radial-gradient(42% 50% at 84% 12%, rgba(129, 140, 248, 0.22), transparent 70%),
+    radial-gradient(46% 48% at 66% 94%, rgba(168, 85, 247, 0.18), transparent 72%),
+    radial-gradient(40% 40% at 95% 55%, rgba(99, 102, 241, 0.16), transparent 70%),
+    var(--bg);
 }
-:global([data-theme='dark']) .markLight {
-  display: none;
+.bgLeft {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 50%;
+  background: linear-gradient(160deg, #3b2fae 0%, #4f46e5 55%, #5b54e8 100%);
 }
-:global([data-theme='dark']) .markDark {
-  display: block;
+
+/* One shapes layer above the backgrounds, spanning the whole page so a shape
+   drifting toward the middle crosses the seam and appears on the other side. */
+.panelShapes {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  overflow: hidden;
+  pointer-events: none;
 }
-.card {
-  width: 100%;
-  max-width: 400px;
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-lg);
-  padding: 2rem;
+/* White-tinted variant so the shapes read on the indigo left panel */
+.onDark :global(.shape) {
+  border-color: rgba(255, 255, 255, 0.5);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.24), rgba(255, 255, 255, 0.06));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.55), 0 30px 60px -30px rgba(0, 0, 0, 0.35);
+}
+.onDark :global(.orb) {
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.3), transparent 70%);
+  opacity: 0.5;
+}
+.onDark :global(.dot) {
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0));
+}
+.blob1,
+.blob2,
+.blob3 {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(70px);
+  animation: float 18s ease-in-out infinite;
+}
+.blob1 {
+  width: 420px;
+  height: 420px;
+  top: -120px;
+  left: -60px;
+  background: rgba(255, 255, 255, 0.28);
+  opacity: 0.5;
+}
+.blob2 {
+  width: 360px;
+  height: 360px;
+  bottom: -100px;
+  left: 14%;
+  background: rgba(167, 139, 250, 0.55);
+  opacity: 0.55;
+  animation-delay: -7s;
+}
+.blob3 {
+  width: 300px;
+  height: 300px;
+  top: 30%;
+  left: 34%;
+  background: rgba(99, 102, 241, 0.5);
+  opacity: 0.45;
+  animation-delay: -12s;
+}
+@keyframes float {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(26px, -32px) scale(1.08); }
+  66% { transform: translate(-22px, 22px) scale(0.95); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .blob1, .blob2, .blob3 { animation: none; }
+}
+
+/* ===================== Left brand panel ===================== */
+.brand {
+  position: relative;
+  z-index: 2;
+  overflow: visible;
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem;
+  color: #fff;
+  background: transparent;
 }
-.brand {
+.brandInner {
+  width: 100%;
+  max-width: 30rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+.logo {
+  position: relative;
+  z-index: 1;
   display: inline-flex;
   align-items: center;
   gap: 0.55rem;
-  font-weight: 700;
-  font-size: 1rem;
-  color: var(--text);
-  margin-bottom: 0.5rem;
+  font-size: 1.2rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: #fff;
+  text-decoration: none;
 }
-.mark {
-  width: 22px;
-  height: 22px;
-  border-radius: 7px;
-  background: linear-gradient(135deg, var(--accent), var(--accent-2));
-  box-shadow: 0 0 0 4px var(--accent-soft);
+.logoMark {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+  filter: brightness(0) invert(1);
+}
+.brandBody {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+}
+.brandHeadline {
+  margin: 0;
+  font-size: clamp(2rem, 3vw, 2.85rem);
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+}
+.brandSub {
+  margin: 0.85rem 0 0;
+  font-size: 1rem;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.85);
+  max-width: 24rem;
+}
+
+/* ---------- Live product mockup ---------- */
+.stage {
+  position: relative;
+  margin-top: 1.75rem;
+  max-width: 330px;
+}
+.mock {
+  position: relative;
+  z-index: 1;
+  border-radius: 16px;
+  padding: 14px;
+  background: rgba(255, 255, 255, 0.14);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 24px 60px -22px rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(10px);
+  animation: bob 7s ease-in-out infinite;
+}
+@keyframes bob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-7px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .mock { animation: none; }
+}
+.mockTop {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+.mockDots {
+  display: inline-flex;
+  gap: 5px;
+}
+.mockDots i {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.4);
+}
+.mockTitle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #fff;
+}
+.mockLogo {
+  width: 16px;
+  height: 16px;
+  object-fit: contain;
+  filter: brightness(0) invert(1);
+}
+.mockRows {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+.mockRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 9px 11px;
+  border-radius: 9px;
+  background: rgba(255, 255, 255, 0.07);
+  font-size: 12.5px;
+  color: rgba(255, 255, 255, 0.92);
+  transition: background 0.35s var(--ease);
+}
+.isFilled .mockRow {
+  background: rgba(255, 255, 255, 0.18);
+}
+.tick {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #34d399;
+  color: #06281d;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 900;
+  opacity: 0;
+  transform: scale(0.4);
+  transition: opacity 0.3s var(--ease), transform 0.3s var(--ease);
+}
+.isFilled .tick {
+  opacity: 1;
+  transform: scale(1);
+}
+.mockBtn {
+  width: 100%;
+  margin-top: 12px;
+  padding: 10px;
+  border: none;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.95);
+  color: var(--accent);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: filter 140ms var(--ease);
+}
+.mockBtn:hover {
+  filter: brightness(0.96);
+}
+
+/* ---------- Floating result toasts ---------- */
+.toast {
+  position: absolute;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: rgba(13, 12, 34, 0.66);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  color: #fff;
+  font-size: 12.5px;
+  font-weight: 600;
+  white-space: nowrap;
+  backdrop-filter: blur(8px);
+  box-shadow: 0 12px 30px -14px rgba(0, 0, 0, 0.6);
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 0.4s var(--ease), transform 0.4s var(--ease);
+}
+.toast b {
+  color: #fde047;
+}
+.toastA {
+  top: 4%;
+  right: -52px;
+}
+.toastB {
+  bottom: 18%;
+  right: -66px;
+}
+.isFilled .toastA {
+  opacity: 1;
+  transform: none;
+  transition-delay: 0.75s;
+}
+.isFilled .toastB {
+  opacity: 1;
+  transform: none;
+  transition-delay: 1.05s;
+}
+
+/* ---------- ATS marquee (pinned to the bottom, always visible) ---------- */
+.marqueeWrap {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  overflow: hidden;
+  mask-image: linear-gradient(90deg, #000 82%, transparent);
+}
+.marquee {
+  display: flex;
+  gap: 0.6rem;
+  width: max-content;
+  animation: marquee 32s linear infinite;
+}
+.marqueeItem {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.92);
+  padding: 0.38rem 0.8rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+}
+@keyframes marquee {
+  to { transform: translateX(-50%); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .marquee { animation: none; }
+}
+
+/* ===================== Right form panel ===================== */
+.formSide {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 3rem;
+  overflow: hidden;
+  overflow-y: auto;
+}
+.shapesRight {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+.rblob1,
+.rblob2 {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(75px);
+  animation: float 20s ease-in-out infinite;
+}
+.rblob1 {
+  width: 360px;
+  height: 360px;
+  top: -90px;
+  right: -70px;
+  background: rgba(129, 140, 248, 0.22);
+}
+.rblob2 {
+  width: 300px;
+  height: 300px;
+  bottom: -70px;
+  right: 18%;
+  background: rgba(99, 102, 241, 0.18);
+  animation-delay: -9s;
+}
+@media (prefers-reduced-motion: reduce) {
+  .rblob1, .rblob2 { animation: none; }
+}
+.mobileLogo {
+  position: relative;
+  z-index: 1;
+  display: none;
+}
+.formInner {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 26rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
 }
 .title {
   margin: 0;
-  font-size: 1.5rem;
-  font-weight: 700;
+  font-size: 1.7rem;
+  font-weight: 800;
   letter-spacing: -0.02em;
+  line-height: 1.15;
+  color: var(--text);
 }
 .sub {
   margin: 0;
   color: var(--text-muted);
-  font-size: 0.92rem;
+  font-size: 0.98rem;
   line-height: 1.5;
 }
 .form {
   display: flex;
   flex-direction: column;
-  gap: 0.85rem;
-  margin-top: 0.5rem;
+  gap: 0.9rem;
+  margin-top: 0.9rem;
 }
 .field {
   display: flex;
   flex-direction: column;
-  gap: 0.35rem;
+  gap: 0.4rem;
 }
 .label {
-  font-size: 0.82rem;
+  font-size: 0.84rem;
   font-weight: 500;
   color: var(--text-muted);
 }
 .input {
   width: 100%;
-  padding: 0.65rem 0.8rem;
+  padding: 0.8rem 0.9rem;
   border: 1px solid var(--border-strong);
-  border-radius: var(--radius-sm);
-  background: var(--bg);
+  border-radius: var(--radius);
+  background: var(--bg-card);
   color: var(--text);
-  font-size: 0.95rem;
+  font-size: 1rem;
   transition: border-color 140ms var(--ease), box-shadow 140ms var(--ease);
 }
 .input:focus {
   outline: none;
   border-color: var(--accent);
-  box-shadow: 0 0 0 3px var(--accent-glow);
+  box-shadow: 0 0 0 4px var(--accent-glow);
 }
 .codeInput {
-  letter-spacing: 0.4em;
+  letter-spacing: 0.5em;
   text-align: center;
-  font-size: 1.3rem;
+  font-size: 1.5rem;
   font-variant-numeric: tabular-nums;
 }
 .button {
-  padding: 0.7rem 1rem;
+  padding: 0.85rem 1rem;
   border: none;
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius);
   background: linear-gradient(135deg, var(--accent), var(--accent-2));
   color: #fff;
-  font-size: 0.95rem;
+  font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
+  box-shadow: 0 8px 24px -10px var(--accent-glow);
   transition: filter 140ms var(--ease), transform 80ms var(--ease);
 }
 .button:hover:not(:disabled) {
-  filter: brightness(1.06);
+  filter: brightness(1.07);
 }
 .button:active:not(:disabled) {
   transform: translateY(1px);
@@ -124,23 +472,78 @@
   opacity: 0.6;
   cursor: default;
 }
+.fine {
+  margin: 0;
+  text-align: center;
+  font-size: 0.82rem;
+  color: var(--text-subtle);
+}
 .linkBtn {
   background: none;
   border: none;
   color: var(--text-muted);
-  font-size: 0.85rem;
+  font-size: 0.88rem;
   cursor: pointer;
   padding: 0.2rem;
+  align-self: center;
 }
 .linkBtn:hover {
-  color: var(--text);
+  color: var(--accent);
 }
 .error {
   margin: 0;
-  font-size: 0.85rem;
+  font-size: 0.88rem;
   color: var(--danger);
   background: var(--danger-bg);
   border: 1px solid var(--danger-border);
   border-radius: var(--radius-sm);
-  padding: 0.5rem 0.7rem;
+  padding: 0.6rem 0.8rem;
+}
+.legal {
+  margin: 1.75rem 0 0;
+  font-size: 0.78rem;
+  color: var(--text-subtle);
+  line-height: 1.5;
+  text-align: center;
+}
+.legal a {
+  color: var(--text-muted);
+}
+
+.markLight { display: block; }
+.markDark { display: none; }
+:global([data-theme='dark']) .markLight { display: none; }
+:global([data-theme='dark']) .markDark { display: block; }
+
+/* ===================== Responsive ===================== */
+@media (max-width: 880px) {
+  .page {
+    grid-template-columns: 1fr;
+  }
+  .brand,
+  .bgLeft {
+    display: none;
+  }
+  .formSide {
+    justify-content: flex-start;
+    padding: 1.5rem;
+  }
+  .mobileLogo {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 800;
+    font-size: 1.15rem;
+    color: var(--text);
+    text-decoration: none;
+    margin: 0.5rem 0 2.5rem;
+  }
+  .mobileMark {
+    width: 26px;
+    height: 26px;
+    object-fit: contain;
+  }
+  .formInner {
+    margin-top: 1rem;
+  }
 }
