@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import type { ReactNode } from 'react';
 import Script from 'next/script';
 import './globals.css';
+import { OfflineBanner } from './_components/OfflineBanner';
 
 const GA_ID = 'G-BM2W75RK7D';
 
@@ -137,10 +138,12 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         <script dangerouslySetInnerHTML={{ __html: themeBootScript }} />
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+          // Escape "<" so a value can never close the <script> tag early.
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData).replace(/</g, '\\u003c') }}
         />
       </head>
       <body>
+        <OfflineBanner />
         {children}
         <Script src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`} strategy="afterInteractive" />
         <Script id="gtag-init" strategy="afterInteractive">

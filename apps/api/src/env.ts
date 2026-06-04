@@ -41,3 +41,20 @@ const envSchema = z.object({
 
 export const env = envSchema.parse(process.env);
 export type Env = typeof env;
+
+// In production, refuse to start with an insecure auth secret. The dev default is
+// public (it's in the repo), so booting with it would let anyone forge sessions.
+if (env.NODE_ENV === 'production') {
+  const weakSecret =
+    !env.JWT_SECRET || env.JWT_SECRET.length < 32 || env.JWT_SECRET.startsWith('dev-dev-dev');
+  if (weakSecret) {
+    throw new Error(
+      'JWT_SECRET must be set to a strong 32+ character value in production. ' +
+        'Refusing to start with the insecure default. Set it via `fly secrets set JWT_SECRET=...`.',
+    );
+  }
+  if (env.COOKIE_DOMAIN === 'localhost') {
+    // eslint-disable-next-line no-console
+    console.warn('[env] COOKIE_DOMAIN is still "localhost" in production; session cookies may not be set.');
+  }
+}

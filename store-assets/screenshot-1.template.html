@@ -1,0 +1,274 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Emplorio — Store Screenshot 1 · 1280×800</title>
+<style>
+  html, body { margin: 0; padding: 0; }
+  * { box-sizing: border-box; }
+  :root { --logo: url('__LOGO__'); }
+  body {
+    width: 1280px; height: 800px; overflow: hidden;
+    font-family: 'Inter', -apple-system, 'Segoe UI', Roboto, sans-serif;
+    -webkit-font-smoothing: antialiased; text-rendering: geometricPrecision;
+  }
+
+  .stage {
+    position: relative; width: 1280px; height: 800px; overflow: hidden;
+    background:
+      radial-gradient(900px 600px at 88% 0%, rgba(199, 210, 254, 0.55), transparent 60%),
+      radial-gradient(800px 600px at 0% 100%, rgba(221, 214, 254, 0.45), transparent 60%),
+      linear-gradient(180deg, #ffffff 0%, #f4f5ff 100%);
+  }
+
+  /* ---- layout ---- */
+  .wrap {
+    position: relative; z-index: 2; height: 100%;
+    display: grid;
+    grid-template-columns: 1.02fr 0.98fr;
+    align-items: center;
+    padding: 64px 72px 0;
+    column-gap: 40px;
+  }
+
+  /* ---- left copy ---- */
+  .brandline { display: flex; align-items: center; gap: 11px; margin-bottom: 30px; }
+  .brandmark {
+    width: 42px; height: 42px;
+    background: #1e1b4b;
+    -webkit-mask: var(--logo) center / contain no-repeat;
+    mask: var(--logo) center / contain no-repeat;
+  }
+  .brandname { font-size: 24px; font-weight: 800; color: #1e1b4b; letter-spacing: -0.02em; }
+
+  h1 {
+    margin: 0; color: #15132e;
+    font-size: 62px; line-height: 1.04; letter-spacing: -0.035em; font-weight: 800;
+  }
+  h1 .u {
+    position: relative; color: #4f46e5; white-space: nowrap;
+  }
+  h1 .u::after {
+    content: ''; position: absolute; left: 0; right: 0; bottom: 4px; height: 5px;
+    border-radius: 4px;
+    background: linear-gradient(90deg, #4f46e5, #7c3aed);
+  }
+  h1 .muted { color: #15132e; }
+
+  p.sub {
+    margin: 34px 0 0; max-width: 510px;
+    color: #4b4870; font-size: 25px; line-height: 1.5; font-weight: 500;
+  }
+  p.sub b { color: #2a2658; font-weight: 800; }
+
+  /* ---- right: browser + extension panel ---- */
+  .scene { position: relative; height: 560px; }
+
+  .browser {
+    position: absolute; top: 6px; left: 22px; right: -64px;
+    height: 470px; border-radius: 20px 20px 0 0;
+    background: #ffffff;
+    border: 1px solid #e7e7f3;
+    box-shadow: 0 50px 90px -40px rgba(40, 33, 120, 0.45);
+    overflow: hidden;
+  }
+  .chrome-bar {
+    height: 56px; display: flex; align-items: center; gap: 14px;
+    padding: 0 18px; background: #f3f3fb; border-bottom: 1px solid #ececf6;
+  }
+  .traffic { display: flex; gap: 8px; }
+  .traffic i { width: 12px; height: 12px; border-radius: 50%; display: block; }
+  .traffic .r { background: #ff5f57; } .traffic .y { background: #febc2e; } .traffic .g { background: #28c840; }
+  .omni {
+    flex: 1; height: 30px; border-radius: 999px; background: #ffffff;
+    border: 1px solid #e6e6f2; display: flex; align-items: center; padding: 0 14px;
+    color: #9aa0bd; font-size: 13px; gap: 8px;
+  }
+  .ext-icon {
+    position: relative;
+    width: 38px; height: 38px; border-radius: 10px;
+    background: #ffffff; border: 1px solid #e6e6f2;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 0 0 5px rgba(124, 58, 237, 0.12);
+  }
+  .ext-icon .mk {
+    width: 24px; height: 24px; background: #1e1b4b;
+    -webkit-mask: var(--logo) center / contain no-repeat;
+    mask: var(--logo) center / contain no-repeat;
+  }
+  .kebab { display: flex; flex-direction: column; gap: 3px; padding: 0 4px; }
+  .kebab i { width: 4px; height: 4px; border-radius: 50%; background: #b9bdd4; display: block; }
+
+  .page { padding: 26px 26px; background: linear-gradient(180deg,#fbfbff,#f6f6fd); height: 100%; }
+  .page-h { width: 240px; height: 16px; border-radius: 6px; background: #e8e8f4; margin-bottom: 16px; }
+  .page-line { height: 12px; border-radius: 6px; background: #eeeef8; margin-bottom: 12px; }
+  .page-line.w1 { width: 86%; } .page-line.w2 { width: 70%; } .page-line.w3 { width: 78%; }
+  .page-field { height: 44px; border-radius: 10px; background: #ffffff; border: 1px solid #ececf6; margin-bottom: 14px; }
+
+  /* extension panel floating on top right */
+  .panel {
+    position: absolute; top: 92px; right: 0; width: 366px;
+    background: #ffffff; border-radius: 18px;
+    border: 1px solid #ececf6;
+    box-shadow: 0 40px 80px -28px rgba(40, 33, 120, 0.5), 0 0 0 1px rgba(124,58,237,0.04);
+    padding: 20px 20px 22px; z-index: 3;
+  }
+  .panel-head { display: flex; align-items: center; gap: 9px; margin-bottom: 18px; }
+  .panel-mark {
+    width: 26px; height: 26px;
+    background: #1e1b4b;
+    -webkit-mask: var(--logo) center / contain no-repeat;
+    mask: var(--logo) center / contain no-repeat;
+  }
+  .panel-title { font-size: 18px; font-weight: 800; color: #1e1b4b; letter-spacing: -0.01em; }
+
+  .item {
+    display: flex; align-items: center; gap: 14px;
+    padding: 14px 14px; border-radius: 13px;
+    border: 1px solid #eeeef7; margin-bottom: 11px; background: #fcfcff;
+  }
+  .item .ico {
+    width: 38px; height: 38px; border-radius: 10px; flex: none;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .ico svg { width: 20px; height: 20px; }
+  .ico.a { background: #eef0ff; color: #4f46e5; }
+  .ico.b { background: #f3ecff; color: #7c3aed; }
+  .ico.c { background: #e9f7f0; color: #15a673; }
+  .ico.d { background: #fff1e8; color: #ea8a3c; }
+  .item .lbl { font-size: 16px; font-weight: 700; color: #2c2950; }
+
+  .panel-foot { display: flex; align-items: center; gap: 12px; margin-top: 16px; }
+  .skel { flex: 1; height: 38px; border-radius: 10px; background: #f1f1fa; }
+  .fill-btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 12px 20px; border-radius: 11px; font-weight: 800; font-size: 15px;
+    color: #fff; background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+    box-shadow: 0 14px 26px -10px rgba(79,70,229,0.6), inset 0 1px 0 rgba(255,255,255,0.25);
+  }
+  .fill-btn svg { width: 16px; height: 16px; }
+
+  /* cursor near ext icon */
+  .cursor {
+    position: absolute; top: 60px; right: 86px; z-index: 5;
+    filter: drop-shadow(0 4px 6px rgba(0,0,0,0.25));
+  }
+  .cursor svg { width: 30px; height: 30px; }
+
+  /* ---- bottom trust bar ---- */
+  .trust {
+    position: absolute; left: 72px; right: 72px; bottom: 40px; z-index: 2;
+    display: flex; align-items: center; gap: 28px;
+    border-top: 1px solid #e9e9f4; padding-top: 26px;
+  }
+  .trust-lead { font-size: 19px; font-weight: 800; color: #1e1b4b; letter-spacing: -0.01em; white-space: nowrap; }
+  .trust-lead span { color: #6b6a8c; font-weight: 600; }
+  .ats { display: flex; align-items: center; gap: 26px; margin-left: auto; }
+  .ats .a {
+    display: inline-flex; align-items: center; gap: 9px;
+    font-size: 17px; font-weight: 800; color: #3a3760; letter-spacing: -0.01em;
+  }
+  .ats .a .sw { width: 24px; height: 24px; border-radius: 7px; display: inline-block; }
+  .trophy { font-size: 22px; }
+</style>
+</head>
+<body>
+  <div class="stage">
+    <div class="wrap">
+      <!-- LEFT -->
+      <div>
+        <div class="brandline">
+          <span class="brandmark"></span>
+          <span class="brandname">Emplorio</span>
+        </div>
+        <h1>
+          The <span class="u">Autofill Tool</span><br/>
+          for <span class="muted">Your Job</span><br/>
+          <span class="muted">Applications</span>
+        </h1>
+        <p class="sub">
+          Fill <b>any</b> application form in seconds, then draft tailored
+          cover letters and answers — across the <b>9 ATS systems</b> behind most job listings.
+        </p>
+      </div>
+
+      <!-- RIGHT -->
+      <div class="scene">
+        <div class="browser">
+          <div class="chrome-bar">
+            <span class="traffic"><i class="r"></i><i class="y"></i><i class="g"></i></span>
+            <span class="omni">boards.greenhouse.io/acme/jobs/apply</span>
+            <span class="ext-icon"><span class="mk"></span></span>
+            <span class="kebab"><i></i><i></i><i></i></span>
+          </div>
+          <div class="page">
+            <div class="page-h"></div>
+            <div class="page-line w1"></div>
+            <div class="page-line w2"></div>
+            <div class="page-field"></div>
+            <div class="page-field"></div>
+            <div class="page-line w3"></div>
+          </div>
+        </div>
+
+        <div class="cursor">
+          <svg viewBox="0 0 24 24" fill="#1e1b4b" stroke="#fff" stroke-width="1.5"><path d="M5 3l15 9-6.5 1.5L10 20 5 3z"/></svg>
+        </div>
+
+        <div class="panel">
+          <div class="panel-head">
+            <span class="panel-mark"></span>
+            <span class="panel-title">Emplorio</span>
+          </div>
+
+          <div class="item">
+            <span class="ico a">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"/><line x1="7" y1="9" x2="15" y2="9"/><line x1="7" y1="13" x2="12" y2="13"/></svg>
+            </span>
+            <span class="lbl">Autofill Applications</span>
+          </div>
+          <div class="item">
+            <span class="ico b">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 4.6L18.5 9.5l-4.6 1.9L12 16l-1.9-4.6L5.5 9.5l4.6-1.9z"/></svg>
+            </span>
+            <span class="lbl">AI Cover Letters</span>
+          </div>
+          <div class="item">
+            <span class="ico c">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.4 8.4 0 0 1-8.5 8.5 8.4 8.4 0 0 1-3.8-.9L3 21l1.9-5.7A8.4 8.4 0 0 1 12.5 3 8.4 8.4 0 0 1 21 11.5z"/></svg>
+            </span>
+            <span class="lbl">Question Answers</span>
+          </div>
+          <div class="item">
+            <span class="ico d">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="20" x2="20" y2="20"/><rect x="6" y="11" width="3" height="7" rx="1"/><rect x="11" y="6" width="3" height="12" rx="1"/><rect x="16" y="14" width="3" height="4" rx="1"/></svg>
+            </span>
+            <span class="lbl">Application Tracker</span>
+          </div>
+
+          <div class="panel-foot">
+            <span class="skel"></span>
+            <span class="fill-btn">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M13 2 3 14h7l-1 8 10-12h-7z"/></svg>
+              Autofill
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- BOTTOM TRUST BAR -->
+    <div class="trust">
+      <span class="trophy">🏆</span>
+      <span class="trust-lead">Built for serious job seekers <span>· privacy-first, bring your own key</span></span>
+      <span class="ats">
+        <span class="a"><span class="sw" style="background:#24a47f"></span>Greenhouse</span>
+        <span class="a"><span class="sw" style="background:#00b0b9"></span>Lever</span>
+        <span class="a"><span class="sw" style="background:#005cb9"></span>Workday</span>
+        <span class="a"><span class="sw" style="background:#6c4de6"></span>Ashby</span>
+        <span class="a"><span class="sw" style="background:#0a66c2"></span>LinkedIn</span>
+      </span>
+    </div>
+  </div>
+</body>
+</html>

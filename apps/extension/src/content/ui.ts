@@ -26,6 +26,9 @@ type ActionBusy = 'cover' | 'questions' | null;
 /** Where "Finish profile" sends people to complete their details. */
 const PROFILE_URL = 'https://emplorio.co.uk/profile';
 
+/** The real Emplorio (hummingbird) icon, served from the extension. */
+const ICON_URL = chrome.runtime.getURL('icon128.png');
+
 const PANEL_CSS = `
 :host { all: initial; }
 * { box-sizing: border-box; }
@@ -77,10 +80,8 @@ const PANEL_CSS = `
 }
 .brand { display: inline-flex; align-items: center; gap: 7px; font-size: 13px; font-weight: 600; color: var(--text); }
 .mark {
-  width: 16px; height: 16px; border-radius: 5px;
-  background: linear-gradient(135deg, var(--accent), var(--accent-2));
-  box-shadow: 0 0 0 3px var(--accent-soft);
-  flex-shrink: 0;
+  width: 18px; height: 18px; border-radius: 4px;
+  object-fit: contain; flex-shrink: 0; display: block;
 }
 .head-actions { margin-left: auto; display: inline-flex; gap: 2px; }
 .icon {
@@ -270,7 +271,7 @@ function render(): void {
   if (collapsed) {
     mountEl.innerHTML = `
       <button class="pill" id="emp-expand" title="Open Emplorio">
-        <span class="mark"></span>
+        <img class="mark" src="${ICON_URL}" alt="" />
         <span>Emplorio</span>
         <span class="count">${s.fillable}</span>
       </button>`;
@@ -343,7 +344,7 @@ function render(): void {
   mountEl.innerHTML = `
     <div class="card">
       <div class="head">
-        <span class="brand"><span class="mark"></span>Emplorio</span>
+        <span class="brand"><img class="mark" src="${ICON_URL}" alt="" />Emplorio</span>
         <div class="head-actions">
           <button class="icon" id="emp-collapse" title="Minimise" aria-label="Minimise">&#8211;</button>
         </div>

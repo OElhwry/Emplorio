@@ -936,8 +936,22 @@ function FAQ() {
       a: "No. We use Anthropic's API directly with your key, and Anthropic does not train on API data by default. Your CV and applications stay yours.",
     },
   ];
+  const faqLd = {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: items.map((it) => ({
+      '@type': 'Question',
+      name: it.q,
+      acceptedAnswer: { '@type': 'Answer', text: it.a },
+    })),
+  };
   return (
     <section className="section section-tinted reveal" id="faq">
+      {/* FAQ rich-result structured data, kept in sync with the visible items above. */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqLd).replace(/</g, '\\u003c') }}
+      />
       <div className="container">
         <div className="section-eyebrow">FAQ</div>
         <h2 className="section-title">Questions, answered</h2>

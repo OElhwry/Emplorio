@@ -12,9 +12,28 @@ export async function loadProfile(): Promise<Partial<Profile> | null> {
   return (got[PROFILE_KEY] as Partial<Profile> | undefined) ?? null;
 }
 
+/** Fields whose value differs from the previous profile (deep-compared). */
+function changedFields(
+  prev: Partial<Profile> | null,
+  next: Partial<Profile>,
+): Partial<Profile> {
+  const out: Record<string, unknown> = {};
+  for (const [k, v] of Object.entries(next)) {
+    const before = prev ? (prev as Record<string, unknown>)[k] : undefined;
+    if (JSON.stringify(before) !== JSON.stringify(v)) out[k] = v;
+  }
+  return out as Partial<Profile>;
+}
+
 export async function saveProfile(profile: Partial<Profile>): Promise<void> {
+  const prev = await loadProfile();
   await chrome.storage.local.set({ [PROFILE_KEY]: profile });
-  emitProfileSaved(profile);
+  // Only sync the fields that actually changed, so a stale local copy can never
+  // overwrite a field someone just edited on the web (the server merges these in).
+  const partial = changedFields(prev, profile);
+  if (Object.keys(partial).length > 0) {
+    emitProfileSaved(partial);
+  }
 }
 
 export interface SavedCoverLetter {

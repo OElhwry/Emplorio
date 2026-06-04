@@ -1,0 +1,92 @@
+.cards {
+  display: grid;
+  gap: 18px;
+  max-width: 640px;
+}
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 22px 24px;
+  box-shadow: var(--shadow-sm);
+}
+.cardTitle {
+  margin: 0 0 8px;
+  font-family: var(--font-display, inherit);
+  font-size: 1.1rem;
+}
+.row {
+  margin: 0 0 14px;
+  font-size: 0.95rem;
+  color: var(--text);
+}
+.muted {
+  margin: 0 0 14px;
+  font-size: 0.92rem;
+  line-height: 1.55;
+  color: var(--text-muted);
+}
+.secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5em;
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text);
+  background: var(--bg-soft);
+  border: 1px solid var(--border-strong, var(--border));
+  border-radius: var(--radius-sm);
+  padding: 9px 16px;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+.secondary:hover {
+  background: var(--bg-card);
+  border-color: var(--accent);
+}
+.danger {
+  border-color: var(--danger-border);
+}
+.dangerBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5em;
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #fff;
+  background: var(--danger);
+  border: 1px solid var(--danger);
+  border-radius: var(--radius-sm);
+  padding: 9px 16px;
+  cursor: pointer;
+  transition: filter 0.15s ease;
+}
+.dangerBtn:hover:not(:disabled) {
+  filter: brightness(1.08);
+}
+.dangerBtn:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+.confirmRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.confirmText {
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: var(--danger);
+}
+.confirmActions {
+  display: flex;
+  gap: 10px;
+}
+.msg {
+  margin-top: 14px;
+}

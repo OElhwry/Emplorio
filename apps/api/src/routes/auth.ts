@@ -1,10 +1,16 @@
 import type { FastifyInstance } from 'fastify';
+import { eq } from 'drizzle-orm';
+import { db, users, profiles, applications, magicLinks } from '@emplorio/db';
 import { requestCodeSchema, verifyCodeSchema } from '@emplorio/shared';
 import { env } from '../env.js';
 import { getUserById, requestLoginCode, verifyLoginCode } from '../services/auth.js';
 
 export async function authRoutes(app: FastifyInstance) {
-  app.post('/request-code', { schema: { body: requestCodeSchema } }, async (req, reply) => {
+  app.post('/request-code', {
+    schema: { body: requestCodeSchema },
+    // Stop the endpoint being used to spray verification emails.
+    config: { rateLimit: { max: 5, timeWindow: '5 minutes' } },
+  }, async (req, reply) => {
     const { email } = req.body as { email: string };
     try {
       const result = await requestLoginCode(email);
@@ -22,7 +28,11 @@ export async function authRoutes(app: FastifyInstance) {
     }
   });
 
-  app.post('/verify', { schema: { body: verifyCodeSchema } }, async (req, reply) => {
+  app.post('/verify', {
+    schema: { body: verifyCodeSchema },
+    // Limit brute-forcing of the 6-digit code from a single IP.
+    config: { rateLimit: { max: 10, timeWindow: '5 minutes' } },
+  }, async (req, reply) => {
     const { email, code, remember } = req.body as {
       email: string;
       code: string;
@@ -60,5 +70,39 @@ export async function authRoutes(app: FastifyInstance) {
     const user = await getUserById(req.userId);
     if (!user) return reply.code(401).send({ error: 'unauthorized' });
     return { userId: user.id, email: user.email };
+  });
+
+  // Download everything we hold for this account (GDPR-style export).
+  app.get('/export', { preHandler: app.requireAuth }, async (req, reply) => {
+    if (!req.userId) return reply.code(401).send({ error: 'unauthorized' });
+    const [user] = await db.select().from(users).where(eq(users.id, req.userId)).limit(1);
+    const [profileRow] = await db
+      .select({ data: profiles.data })
+      .from(profiles)
+      .where(eq(profiles.userId, req.userId))
+      .limit(1);
+    const apps = await db.select().from(applications).where(eq(applications.userId, req.userId));
+    reply.header('Content-Disposition', 'attachment; filename="emplorio-data.json"');
+    return {
+      exportedAt: new Date().toISOString(),
+      account: user ? { id: user.id, email: user.email, createdAt: user.createdAt } : null,
+      profile: profileRow?.data ?? null,
+      applications: apps,
+    };
+  });
+
+  // Permanently delete the account and all associated data.
+  app.delete('/account', { preHandler: app.requireAuth }, async (req, reply) => {
+    if (!req.userId) return reply.code(401).send({ error: 'unauthorized' });
+    const [user] = await db
+      .select({ email: users.email })
+      .from(users)
+      .where(eq(users.id, req.userId))
+      .limit(1);
+    // magic_links are keyed by email; everything else cascades from the user row.
+    if (user?.email) await db.delete(magicLinks).where(eq(magicLinks.email, user.email));
+    await db.delete(users).where(eq(users.id, req.userId));
+    reply.clearCookie('emplorio_session', { path: '/' });
+    return { ok: true };
   });
 }

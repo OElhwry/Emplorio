@@ -153,24 +153,58 @@ export async function deleteRemoteApplication(id: string): Promise<void> {
 
 // ---- login orchestration ----
 
+function nonEmpty(v: unknown): boolean {
+  if (v == null) return false;
+  if (typeof v === 'string') return v.trim() !== '';
+  if (Array.isArray(v)) return v.length > 0;
+  return true;
+}
+
+/**
+ * The server profile is the source of truth (so edits made on the web are never
+ * lost). Every field the server has wins; the local copy only contributes fields
+ * the server is missing, e.g. data entered in the extension before first sync.
+ */
+function mergeServerWins(
+  remote: Partial<Profile> | null,
+  local: Partial<Profile> | null,
+): Partial<Profile> {
+  return { ...(local ?? {}), ...(remote ?? {}) };
+}
+
 export async function syncOnLogin(): Promise<void> {
   const session = await loadSession();
   if (!session) return;
 
-  // 1. Push whatever's local right now (covers first-time signup with existing data)
   const [localProfile, localApps] = await Promise.all([loadProfile(), loadApplications()]);
-  if (localProfile && Object.keys(localProfile).length > 0) {
-    await pushProfile(localProfile);
-  }
+
+  // Applications use an additive /sync endpoint, so it's safe to push local up first.
   if (localApps.length > 0) {
     await pushApplications(localApps);
   }
 
-  // 2. Pull from server (now contains both old remote + just-pushed local)
   const [remoteProfile, remoteApps] = await Promise.all([pullProfile(), pullApplications()]);
-  if (remoteProfile) {
-    await saveProfile(remoteProfile);
+
+  // Profile: server values win, local only fills fields the server is missing.
+  // saveProfile also pushes the result back via the sync hook, but because this
+  // is a server-wins merge that push can only ADD local-only fields, it can never
+  // overwrite a value that was just edited on the web. This was the bug: the old
+  // code pushed the whole stale local profile first, clobbering web edits.
+  const merged = mergeServerWins(remoteProfile, localProfile);
+  if (Object.keys(merged).length > 0) {
+    await saveProfile(merged);
+    // Upload only what the server is missing (first sync, or local-only fields).
+    // Existing server values are never included, so web edits are preserved.
+    const remoteObj = (remoteProfile ?? {}) as Record<string, unknown>;
+    const gap: Record<string, unknown> = {};
+    for (const [k, v] of Object.entries(merged)) {
+      if (!(k in remoteObj) && nonEmpty(v)) gap[k] = v;
+    }
+    if (Object.keys(gap).length > 0) {
+      await pushProfile(gap);
+    }
   }
+
   if (remoteApps) {
     await saveApplications(remoteApps);
   }

@@ -4,7 +4,8 @@ export default defineManifest({
   manifest_version: 3,
   name: 'Emplorio: Autofill Job Applications, AI Cover Letters & Tracker',
   description: 'Apply faster. Autofill job forms, generate AI cover letters and tailored answers, and track every application from saved to offer.',
-  version: '1.0.3',
+  version: '1.0.4',
+  homepage_url: 'https://emplorio.co.uk',
   icons: {
     '16': 'icon16.png',
     '32': 'icon32.png',
@@ -53,6 +54,14 @@ export default defineManifest({
   ],
   permissions: ['storage', 'activeTab'],
   host_permissions: ['https://emplorio-api.fly.dev/*'],
+  // The on-page panel (injected into a shadow DOM) renders the brand icon, so the
+  // icon file must be reachable from page context.
+  web_accessible_resources: [
+    {
+      resources: ['icon128.png'],
+      matches: ['<all_urls>'],
+    },
+  ],
   commands: {
     _execute_action: {
       suggested_key: { default: 'Alt+Shift+E' },

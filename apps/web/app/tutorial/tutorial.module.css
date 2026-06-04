@@ -364,11 +364,10 @@
   color: #1a1d23;
 }
 .panelMark {
-  width: 16px;
-  height: 16px;
-  border-radius: 5px;
-  background: linear-gradient(135deg, #4f46e5, #818cf8);
-  box-shadow: 0 0 0 3px #eef2ff;
+  width: 18px;
+  height: 18px;
+  border-radius: 4px;
+  object-fit: contain;
   flex-shrink: 0;
 }
 .panelMinBtn {

@@ -703,7 +703,8 @@ function Tutorial() {
           <div ref={panelRef} className={`${styles.panel} ${minimised ? styles.panelMin : ''}`}>
             {minimised ? (
               <button type="button" className={styles.pill} onClick={() => setMinimised(false)}>
-                <span className={styles.panelMark} />
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src="/emplorio-mark-dark.png" alt="" className={styles.panelMark} />
                 Emplorio
                 <span className={styles.pillCount}>{fillableCount}</span>
               </button>
@@ -711,7 +712,8 @@ function Tutorial() {
               <div className={styles.panelCard}>
                 <div className={styles.panelTop}>
                   <span className={styles.panelBrand}>
-                    <span className={styles.panelMark} />
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src="/emplorio-mark-dark.png" alt="" className={styles.panelMark} />
                     Emplorio
                   </span>
                   <button

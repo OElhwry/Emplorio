@@ -6,7 +6,12 @@ const resend = env.RESEND_API_KEY ? new Resend(env.RESEND_API_KEY) : null;
 
 export async function sendLoginCode(email: string, code: string): Promise<void> {
   if (!resend) {
-    logger.warn({ email, code }, '[email] RESEND_API_KEY not set — printing code instead');
+    // In production a missing key is a real misconfiguration: fail loudly so the
+    // route returns a clear error instead of silently "sending" nothing.
+    if (env.NODE_ENV === 'production') {
+      throw new Error('RESEND_API_KEY is not set; cannot send the sign-in email.');
+    }
+    logger.warn({ email, code }, '[email] RESEND_API_KEY not set — printing code instead (dev only)');
     return;
   }
   const subject = `Your Emplorio sign-in code: ${code}`;

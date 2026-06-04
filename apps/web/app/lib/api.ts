@@ -194,6 +194,20 @@ export async function logout(): Promise<void> {
   clearToken();
 }
 
+/** Fetch the full account export as a JSON object. */
+export async function exportMyData(): Promise<unknown> {
+  const res = await apiFetch('/auth/export');
+  if (!res.ok) throw await errorFromResponse(res, 'Could not export your data.');
+  return res.json();
+}
+
+/** Permanently delete the account and all data, then clear the local session. */
+export async function deleteAccount(): Promise<void> {
+  const res = await apiFetch('/auth/account', { method: 'DELETE' });
+  if (!res.ok) throw await errorFromResponse(res, 'Could not delete your account.');
+  clearToken();
+}
+
 /* ---------- Profile ---------- */
 
 export async function fetchProfile(): Promise<Partial<Profile> | null> {
