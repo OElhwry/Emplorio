@@ -15,6 +15,60 @@ export interface Session {
   expiresAt: number;
 }
 
+export type ApiErrorKind = 'network' | 'server' | 'rate-limit' | 'auth' | 'unknown';
+
+/** A normalised API error carrying a user-friendly message and a machine kind. */
+export class ApiError extends Error {
+  kind: ApiErrorKind;
+  status?: number;
+  constructor(message: string, kind: ApiErrorKind = 'unknown', status?: number) {
+    super(message);
+    this.name = 'ApiError';
+    this.kind = kind;
+    this.status = status;
+  }
+}
+
+const NETWORK_MESSAGE =
+  "We couldn't reach Emplorio. Check your internet connection and try again in a moment.";
+
+function isNetworkError(err: unknown): boolean {
+  if (err instanceof TypeError) return true; // fetch throws TypeError on network failure
+  if (err instanceof Error) return /failed to fetch|load failed|networkerror|fetch failed/i.test(err.message);
+  return false;
+}
+
+/** Turn any thrown value into a short, human-readable message for the UI. */
+export function toFriendlyMessage(err: unknown): string {
+  if (err instanceof ApiError) return err.message;
+  if (isNetworkError(err)) return NETWORK_MESSAGE;
+  if (err instanceof Error && err.message) return err.message;
+  return 'Something went wrong. Please try again.';
+}
+
+/** Read a server error message from a non-OK response, mapping common statuses. */
+async function errorFromResponse(res: Response, fallback: string): Promise<ApiError> {
+  const data = (await res.json().catch(() => ({}))) as { error?: string };
+  if (res.status === 429) {
+    return new ApiError(
+      data.error ?? 'Too many attempts. Please wait a moment and try again.',
+      'rate-limit',
+      429,
+    );
+  }
+  if (res.status === 401 || res.status === 403) {
+    return new ApiError(data.error ?? 'Your session has expired. Please sign in again.', 'auth', res.status);
+  }
+  if (res.status >= 500) {
+    return new ApiError(
+      data.error ?? 'Emplorio is having a moment on our side. Please try again shortly.',
+      'server',
+      res.status,
+    );
+  }
+  return new ApiError(data.error ?? fallback, 'unknown', res.status);
+}
+
 export function getToken(): string | null {
   if (typeof window === 'undefined') return null;
   try {
@@ -71,7 +125,12 @@ export async function apiFetch(path: string, init: RequestInit = {}): Promise<Re
     const key = getAnthropicKey();
     if (key) headers.set('X-Anthropic-Key', key);
   }
-  return fetch(`${API_ORIGIN}${path}`, { ...init, headers });
+  try {
+    return await fetch(`${API_ORIGIN}${path}`, { ...init, headers });
+  } catch {
+    // Connection refused / DNS / CORS block / offline all land here.
+    throw new ApiError(NETWORK_MESSAGE, 'network');
+  }
 }
 
 export interface ParsedCv {
@@ -101,8 +160,7 @@ export async function requestCode(email: string): Promise<{ devCode?: string }> 
     body: JSON.stringify({ email }),
   });
   if (!res.ok) {
-    const data = (await res.json().catch(() => ({}))) as { error?: string };
-    throw new Error(data.error ?? 'Could not send a code. Please try again.');
+    throw await errorFromResponse(res, 'Could not send a code. Please try again.');
   }
   const data = (await res.json().catch(() => ({}))) as { devCode?: string };
   return { devCode: data.devCode };
@@ -114,8 +172,7 @@ export async function verifyCode(email: string, code: string): Promise<Session> 
     body: JSON.stringify({ email, code, remember: true }),
   });
   if (!res.ok) {
-    const data = (await res.json().catch(() => ({}))) as { error?: string };
-    throw new Error(data.error ?? 'That code did not work. Try again.');
+    throw await errorFromResponse(res, 'That code did not work. Try again.');
   }
   const session = (await res.json()) as Session;
   setToken(session.token);

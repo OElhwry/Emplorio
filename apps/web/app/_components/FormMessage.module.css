@@ -1,0 +1,46 @@
+.msg {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin: 0;
+  padding: 0.7rem 0.85rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid;
+  font-size: 0.88rem;
+  line-height: 1.45;
+  animation: msgIn 0.22s var(--ease-out, ease);
+}
+@keyframes msgIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+}
+.icon {
+  flex-shrink: 0;
+  display: inline-flex;
+  margin-top: 1px;
+}
+.text {
+  flex: 1;
+  min-width: 0;
+}
+.action {
+  flex-shrink: 0;
+}
+
+.error {
+  color: var(--danger);
+  background: var(--danger-bg);
+  border-color: var(--danger-border);
+}
+.success {
+  color: var(--success, #15803d);
+  background: var(--success-bg, rgba(34, 197, 94, 0.12));
+  border-color: var(--success-border, rgba(34, 197, 94, 0.4));
+}
+.info {
+  color: var(--accent);
+  background: var(--accent-soft);
+  border-color: var(--accent-soft);
+}

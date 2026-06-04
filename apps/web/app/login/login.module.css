@@ -501,6 +501,26 @@
   border-radius: var(--radius-sm);
   padding: 0.6rem 0.8rem;
 }
+.retry {
+  font: inherit;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--danger);
+  background: transparent;
+  border: 1px solid currentColor;
+  border-radius: 999px;
+  padding: 3px 11px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.retry:hover:not(:disabled) {
+  background: var(--danger);
+  color: #fff;
+}
+.retry:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
 .legal {
   margin: 1.75rem 0 0;
   font-size: 0.78rem;

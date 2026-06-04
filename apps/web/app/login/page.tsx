@@ -2,9 +2,11 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { fetchProfile, requestCode, verifyCode } from '../lib/api';
+import { fetchProfile, requestCode, toFriendlyMessage, verifyCode } from '../lib/api';
 import { profileCompletionPct } from '../lib/completeness';
 import styles from './login.module.css';
+import { LoadingButton } from '../_components/LoadingButton';
+import { FormMessage } from '../_components/FormMessage';
 
 type Step = 'email' | 'code';
 
@@ -167,7 +169,7 @@ export default function LoginPage() {
       }
       setStep('code');
     } catch (err) {
-      setError((err as Error).message || 'Could not send a code. Check your connection and try again.');
+      setError(toFriendlyMessage(err));
     } finally {
       setBusy(false);
     }
@@ -179,12 +181,18 @@ export default function LoginPage() {
     setBusy(true);
     try {
       await verifyCode(email.trim(), code.trim());
+      // Honour an explicit return destination (e.g. the extension's tutorial handoff).
+      const nextParam = new URLSearchParams(window.location.search).get('next');
+      if (nextParam && nextParam.startsWith('/')) {
+        router.push(nextParam);
+        return;
+      }
       const profile = await fetchProfile().catch(() => null);
       const pct = profileCompletionPct(profile);
       // New / nearly-empty accounts go through the guided onboarding first.
       router.push(pct < 20 ? '/get-started' : '/dashboard');
     } catch (err) {
-      setError((err as Error).message);
+      setError(toFriendlyMessage(err));
     } finally {
       setBusy(false);
     }
@@ -257,10 +265,21 @@ export default function LoginPage() {
                     className={styles.input}
                   />
                 </label>
-                {error && <p className={styles.error}>{error}</p>}
-                <button type="submit" disabled={busy} className={styles.button}>
-                  {busy ? 'Sending…' : 'Continue with email'}
-                </button>
+                {error && (
+                  <FormMessage
+                    tone="error"
+                    action={
+                      <button type="submit" className={styles.retry} disabled={busy}>
+                        Try again
+                      </button>
+                    }
+                  >
+                    {error}
+                  </FormMessage>
+                )}
+                <LoadingButton type="submit" loading={busy} loadingText="Sending…" className={styles.button}>
+                  Continue with email
+                </LoadingButton>
                 <p className={styles.fine}>
                   First time? This creates your account. No card, free forever.
                 </p>
@@ -273,7 +292,7 @@ export default function LoginPage() {
                 We sent a 6-digit code to <strong>{email}</strong>.
               </p>
               {devHint && (
-                <p className={styles.fine}>Dev mode: code prefilled, no email needed locally.</p>
+                <FormMessage tone="info">Dev mode: code prefilled, no email needed locally.</FormMessage>
               )}
               <form onSubmit={submitCode} className={styles.form}>
                 <label className={styles.field}>
@@ -290,10 +309,16 @@ export default function LoginPage() {
                     className={`${styles.input} ${styles.codeInput}`}
                   />
                 </label>
-                {error && <p className={styles.error}>{error}</p>}
-                <button type="submit" disabled={busy || code.length < 6} className={styles.button}>
-                  {busy ? 'Verifying…' : 'Verify & continue'}
-                </button>
+                {error && <FormMessage tone="error">{error}</FormMessage>}
+                <LoadingButton
+                  type="submit"
+                  loading={busy}
+                  loadingText="Verifying…"
+                  disabled={code.length < 6}
+                  className={styles.button}
+                >
+                  Verify & continue
+                </LoadingButton>
                 <button
                   type="button"
                   className={styles.linkBtn}

@@ -12,6 +12,8 @@ import {
 import { extractPdfText, fileToDataUrl } from '../lib/pdf';
 import { profileCompletionPct } from '../lib/completeness';
 import styles from './profile.module.css';
+import { PageLoader } from '../_components/PageLoader';
+import { SpiralLoader } from '../_components/SpiralLoader';
 
 type TabId =
   | 'cv'
@@ -206,7 +208,7 @@ export function ProfileEditor() {
   const incomplete = TABS.filter((t) => t.id !== 'eeo' && !SECTION_DONE[t.id](profile));
 
   if (!loaded) {
-    return <p className={styles.loading}>Loading your profile…</p>;
+    return <PageLoader />;
   }
 
   return (
@@ -1021,7 +1023,15 @@ function CvSection({
           className={styles.hiddenInput}
           disabled={busy}
         />
-        <span className={styles.dropTitle}>{busy ? 'Working…' : 'Upload your resume'}</span>
+        <span className={styles.dropTitle}>
+          {busy ? (
+            <>
+              <SpiralLoader size={16} tone="auto" /> Working…
+            </>
+          ) : (
+            'Upload your resume'
+          )}
+        </span>
         <span className={styles.dropHint}>
           We parse it and prefill your profile. PDF, DOC, DOCX up to 5 MB. PDF recommended.
         </span>
@@ -1056,5 +1066,13 @@ function SaveIndicator({ state }: { state: SaveState }) {
         : state === 'error'
           ? 'Save failed — retrying on next change'
           : 'Autosaves as you type';
-  return <span className={`${styles.saveIndicator} ${state === 'error' ? styles.saveError : ''}`}>{text}</span>;
+  return (
+    <span
+      className={`${styles.saveIndicator} ${state === 'error' ? styles.saveError : ''}`}
+      style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4em' }}
+    >
+      {state === 'saving' && <SpiralLoader size={14} tone="auto" />}
+      {text}
+    </span>
+  );
 }

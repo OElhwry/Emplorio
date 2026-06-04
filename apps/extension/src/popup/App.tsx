@@ -91,6 +91,8 @@ export function App() {
   const [authReady, setAuthReady] = useState(false);
   const [theme, setTheme] = useState<Theme>('system');
   const [highlightAi, setHighlightAi] = useState(false);
+  // Whether the user has finished the web onboarding tutorial (synced via profile).
+  const [tutorialDone, setTutorialDone] = useState<boolean | null>(null);
 
   function setTab(next: Tab) {
     setTabState(next);
@@ -102,6 +104,11 @@ export function App() {
     setTab('settings');
   }
 
+  async function refreshTutorialDone() {
+    const p = (await loadProfile().catch(() => null)) as { tutorialCompletedAt?: string } | null;
+    setTutorialDone(!!p?.tutorialCompletedAt);
+  }
+
   useEffect(() => {
     void chrome.storage.local.get(ACTIVE_TAB_KEY).then((r) => {
       const saved = r[ACTIVE_TAB_KEY] as Tab | undefined;
@@ -109,13 +116,17 @@ export function App() {
       setTabReady(true);
     });
     void isOnboardingComplete().then(setOnboarded);
+    void refreshTutorialDone();
     void loadSession().then(async (s) => {
       setSession(s);
       setCachedToken(s?.token ?? null);
       setAuthReady(true);
       if (s) {
         // Background: pull latest from server every popup open (no UI block)
-        void syncOnLogin().then(() => isOnboardingComplete().then(setOnboarded));
+        void syncOnLogin().then(() => {
+          void isOnboardingComplete().then(setOnboarded);
+          void refreshTutorialDone();
+        });
       }
     });
     void loadTheme().then((t) => {
@@ -228,6 +239,32 @@ export function App() {
           ))}
         </nav>
       </header>
+      {tutorialDone === false && (
+        <div className="setup-banner">
+          <div className="setup-banner-head">
+            <IconLightbulb size={15} />
+            <strong>Finish setting up on the web</strong>
+          </div>
+          <p className="setup-banner-text">
+            Run the quick tutorial so you know how filling, cover letters, and question answers work.
+          </p>
+          <div className="setup-checklist">
+            <span className="setup-item done">
+              <IconCheck size={12} /> Account created
+            </span>
+            <span className="setup-item todo">
+              <span className="setup-ring" /> Tutorial completed
+            </span>
+          </div>
+          <button
+            type="button"
+            className="btn-primary btn-with-icon setup-banner-btn"
+            onClick={() => chrome.tabs.create({ url: 'https://emplorio.co.uk/tutorial' })}
+          >
+            <IconExternal size={14} /> Finish on the web
+          </button>
+        </div>
+      )}
       {tab === 'fill' && <FillPanel />}
       {tab === 'cover' && <CoverPanel onNeedKey={goToSettings} />}
       {tab === 'questions' && <QuestionsPanel onNeedKey={goToSettings} />}

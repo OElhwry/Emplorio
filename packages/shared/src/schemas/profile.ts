@@ -69,6 +69,8 @@ export const profileSchema = z.object({
       uploadedAt: z.number(),
     })
     .optional(),
+  // ISO timestamp set when the user finishes the web onboarding tutorial.
+  tutorialCompletedAt: z.string().optional(),
 });
 
 export type Profile = z.infer<typeof profileSchema>;

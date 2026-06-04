@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { getAnthropicKey, setAnthropicKey } from '../lib/settings.js';
-import { IconCheck, IconEye, IconEyeOff, IconLock, IconPower, IconSparkles } from './icons.js';
+import { IconCheck, IconExternal, IconEye, IconEyeOff, IconLock, IconPower, IconSparkles } from './icons.js';
 
 export function SettingsPanel({
   highlightAi = false,
@@ -158,6 +158,23 @@ export function SettingsPanel({
             </ul>
           </div>
         </div>
+      </div>
+
+      <div className="card">
+        <div className="section-header">
+          <h3>Tutorial</h3>
+        </div>
+        <p className="field-hint">
+          New here, or want a refresher? Replay the interactive walkthrough on the web to see exactly
+          how filling, cover letters, and question answers work.
+        </p>
+        <button
+          type="button"
+          className="btn-secondary btn-with-icon"
+          onClick={() => chrome.tabs.create({ url: 'https://emplorio.co.uk/tutorial' })}
+        >
+          <IconExternal size={14} /> Replay tutorial
+        </button>
       </div>
 
       {onSignOut && (

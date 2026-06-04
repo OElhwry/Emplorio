@@ -5,6 +5,9 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from '../lib/useAuth';
 import { fetchProfile, saveProfile } from '../lib/api';
 import { extractPdfText, fileToDataUrl } from '../lib/pdf';
+import { PageLoader } from '../_components/PageLoader';
+import { SpiralLoader } from '../_components/SpiralLoader';
+import { LoadingButton } from '../_components/LoadingButton';
 import styles from './getstarted.module.css';
 
 type StepId =
@@ -134,7 +137,7 @@ export default function GetStartedPage() {
   }, [status, router]);
 
   if (status !== 'authed') {
-    return <div className={styles.loading}>Loading…</div>;
+    return <PageLoader />;
   }
 
   const step = STEPS[idx];
@@ -273,14 +276,15 @@ export default function GetStartedPage() {
           </button>
         ) : (
           <div className={styles.finishActions}>
-            <button
+            <LoadingButton
               type="button"
               className={styles.primary}
-              disabled={saving}
+              loading={saving}
+              loadingText="Saving…"
               onClick={() => void finish(`/tutorial?next=${encodeURIComponent('/profile?welcome=1')}`)}
             >
-              {saving ? 'Saving…' : 'Build my profile →'}
-            </button>
+              Build my profile →
+            </LoadingButton>
             <button
               type="button"
               className={styles.ghost}
@@ -389,7 +393,17 @@ function CvStep({
         <svg className={styles.dropIcon} viewBox="0 0 48 48" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
           <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4" strokeLinecap="round" strokeLinejoin="round" />
         </svg>
-        <span className={styles.dropTitle}>{busy ? 'Working…' : name ? 'Replace resume' : 'Upload a file'}</span>
+        <span className={styles.dropTitle}>
+          {busy ? (
+            <>
+              <SpiralLoader size={16} tone="auto" /> Working…
+            </>
+          ) : name ? (
+            'Replace resume'
+          ) : (
+            'Upload a file'
+          )}
+        </span>
         <span className={styles.dropHint}>PDF, DOC, DOCX up to 5 MB. PDF recommended.</span>
       </label>
 

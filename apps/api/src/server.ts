@@ -20,8 +20,24 @@ export async function buildServer() {
   app.setSerializerCompiler(serializerCompiler);
 
   await app.register(helmet);
+  // Allow the configured web origin plus the known apex/www domains and the
+  // extension. A misconfigured WEB_ORIGIN was surfacing in the browser as an
+  // opaque "Failed to fetch", so we accept the obvious production variants too.
+  const allowedOrigins = new Set(
+    [env.WEB_ORIGIN, 'https://emplorio.co.uk', 'https://www.emplorio.co.uk'].filter(Boolean),
+  );
   await app.register(cors, {
-    origin: [env.WEB_ORIGIN, /^chrome-extension:\/\//],
+    origin(origin, cb) {
+      // No Origin header (same-origin, curl, server-to-server, health checks).
+      if (!origin) return cb(null, true);
+      if (allowedOrigins.has(origin)) return cb(null, true);
+      if (/^chrome-extension:\/\//.test(origin)) return cb(null, true);
+      // Any localhost port while developing.
+      if (env.NODE_ENV !== 'production' && /^https?:\/\/localhost(:\d+)?$/.test(origin)) {
+        return cb(null, true);
+      }
+      return cb(null, false);
+    },
     credentials: true,
   });
   await app.register(cookie);

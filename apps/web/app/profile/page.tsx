@@ -4,6 +4,7 @@ import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '../lib/useAuth';
 import { AppShell } from '../_components/AppShell';
+import { PageLoader } from '../_components/PageLoader';
 import { ProfileEditor } from './ProfileEditor';
 
 export default function ProfilePage() {
@@ -17,9 +18,13 @@ export default function ProfilePage() {
   if (status !== 'authed') {
     return (
       <AppShell active="profile" title="Profile">
-        <p style={{ color: 'var(--text-muted)', padding: '2rem 0' }}>
-          {status === 'loading' ? 'Loading…' : 'Redirecting to sign in…'}
-        </p>
+        <div style={{ padding: '2rem 0' }}>
+          {status === 'loading' ? (
+            <PageLoader />
+          ) : (
+            <p style={{ color: 'var(--text-muted)' }}>Redirecting to sign in…</p>
+          )}
+        </div>
       </AppShell>
     );
   }

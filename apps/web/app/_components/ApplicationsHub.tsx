@@ -9,6 +9,7 @@ import {
   type WebApplication,
 } from '../lib/api';
 import styles from './ApplicationsHub.module.css';
+import { PageLoader } from './PageLoader';
 
 const COLUMNS: { id: ApplicationStatus; label: string }[] = [
   { id: 'saved', label: 'Saved' },
@@ -131,7 +132,7 @@ export function ApplicationsHub({ showInsights = true }: { showInsights?: boolea
   }
 
   if (loading) {
-    return <p className={styles.muted}>Loading your applications…</p>;
+    return <PageLoader minHeight="40vh" />;
   }
 
   return (

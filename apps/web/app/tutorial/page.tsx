@@ -4,14 +4,16 @@ import { Suspense, useEffect, useLayoutEffect, useMemo, useRef, useState } from 
 import { useRouter, useSearchParams } from 'next/navigation';
 import type { Profile } from '@emplorio/shared';
 import { useAuth } from '../lib/useAuth';
-import { fetchProfile } from '../lib/api';
+import { fetchProfile, saveProfile } from '../lib/api';
 import { AmbientShapes } from '../_components/AmbientShapes';
+import { PageLoader } from '../_components/PageLoader';
+import { SpiralLoader } from '../_components/SpiralLoader';
 import styles from './tutorial.module.css';
 
 /* ---------- The guided tour script ---------- */
 
 type Gate = 'next' | 'fill' | 'cover' | 'questions' | 'finish';
-type Target = 'panel' | 'fill' | 'form' | 'cover' | 'questions' | 'save' | null;
+type Target = 'panel' | 'fill' | 'form' | 'cover' | 'questions' | null;
 
 interface TourStep {
   id: string;
@@ -67,22 +69,15 @@ const TOUR: TourStep[] = [
     gate: 'questions',
     title: 'Answer the tricky questions',
     body: 'Screening prompts like "why are you a good fit?" get a first draft in your voice. Edit, then paste it back.',
-    hint: 'Click Questions on the panel.',
+    hint: 'Click Answer questions on the panel.',
   },
   {
     id: 'shortcuts',
     target: null,
     gate: 'next',
     title: 'Keyboard shortcuts',
-    body: 'Skip the mouse entirely. These work on every application page once the extension is installed.',
+    body: 'Skip the mouse entirely. These work on every application page once the extension is installed. Alt+Shift+S logs the job to your tracker.',
     shortcuts: true,
-  },
-  {
-    id: 'save',
-    target: 'save',
-    gate: 'next',
-    title: 'Save jobs to your tracker',
-    body: 'Save any role and it lands on your dashboard board, so every application you send is logged automatically.',
   },
   {
     id: 'done',
@@ -178,7 +173,7 @@ function answerFrom(p: Partial<Profile> | null): string {
 
 export default function TutorialPage() {
   return (
-    <Suspense fallback={<div className={styles.loading}>Loading…</div>}>
+    <Suspense fallback={<PageLoader />}>
       <Tutorial />
     </Suspense>
   );
@@ -338,7 +333,6 @@ function Tutorial() {
   const [qDone, setQDone] = useState(false);
   const [minimised, setMinimised] = useState(false);
   const [copied, setCopied] = useState(false);
-  const [saved, setSaved] = useState(false);
   const [intro, setIntro] = useState<number | null>(0); // null once the intro is dismissed
   const [mounted, setMounted] = useState(false);
   const fieldRefs = useRef<Partial<Record<FieldId, HTMLElement | null>>>({});
@@ -349,7 +343,6 @@ function Tutorial() {
   const formRef = useRef<HTMLElement>(null);
   const coverBtnRef = useRef<HTMLButtonElement>(null);
   const questionsBtnRef = useRef<HTMLButtonElement>(null);
-  const saveBtnRef = useRef<HTMLButtonElement>(null);
   const coachRef = useRef<HTMLDivElement>(null);
 
   type Spot = { top: number; left: number; width: number; height: number; panelSide: boolean };
@@ -364,8 +357,12 @@ function Tutorial() {
     document.title = 'Emplorio · How it works';
   }, []);
   useEffect(() => {
-    if (status === 'anon') router.replace('/login');
-  }, [status, router]);
+    if (status === 'anon') {
+      // Carry the destination so sign-in returns here (e.g. extension handoff).
+      const dest = `/tutorial${next ? `?next=${encodeURIComponent(next)}` : ''}`;
+      router.replace(`/login?next=${encodeURIComponent(dest)}`);
+    }
+  }, [status, router, next]);
   useEffect(() => {
     if (status !== 'authed') return;
     void fetchProfile().then((p) => setProfile(p));
@@ -385,8 +382,6 @@ function Tutorial() {
         return coverBtnRef.current;
       case 'questions':
         return questionsBtnRef.current;
-      case 'save':
-        return saveBtnRef.current;
       default:
         return null;
     }
@@ -424,7 +419,7 @@ function Tutorial() {
       window.removeEventListener('resize', update);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [intro, stepIdx, step.target, activeField, filled, coverText, qDone, saved, minimised]);
+  }, [intro, stepIdx, step.target, activeField, filled, coverText, qDone, minimised]);
 
   // Bring the step's target into view when the step changes.
   useEffect(() => {
@@ -550,9 +545,21 @@ function Tutorial() {
           ? qDone
           : true;
 
+  async function finishTour() {
+    try {
+      const current = (await fetchProfile().catch(() => null)) ?? {};
+      await saveProfile({
+        ...current,
+        tutorialCompletedAt: new Date().toISOString(),
+      } as Parameters<typeof saveProfile>[0]).catch(() => {});
+    } finally {
+      router.push(next);
+    }
+  }
+
   function goNext() {
     if (step.gate === 'finish') {
-      router.push(next);
+      void finishTour();
       return;
     }
     if (!canNext) return;
@@ -566,11 +573,19 @@ function Tutorial() {
   }
 
   if (status !== 'authed') {
-    return <div className={styles.loading}>Loading…</div>;
+    return <PageLoader />;
   }
 
   const fillFilledCount = FILL_ORDER.filter((id) => filledSet.has(id)).length;
   const activeLabel = activeField ? FIELDS.find((f) => f.id === activeField)?.label : null;
+  // On the final step we drop the dim/blur entirely so the whole filled page is visible.
+  const isFinish = step.gate === 'finish';
+
+  // A panel action is only clickable once its own step is reached, so the user
+  // can't fire Fill / Cover / Questions out of order and desync the tour.
+  const canFill = stepIdx >= TOUR.findIndex((s) => s.id === 'fill');
+  const canCover = stepIdx >= TOUR.findIndex((s) => s.id === 'cover');
+  const canQuestions = stepIdx >= TOUR.findIndex((s) => s.id === 'questions');
 
   return (
     <div className={styles.page}>
@@ -688,16 +703,15 @@ function Tutorial() {
           <div ref={panelRef} className={`${styles.panel} ${minimised ? styles.panelMin : ''}`}>
             {minimised ? (
               <button type="button" className={styles.pill} onClick={() => setMinimised(false)}>
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src="/emplorio-mark-dark.png" alt="" className={styles.pillMark} />
+                <span className={styles.panelMark} />
                 Emplorio
+                <span className={styles.pillCount}>{fillableCount}</span>
               </button>
             ) : (
-              <>
+              <div className={styles.panelCard}>
                 <div className={styles.panelTop}>
                   <span className={styles.panelBrand}>
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src="/emplorio-mark-dark.png" alt="" className={styles.panelMark} />
+                    <span className={styles.panelMark} />
                     Emplorio
                   </span>
                   <button
@@ -711,102 +725,91 @@ function Tutorial() {
                   </button>
                 </div>
 
-                <div className={styles.panelMeta}>
-                  {fillBusy ? (
-                    <span className={styles.fillingMeta}>
-                      Filling <b>{activeLabel ?? '…'}</b>
-                    </span>
-                  ) : filled ? (
-                    <span>
-                      <b>{fillFilledCount}</b> of {fillableCount} fields filled
-                    </span>
-                  ) : (
-                    <span>
-                      Detected <b>{fillableCount}</b> fields on this page
-                    </span>
-                  )}
-                </div>
-
-                <button
-                  ref={fillBtnRef}
-                  type="button"
-                  className={styles.fillBtn}
-                  onClick={() => void doFill()}
-                  disabled={fillBusy || filled}
-                >
-                  {fillBusy ? (
-                    <>
-                      <span className={styles.spinner} /> Filling…
-                    </>
-                  ) : filled ? (
-                    <>✓ Filled {fillFilledCount} fields</>
-                  ) : (
-                    <>Fill {fillableCount} fields</>
-                  )}
-                </button>
-
-                {filled && !fillBusy && (
-                  <div className={styles.successNote}>
-                    <span className={styles.successTick}>✓</span> Successfully filled, review and you are
-                    done
-                  </div>
-                )}
-
-                <div className={styles.aiRow}>
-                  <button
-                    ref={coverBtnRef}
-                    type="button"
-                    className={styles.aiBtn}
-                    onClick={() => void doCover()}
-                    disabled={coverBusy}
-                  >
-                    {coverBusy ? <span className={styles.spinnerDark} /> : '✨'} Cover letter
-                  </button>
-                  <button
-                    ref={questionsBtnRef}
-                    type="button"
-                    className={styles.aiBtn}
-                    onClick={() => void doQuestions()}
-                    disabled={qBusy}
-                  >
-                    {qBusy ? <span className={styles.spinnerDark} /> : '💬'} Questions
-                  </button>
-                </div>
-
-                {coverText && (
-                  <div className={styles.result}>
-                    <div className={styles.resultHead}>
-                      <span>Cover letter draft</span>
-                      <button type="button" className={styles.copy} onClick={copyCover}>
-                        {copied ? 'Copied ✓' : 'Copy'}
-                      </button>
+                <div className={styles.panelBody}>
+                  <div>
+                    <div className={styles.panelRole}>Not a real job application</div>
+                    <div className={styles.panelCompany}>
+                      {fillBusy
+                        ? `Filling ${activeLabel ?? '…'}`
+                        : filled
+                          ? `${fillFilledCount} of ${fillableCount} fields filled`
+                          : 'Emplorio · San Francisco, CA'}
                     </div>
-                    <p className={styles.resultText}>{coverText}</p>
+                  </div>
+
+                  <button
+                    ref={fillBtnRef}
+                    type="button"
+                    className={`${styles.fillBtn} ${filled && !fillBusy ? styles.fillBtnDone : ''}`}
+                    onClick={() => void doFill()}
+                    disabled={fillBusy || filled || !canFill}
+                  >
+                    {fillBusy ? (
+                      <>
+                        <SpiralLoader size={16} tone="light" /> Filling…
+                      </>
+                    ) : filled ? (
+                      <>
+                        <span className={styles.check}>✓</span> Filled {fillFilledCount} fields
+                      </>
+                    ) : (
+                      <>Fill {fillableCount} fields</>
+                    )}
+                  </button>
+
+                  {filled && !fillBusy && (
+                    <div className={styles.successNote}>
+                      <span className={styles.successTick}>✓</span> Successfully filled, review and you
+                      are done
+                    </div>
+                  )}
+
+                  <div className={styles.aiRow}>
                     <button
+                      ref={coverBtnRef}
                       type="button"
-                      className={styles.pasteBtn}
-                      onClick={pasteCover}
-                      disabled={coverPasted}
+                      className={styles.aiBtn}
+                      onClick={() => void doCover()}
+                      disabled={coverBusy || !canCover}
                     >
-                      {coverPasted ? '✓ Pasted into application' : '↧ Paste into application'}
+                      {coverBusy && <SpiralLoader size={14} tone="dark" />}Cover letter
+                    </button>
+                    <button
+                      ref={questionsBtnRef}
+                      type="button"
+                      className={styles.aiBtn}
+                      onClick={() => void doQuestions()}
+                      disabled={qBusy || !canQuestions}
+                    >
+                      {qBusy && <SpiralLoader size={14} tone="dark" />}Answer questions
                     </button>
                   </div>
-                )}
 
-                <button
-                  ref={saveBtnRef}
-                  type="button"
-                  className={`${styles.saveBtn} ${saved ? styles.saveBtnOn : ''}`}
-                  onClick={() => setSaved((s) => !s)}
-                >
-                  <span className={`${styles.saveStar} ${saved ? styles.saveStarOn : ''}`}>
-                    {saved ? '★' : '☆'}
-                  </span>
-                  {saved ? 'Saved to your tracker' : 'Save job to tracker'}
-                </button>
+                  {coverText && (
+                    <div className={styles.result}>
+                      <div className={styles.resultHead}>
+                        <span>Cover letter draft</span>
+                        <button type="button" className={styles.copy} onClick={copyCover}>
+                          {copied ? 'Copied ✓' : 'Copy'}
+                        </button>
+                      </div>
+                      <p className={styles.resultText}>{coverText}</p>
+                      <button
+                        type="button"
+                        className={styles.pasteBtn}
+                        onClick={pasteCover}
+                        disabled={coverPasted}
+                      >
+                        {coverPasted ? '✓ Pasted into application' : '↧ Paste into application'}
+                      </button>
+                    </div>
+                  )}
 
-                <p className={styles.panelFoot}>Fills only when you click</p>
-              </>
+                  <div className={styles.panelFootRow}>
+                    <span className={styles.panelFoot}>Fills only when you click</span>
+                  </div>
+                </div>
+              </div>
             )}
           </div>
         </aside>
@@ -815,7 +818,7 @@ function Tutorial() {
       {/* ---------- Spotlight tour ---------- */}
       {mounted && intro === null && (
         <div className={styles.tour}>
-          {spot ? (
+          {isFinish ? null : spot ? (
             <>
               {/* Four blurred masks leave a clickable hole over the target */}
               <div
@@ -865,8 +868,8 @@ function Tutorial() {
 
           <div
             ref={coachRef}
-            className={spot ? styles.coachFloat : styles.coachCenter}
-            style={spot ? coachStyle() : undefined}
+            className={isFinish ? styles.coachFinish : spot ? styles.coachFloat : styles.coachCenter}
+            style={!isFinish && spot ? coachStyle() : undefined}
             role="dialog"
             aria-label="Tutorial step"
           >

@@ -1155,3 +1155,53 @@ kbd {
   font-size: 16px;
   user-select: none;
 }
+
+/* Web setup soft banner (extension -> web tutorial handoff) */
+.setup-banner {
+  margin: 12px 16px;
+  padding: 14px;
+  border: 1px solid var(--accent);
+  background: var(--accent-soft);
+  border-radius: 12px;
+}
+.setup-banner-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--accent);
+  font-size: 13px;
+}
+.setup-banner-head strong { color: var(--text); font-weight: 600; }
+.setup-banner-text {
+  margin: 7px 0 11px;
+  font-size: 12px;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+.setup-checklist {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  margin-bottom: 12px;
+}
+.setup-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12.5px;
+}
+.setup-item.done { color: var(--text); }
+.setup-item.done svg { color: var(--success, #16a34a); }
+.setup-item.todo { color: var(--text-muted); }
+.setup-ring {
+  width: 12px;
+  height: 12px;
+  border: 2px solid currentColor;
+  border-radius: 50%;
+  display: inline-block;
+  opacity: 0.55;
+}
+.setup-banner-btn {
+  width: 100%;
+  justify-content: center;
+}
