@@ -1,0 +1,254 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Emplorio — Store Screenshot 2 · 1280×800</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  html, body { margin: 0; padding: 0; }
+  * { box-sizing: border-box; }
+  :root { --logo: url('__LOGO__'); }
+  body {
+    width: 1280px; height: 800px; overflow: hidden;
+    font-family: 'Plus Jakarta Sans', -apple-system, 'Segoe UI', Roboto, sans-serif;
+    -webkit-font-smoothing: antialiased; text-rendering: geometricPrecision;
+  }
+
+  .stage {
+    position: relative; width: 1280px; height: 800px; overflow: hidden;
+    background:
+      radial-gradient(900px 560px at 92% 0%, rgba(199, 210, 254, 0.5), transparent 60%),
+      radial-gradient(760px 560px at 0% 100%, rgba(221, 214, 254, 0.42), transparent 60%),
+      linear-gradient(180deg, #ffffff 0%, #f4f5ff 100%);
+  }
+
+  .wrap { position: relative; z-index: 2; height: 100%;
+    display: flex; flex-direction: column; padding: 36px 52px 34px; }
+
+  /* header */
+  h1 { margin: 0; color: #15132e; font-size: 48px; line-height: 1.05;
+    letter-spacing: -0.035em; font-weight: 800; }
+  h1 .u { position: relative; color: #4f46e5; white-space: nowrap; }
+  h1 .u::after { content: ''; position: absolute; left: 0; right: 0; bottom: 1px;
+    height: 5px; border-radius: 4px; background: linear-gradient(90deg, #4f46e5, #7c3aed); }
+  .subhead { margin: 16px 0 0; color: #4b4870; font-size: 23px; font-weight: 600;
+    display: flex; align-items: center; gap: 10px; }
+  .subhead b { color: #2a2658; font-weight: 800; }
+  .subhead .ico { font-size: 24px; }
+
+  /* grid */
+  .grid { flex: 1; min-height: 0; margin-top: 18px; display: grid;
+    grid-template-columns: 374px 1fr 1fr; grid-template-rows: 1fr 1fr;
+    gap: 20px; }
+  .card {
+    position: relative; overflow: hidden; min-height: 0;
+    background: linear-gradient(180deg, #f6f8ff 0%, #eef1fe 100%);
+    border: 1px solid #d7d9ee; border-radius: 20px; padding: 20px 22px;
+    box-shadow: 0 16px 34px -26px rgba(40, 33, 120, 0.45);
+  }
+  .c1 { grid-row: 1 / span 2; display: flex; flex-direction: column; }
+
+  .ct { font-size: 26px; font-weight: 800; color: #1c1940;
+    letter-spacing: -0.02em; line-height: 1.18; }
+  .ct .em { font-size: 24px; margin-right: 4px; }
+  .ct .hl { color: #4f46e5; }
+
+  /* ---- card 1: autofill ---- */
+  .c1desc { margin-top: 11px; font-size: 15.5px; font-weight: 600; color: #56557a;
+    line-height: 1.5; max-width: 310px; }
+
+  .c1 .browser { margin-top: 16px; flex: 1; min-height: 0;
+    display: flex; flex-direction: column; }
+  .browser { border-radius: 14px; overflow: hidden;
+    background: #fff; border: 1px solid #dcdded;
+    box-shadow: 0 22px 44px -28px rgba(40, 33, 120, 0.42); }
+  .bbar { height: 38px; background: #f3f3fb; border-bottom: 1px solid #ececf6;
+    display: flex; align-items: center; gap: 9px; padding: 0 12px; flex: none; }
+  .bbar .tl { display: flex; gap: 6px; }
+  .bbar .tl i { width: 9px; height: 9px; border-radius: 50%; display: block; }
+  .bbar .tl .r { background: #ff5f57; } .bbar .tl .y { background: #febc2e; } .bbar .tl .g { background: #28c840; }
+  .bbar .url { flex: 1; height: 19px; border-radius: 999px; background: #fff;
+    border: 1px solid #e6e6f2; }
+  .bbar .ext { width: 25px; height: 25px; border-radius: 7px; background: #fff;
+    border: 1px solid #e6e6f2; display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 0 0 3px rgba(124,58,237,0.12); }
+  .bbar .ext .mk { width: 15px; height: 15px; background: #1e1b4b;
+    -webkit-mask: var(--logo) center / contain no-repeat; mask: var(--logo) center / contain no-repeat; }
+  .bpage { padding: 16px 18px; flex: 1; min-height: 0; display: flex; flex-direction: column; }
+  .bhead { display: flex; align-items: center; gap: 11px; margin-bottom: 16px; }
+  .bhead .lg { width: 34px; height: 34px; border-radius: 9px; flex: none;
+    background: linear-gradient(135deg, #4f46e5, #7c3aed); }
+  .bhead .nm { font-size: 15px; font-weight: 800; color: #2c2950; line-height: 1.2; }
+  .bhead .role { font-size: 12.5px; color: #8a8ca8; font-weight: 600; }
+  .bhead .auto { margin-left: auto; display: inline-flex; align-items: center; gap: 6px;
+    font-size: 11.5px; font-weight: 800; color: #15a673;
+    background: #e9f7f0; border: 1px solid #c7ecdb; border-radius: 999px; padding: 5px 10px; }
+  .field { display: flex; align-items: center; gap: 12px; margin-bottom: 11px; }
+  .field .lb { width: 62px; font-size: 12.5px; font-weight: 700; color: #9a9cb4; flex: none; }
+  .field .vl { flex: 1; height: 34px; border-radius: 9px; background: #eef0ff;
+    border: 1px solid #dde1ff; display: flex; align-items: center; padding: 0 13px;
+    font-size: 13.5px; font-weight: 600; color: #3a3760; }
+  .field .vl.filling { background: #fff; border: 1px dashed #cdd2f0; color: #b6b9cf; }
+  .fillbtn { margin-top: auto; height: 42px; border-radius: 11px;
+    background: linear-gradient(135deg, #4f46e5, #7c3aed); color: #fff;
+    font-weight: 800; font-size: 14.5px; display: flex; align-items: center;
+    justify-content: center; gap: 8px;
+    box-shadow: 0 14px 26px -10px rgba(79, 70, 229, 0.55); }
+  .fillbtn svg { width: 16px; height: 16px; }
+
+  /* ---- generic mini mock blocks ---- */
+  .mock { margin-top: 16px; background: #fff; border: 1px solid #ececf6;
+    border-radius: 14px; padding: 14px 16px; box-shadow: 0 16px 30px -24px rgba(40,33,120,0.35); }
+
+  /* card 2: cover letter */
+  .tone { display: inline-flex; gap: 7px; margin-bottom: 11px; }
+  .tone .t { font-size: 12px; font-weight: 700; padding: 4px 11px; border-radius: 999px;
+    background: #eef0ff; color: #4f46e5; }
+  .tone .t.muted { background: #f1f1f8; color: #8a8ca8; }
+  .lline { height: 9px; border-radius: 5px; background: #e9e9f4; margin-bottom: 9px; }
+  .lline.w1 { width: 92%; } .lline.w2 { width: 80%; } .lline.w3 { width: 86%; }
+  .lline.acc { background: linear-gradient(90deg,#c7d2fe,#ddd6fe); }
+  .caret { display: inline-block; width: 2px; height: 12px; background: #4f46e5;
+    vertical-align: middle; margin-left: 2px; }
+
+  /* card 3: questions */
+  .qlabel { font-size: 12px; font-weight: 800; color: #7c3aed; letter-spacing: 0.04em;
+    text-transform: uppercase; margin-bottom: 6px; }
+  .qtext { font-size: 15px; font-weight: 800; color: #2c2950; margin-bottom: 10px; }
+  .qans { font-size: 13.5px; color: #56557a; line-height: 1.5; font-weight: 500; }
+  .qnav { display: flex; gap: 7px; margin-top: 12px; }
+  .qnav .d { width: 22px; height: 22px; border-radius: 7px; background: #eef0ff;
+    color: #4f46e5; font-size: 12px; font-weight: 800; display: flex; align-items: center; justify-content: center; }
+  .qnav .d.muted { background: #f1f1f8; color: #b3b3c6; }
+
+  /* card 4: tracker */
+  .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 12px; }
+  .stat { background: #fff; border: 1px solid #ececf6; border-radius: 12px; padding: 11px 12px; }
+  .stat .n { font-size: 22px; font-weight: 800; color: #1c1940; letter-spacing: -0.02em; line-height: 1; }
+  .stat .l { font-size: 11px; font-weight: 700; color: #8a8ca8; margin-top: 5px;
+    text-transform: uppercase; letter-spacing: 0.04em; }
+  .pills { display: flex; gap: 8px; flex-wrap: wrap; }
+  .pill { display: inline-flex; align-items: center; gap: 7px; font-size: 12.5px; font-weight: 700;
+    color: #3a3760; background: #fff; border: 1px solid #ececf6; border-radius: 999px; padding: 5px 11px; }
+  .pill .dot { width: 8px; height: 8px; border-radius: 50%; }
+
+  /* card 5: follow-up */
+  .mail { display: flex; align-items: flex-start; gap: 12px; }
+  .mail .av { width: 38px; height: 38px; border-radius: 11px; flex: none;
+    background: #eef0ff; color: #4f46e5; display: flex; align-items: center; justify-content: center; }
+  .mail .av svg { width: 20px; height: 20px; }
+  .mail .b .s { font-size: 14.5px; font-weight: 800; color: #2c2950; }
+  .mail .b .p { font-size: 13px; color: #6b6a8c; margin-top: 4px; line-height: 1.45; }
+  .queued { margin-top: 12px; display: inline-flex; align-items: center; gap: 8px;
+    font-size: 12.5px; font-weight: 700; color: #15a673;
+    background: #e9f7f0; border: 1px solid #c7ecdb; border-radius: 999px; padding: 6px 12px; }
+  .queued .d { width: 8px; height: 8px; border-radius: 50%; background: #15a673; }
+</style>
+</head>
+<body>
+  <div class="stage">
+    <div class="wrap">
+      <!-- header -->
+      <div>
+        <h1>Your whole job hunt. <span class="u">Powered by one profile.</span></h1>
+        <p class="subhead"><span class="ico">⚡</span> Apply to <b>ten roles</b> in the time it took to apply to one</p>
+      </div>
+
+      <!-- grid -->
+      <div class="grid">
+        <!-- CARD 1: autofill (tall) -->
+        <div class="card c1">
+          <div class="ct"><span class="em">⚡</span>Autofill your forms<br/><span class="hl">in 1 click.</span></div>
+          <div class="c1desc">Emplorio detects every field and fills it straight from your saved profile.</div>
+          <div class="browser">
+            <div class="bbar">
+              <span class="tl"><i class="r"></i><i class="y"></i><i class="g"></i></span>
+              <span class="url"></span>
+              <span class="ext"><span class="mk"></span></span>
+            </div>
+            <div class="bpage">
+              <div class="bhead">
+                <span class="lg"></span>
+                <div>
+                  <div class="nm">Software Engineer</div>
+                  <div class="role">Vercel · Remote</div>
+                </div>
+                <span class="auto">
+                  <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                  Auto-filled
+                </span>
+              </div>
+              <div class="field"><span class="lb">Name</span><span class="vl">Alex Morgan</span></div>
+              <div class="field"><span class="lb">Email</span><span class="vl">alex.morgan@email.com</span></div>
+              <div class="field"><span class="lb">Phone</span><span class="vl">+44 7700 900 000</span></div>
+              <div class="field"><span class="lb">Location</span><span class="vl">London, UK</span></div>
+              <div class="field"><span class="lb">LinkedIn</span><span class="vl filling">Filling…</span></div>
+              <div class="fillbtn">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M13 2 3 14h7l-1 8 10-12h-7z"/></svg>
+                Autofill this form
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- CARD 2: cover letters (top middle) -->
+        <div class="card">
+          <div class="ct"><span class="em">✨</span>Draft cover letters<br/><span class="hl">in your voice.</span></div>
+          <div class="mock">
+            <div class="tone"><span class="t">Friendly</span><span class="t muted">Formal</span><span class="t muted">Concise</span></div>
+            <div class="lline w1"></div>
+            <div class="lline w2"></div>
+            <div class="lline acc w3"></div>
+            <div class="lline w2" style="width:64%; margin-bottom:0"></div>
+          </div>
+        </div>
+
+        <!-- CARD 3: tracker (top right) -->
+        <div class="card">
+          <div class="ct"><span class="em">📊</span>Track <span class="hl">every application</span> in one place.</div>
+          <div class="mock">
+            <div class="stats">
+              <div class="stat"><div class="n">12</div><div class="l">This week</div></div>
+              <div class="stat"><div class="n">38</div><div class="l">Past 30d</div></div>
+              <div class="stat"><div class="n">21%</div><div class="l">Reply rate</div></div>
+            </div>
+            <div class="pills">
+              <span class="pill"><span class="dot" style="background:#6366f1"></span>Applied 38</span>
+              <span class="pill"><span class="dot" style="background:#f59e0b"></span>Interview 6</span>
+              <span class="pill"><span class="dot" style="background:#10b981"></span>Offer 1</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- CARD 4: questions (bottom middle) -->
+        <div class="card">
+          <div class="ct"><span class="em">💬</span>Answer the <span class="hl">hard questions.</span></div>
+          <div class="mock">
+            <div class="qlabel">Question 1 of 3</div>
+            <div class="qtext">Why do you want to work here?</div>
+            <div class="qans">The infra team's work on edge runtimes lines up with what I built last year, and I'd rather ship to thousands of developers than ten internal teams.</div>
+            <div class="qnav"><span class="d">1</span><span class="d muted">2</span><span class="d muted">3</span></div>
+          </div>
+        </div>
+
+        <!-- CARD 5: follow-ups (bottom right) -->
+        <div class="card">
+          <div class="ct"><span class="em">📧</span>Never miss a <span class="hl">follow-up.</span></div>
+          <div class="mock">
+            <div class="mail">
+              <span class="av"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><polyline points="3 7 12 13 21 7"/></svg></span>
+              <div class="b">
+                <div class="s">Following up · Software Engineer</div>
+                <div class="p">Just checking in on my application from last week. I'm still very keen on the role and happy to share more.</div>
+              </div>
+            </div>
+            <span class="queued"><span class="d"></span>Queued · 7 days after you apply</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

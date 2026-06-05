@@ -13,6 +13,8 @@ export function getClient(apiKey?: string): Anthropic {
 }
 
 export const MODEL = env.ANTHROPIC_MODEL;
+/** Cheaper model used for structured extraction (CV parsing). */
+export const PARSE_MODEL = env.ANTHROPIC_PARSE_MODEL;
 
 export function profileToBlock(profile: Partial<Profile>): string {
   const lines: string[] = [];
@@ -215,7 +217,7 @@ export async function draftFollowUp(args: FollowUpArgs): Promise<{ subject: stri
 
 export async function parseCvWithClaude(cvText: string, apiKey?: string): Promise<unknown> {
   const res = await getClient(apiKey).messages.create({
-    model: MODEL,
+    model: PARSE_MODEL,
     max_tokens: 4096,
     system:
       'You extract structured data from CVs. Output ONLY a single JSON object — no prose, no markdown fences.',

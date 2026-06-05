@@ -523,14 +523,9 @@ function findInputByLabel(
 }
 
 async function fillSkills(doc: Document, skills: string[]): Promise<number> {
-  console.log('[emplorio] fillSkills start, skills:', skills);
   if (!skills.length) return 0;
   const input = findSkillsInput(doc);
-  if (!input) {
-    console.log('[emplorio] fillSkills: no skills input found');
-    return 0;
-  }
-  console.log('[emplorio] fillSkills: input found', input);
+  if (!input) return 0;
 
   let added = 0;
   for (const skill of skills) {

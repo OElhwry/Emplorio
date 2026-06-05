@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Emplorio — Store Screenshot 3 · 1280×800</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  html, body { margin: 0; padding: 0; }
+  * { box-sizing: border-box; }
+  :root { --logo: url('__LOGO__'); }
+  body {
+    width: 1280px; height: 800px; overflow: hidden;
+    font-family: 'Plus Jakarta Sans', -apple-system, 'Segoe UI', Roboto, sans-serif;
+    -webkit-font-smoothing: antialiased; text-rendering: geometricPrecision;
+  }
+
+  .stage {
+    position: relative; width: 1280px; height: 800px; overflow: hidden;
+    background:
+      radial-gradient(900px 600px at 92% 0%, rgba(199, 210, 254, 0.5), transparent 60%),
+      radial-gradient(760px 600px at 0% 100%, rgba(221, 214, 254, 0.4), transparent 60%),
+      linear-gradient(180deg, #ffffff 0%, #f4f5ff 100%);
+  }
+
+  .wrap { position: relative; z-index: 2; height: 100%;
+    display: grid; grid-template-columns: 0.92fr 1.08fr; align-items: center;
+    padding: 0 72px; column-gap: 36px; }
+
+  /* ---- left ---- */
+  h1 { margin: 0; color: #15132e; font-size: 64px; line-height: 1.05;
+    letter-spacing: -0.04em; font-weight: 800; }
+  h1 .u { position: relative; color: #4f46e5; white-space: nowrap; }
+  h1 .u::after { content: ''; position: absolute; left: 0; right: 0; bottom: 2px;
+    height: 5px; border-radius: 4px; background: linear-gradient(90deg, #4f46e5, #7c3aed); }
+
+  p.sub { margin: 34px 0 0; max-width: 470px; color: #4b4870;
+    font-size: 27px; line-height: 1.5; font-weight: 500; }
+
+  .pill { margin-top: 40px; display: inline-flex; align-items: center; gap: 11px;
+    background: #ffffff; border: 1px solid #e6e6f2; border-radius: 999px;
+    padding: 15px 24px; font-size: 22px; font-weight: 700; color: #1c1940;
+    box-shadow: 0 18px 36px -24px rgba(40, 33, 120, 0.4); }
+  .pill .em { font-size: 22px; }
+
+  /* ---- right scene ---- */
+  .scene { position: relative; height: 640px; }
+
+  .frame {
+    position: absolute; top: 8px; left: 60px; right: -72px; height: 540px;
+    background: linear-gradient(180deg, #eef0f8, #f6f7fc);
+    border: 1px solid #e7e8f2; border-radius: 22px 22px 0 0;
+    box-shadow: 0 50px 90px -50px rgba(40, 33, 120, 0.4);
+  }
+  .frame-bar { height: 64px; display: flex; align-items: center; gap: 16px; padding: 0 22px; }
+  .frame-omni { flex: 1; height: 30px; border-radius: 999px; background: #ffffff;
+    border: 1px solid #e6e6f2; }
+  .frame-ext { width: 40px; height: 40px; border-radius: 11px; background: #fff;
+    border: 1px solid #e6e6f2; display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 0 0 5px rgba(124,58,237,0.12); }
+  .frame-ext .mk { width: 25px; height: 25px; background: #1e1b4b;
+    -webkit-mask: var(--logo) center / contain no-repeat; mask: var(--logo) center / contain no-repeat; }
+  .frame-kebab { display: flex; flex-direction: column; gap: 4px; padding: 0 2px; }
+  .frame-kebab i { width: 4px; height: 4px; border-radius: 50%; background: #b9bdd4; display: block; }
+
+  .card { position: absolute; background: #fff; border: 1px solid #ececf6;
+    border-radius: 18px; box-shadow: 0 36px 72px -34px rgba(40, 33, 120, 0.42);
+    z-index: 3; }
+
+  /* job card */
+  .job { top: 120px; left: 0; right: 36px; padding: 0; overflow: hidden; }
+  .job-top { display: flex; align-items: center; gap: 16px; padding: 22px 24px; }
+  .job-logo { width: 54px; height: 54px; border-radius: 13px; flex: none;
+    background: linear-gradient(135deg, #4f46e5, #7c3aed);
+    display: flex; align-items: center; justify-content: center; }
+  .job-logo svg { width: 26px; height: 26px; }
+  .job-info { flex: 1; }
+  .job-title { font-size: 22px; font-weight: 800; color: #1c1940; letter-spacing: -0.01em; }
+  .job-meta { font-size: 17px; color: #6b6a8c; font-weight: 600; margin-top: 3px; }
+  .job-badge { font-size: 14px; font-weight: 700; color: #4f46e5;
+    background: #eef0ff; border-radius: 999px; padding: 7px 14px; align-self: flex-start; }
+  .job-foot { display: flex; align-items: center; border-top: 1px solid #f0f0f7;
+    padding: 16px 24px; font-size: 17px; font-weight: 700; }
+  .job-foot .saved { display: inline-flex; align-items: center; gap: 9px; color: #1c1940; }
+  .job-foot .saved svg { width: 18px; height: 18px; }
+  .job-foot .auto { font-size: 13px; font-weight: 700; color: #15a673;
+    background: #e9f7f0; border-radius: 999px; padding: 5px 11px; margin-left: 12px; }
+  .job-foot .details { margin-left: auto; color: #4f46e5; }
+
+  /* tracker cards */
+  .track { right: 12px; padding: 26px 30px; }
+  .track-a { top: 330px; left: 96px; }
+  .track-b { top: 470px; left: 132px; }
+  .steps { position: relative; display: flex; }
+  .step { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 14px; z-index: 2; }
+  .step .lbl { font-size: 16px; font-weight: 700; color: #56557a; }
+  .step .node { width: 18px; height: 18px; border-radius: 50%;
+    background: #fff; border: 3px solid #dcdcec; }
+  .step.done .node { background: #38bdf8; border-color: #38bdf8; }
+  .step.now .node { background: #4f46e5; border-color: #4f46e5;
+    box-shadow: 0 0 0 5px rgba(79,70,229,0.16); }
+  .line { position: absolute; left: 12.5%; right: 12.5%; top: 41px; height: 3px;
+    background: #e6e6f2; border-radius: 3px; z-index: 1; }
+  .line .fill { height: 100%; border-radius: 3px;
+    background: linear-gradient(90deg, #38bdf8, #4f46e5); }
+</style>
+</head>
+<body>
+  <div class="stage">
+    <div class="wrap">
+      <!-- LEFT -->
+      <div>
+        <h1>Bookmark jobs &amp;<br/><span class="u">track your search.</span></h1>
+        <p class="sub">Every job you apply to is saved to your dashboard automatically. Bookmark any other listing yourself with one click.</p>
+        <span class="pill"><span class="em">✅</span> Built-in job tracker</span>
+      </div>
+
+      <!-- RIGHT -->
+      <div class="scene">
+        <div class="frame">
+          <div class="frame-bar">
+            <span class="frame-omni"></span>
+            <span class="frame-ext"><span class="mk"></span></span>
+            <span class="frame-kebab"><i></i><i></i><i></i></span>
+          </div>
+        </div>
+
+        <!-- job card -->
+        <div class="card job">
+          <div class="job-top">
+            <span class="job-logo"><svg viewBox="0 0 24 24" fill="#fff"><path d="M12 4l9 16H3z"/></svg></span>
+            <div class="job-info">
+              <div class="job-title">Senior Engineer</div>
+              <div class="job-meta">Vercel · Remote</div>
+            </div>
+            <span class="job-badge">Full-time</span>
+          </div>
+          <div class="job-foot">
+            <span class="saved">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg>
+              Saved
+            </span>
+            <span class="auto">Added when you applied</span>
+            <span class="details">Details</span>
+          </div>
+        </div>
+
+        <!-- tracker A -->
+        <div class="card track track-a">
+          <div class="steps">
+            <div class="line"><div class="fill" style="width:33%"></div></div>
+            <div class="step done"><span class="lbl">Saved</span><span class="node"></span></div>
+            <div class="step now"><span class="lbl">Applied</span><span class="node"></span></div>
+            <div class="step"><span class="lbl">Interview</span><span class="node"></span></div>
+            <div class="step"><span class="lbl">Offer</span><span class="node"></span></div>
+          </div>
+        </div>
+
+        <!-- tracker B -->
+        <div class="card track track-b">
+          <div class="steps">
+            <div class="line"><div class="fill" style="width:67%"></div></div>
+            <div class="step done"><span class="lbl">Saved</span><span class="node"></span></div>
+            <div class="step done"><span class="lbl">Applied</span><span class="node"></span></div>
+            <div class="step now"><span class="lbl">Interview</span><span class="node"></span></div>
+            <div class="step"><span class="lbl">Offer</span><span class="node"></span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

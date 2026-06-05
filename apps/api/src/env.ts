@@ -25,7 +25,11 @@ const envSchema = z.object({
   DATABASE_URL: optionalUrl,
   REDIS_URL: optionalUrl,
   ANTHROPIC_API_KEY: z.string().min(10).optional(),
-  ANTHROPIC_MODEL: z.string().default('claude-opus-4-7'),
+  // Sonnet for generation (cover letters, answers, follow-ups): strong quality at
+  // a fraction of Opus cost, so users on their own key spend far less.
+  ANTHROPIC_MODEL: z.string().default('claude-sonnet-4-6'),
+  // Haiku for CV parsing: a cheap structured-extraction task.
+  ANTHROPIC_PARSE_MODEL: z.string().default('claude-haiku-4-5-20251001'),
   OWNER_EMAIL: z.string().email().optional(),
   EMPLORIO_API_KEY: z.string().min(16).optional(),
   RESEND_API_KEY: z.string().min(5).optional().or(z.literal('').transform(() => undefined)),

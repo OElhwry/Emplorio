@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Emplorio — Small Promo Tile 440×280</title>
+<style>
+  html, body { margin: 0; padding: 0; }
+  * { box-sizing: border-box; }
+  :root {
+    --logo: url('__LOGO__');
+    --gridline: rgba(255, 255, 255, 0.04);
+  }
+  body {
+    width: 440px; height: 280px; overflow: hidden;
+    font-family: 'Plus Jakarta Sans', -apple-system, 'Segoe UI', Roboto, sans-serif;
+    -webkit-font-smoothing: antialiased; text-rendering: geometricPrecision;
+  }
+
+  .tile {
+    position: relative; width: 440px; height: 280px; overflow: hidden;
+    background:
+      radial-gradient(640px 380px at 50% -12%, rgba(129, 140, 248, 0.12), transparent 62%),
+      #15141f;
+  }
+
+  /* 52px grid, same as home */
+  .grid {
+    position: absolute; inset: 0; pointer-events: none;
+    background-image:
+      linear-gradient(var(--gridline) 1px, transparent 1px),
+      linear-gradient(90deg, var(--gridline) 1px, transparent 1px);
+    background-size: 52px 52px, 52px 52px;
+  }
+
+  /* soft orbs */
+  .orb { position: absolute; border-radius: 50%; filter: blur(60px); opacity: 0.85; }
+  .orb-1 { width: 300px; height: 300px; top: -110px; left: -90px;
+    background: radial-gradient(circle, rgba(99, 102, 241, 0.6), transparent 70%); }
+  .orb-2 { width: 340px; height: 340px; top: -40px; right: -150px;
+    background: radial-gradient(circle, rgba(129, 140, 248, 0.52), transparent 70%); }
+  .orb-3 { width: 260px; height: 260px; bottom: -120px; left: 32%;
+    background: radial-gradient(circle, rgba(168, 85, 247, 0.5), transparent 70%); }
+
+  /* geometric shapes, same treatment as home (dark) */
+  .shape {
+    position: absolute; opacity: 0.8;
+    border: 1px solid rgba(129, 140, 248, 0.24);
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.16), rgba(168, 85, 247, 0.05));
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 28px 56px -28px rgba(79, 70, 229, 0.4);
+  }
+  .sh1 { width: 76px; height: 76px; top: 22px; left: 26px; border-radius: 18px; transform: rotate(-10deg); }
+  .sh2 { width: 60px; height: 60px; top: 168px; left: -14px; border-radius: 50%; }
+  .sh3 { width: 52px; height: 52px; top: -12px; right: 96px; border-radius: 14px; transform: rotate(16deg); }
+  .sh4 { width: 84px; height: 84px; bottom: 6px; right: 26px; border-radius: 22px; transform: rotate(-8deg); }
+  .sh5 { width: 46px; height: 46px; bottom: -16px; left: 158px; border-radius: 50%; }
+
+  /* center brand lockup */
+  .lockup {
+    position: relative; z-index: 3; height: 100%;
+    display: flex; align-items: center; justify-content: center; gap: 16px;
+  }
+  .mark {
+    width: 62px; height: 62px; background: #a5b4fc;
+    -webkit-mask: var(--logo) center / contain no-repeat;
+    mask: var(--logo) center / contain no-repeat;
+    filter: drop-shadow(0 6px 16px rgba(129, 140, 248, 0.45));
+  }
+  .word {
+    color: #f4f4f6; font-size: 54px; font-weight: 800; letter-spacing: -0.03em;
+  }
+</style>
+</head>
+<body>
+  <div class="tile">
+    <div class="grid"></div>
+    <span class="orb orb-1"></span>
+    <span class="orb orb-2"></span>
+    <span class="orb orb-3"></span>
+
+    <span class="shape sh1"></span>
+    <span class="shape sh2"></span>
+    <span class="shape sh3"></span>
+    <span class="shape sh4"></span>
+    <span class="shape sh5"></span>
+
+    <div class="lockup">
+      <span class="mark"></span>
+      <span class="word">Emplorio</span>
+    </div>
+  </div>
+</body>
+</html>

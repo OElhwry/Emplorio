@@ -23,6 +23,9 @@ packages/db/drizzle
 
 *.tsbuildinfo
 
+# Packaged extension build (regenerate via `pnpm build` in apps/extension)
+emplorio-extension-*.zip
+
 # Private keys and certificates
 *.pem
 *.key

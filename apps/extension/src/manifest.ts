@@ -1,9 +1,32 @@
 import { defineManifest } from '@crxjs/vite-plugin';
 
+// The job sites where the content script runs (and where the panel renders the icon).
+const SITE_MATCHES = [
+  'https://boards.greenhouse.io/*',
+  'https://job-boards.greenhouse.io/*',
+  'https://*.greenhouse.io/*',
+  'https://jobs.lever.co/*',
+  'https://*.lever.co/*',
+  'https://*.myworkdayjobs.com/*',
+  'https://*.workday.com/*',
+  'https://jobs.ashbyhq.com/*',
+  'https://*.ashbyhq.com/*',
+  'https://www.linkedin.com/jobs/*',
+  'https://www.linkedin.com/hiring/*',
+  'https://*.indeed.com/*',
+  'https://smartapply.indeed.com/*',
+  'https://apply.workable.com/*',
+  'https://*.workable.com/*',
+  'https://*.smartrecruiters.com/*',
+  'https://jobs.smartrecruiters.com/*',
+  'https://careers.smartrecruiters.com/*',
+  'https://*.icims.com/*',
+];
+
 export default defineManifest({
   manifest_version: 3,
-  name: 'Emplorio: Autofill Job Applications, AI Cover Letters & Tracker',
-  description: 'Apply faster. Autofill job forms, generate AI cover letters and tailored answers, and track every application from saved to offer.',
+  name: 'Emplorio · Autofill Job Applications, AI Cover Letters & Tracker',
+  description: 'The faster way to apply. Autofill job applications in one click, write AI cover letters, and track every role all in one place.',
   version: '1.0.4',
   homepage_url: 'https://emplorio.co.uk',
   icons: {
@@ -27,27 +50,7 @@ export default defineManifest({
   },
   content_scripts: [
     {
-      matches: [
-        'https://boards.greenhouse.io/*',
-        'https://job-boards.greenhouse.io/*',
-        'https://*.greenhouse.io/*',
-        'https://jobs.lever.co/*',
-        'https://*.lever.co/*',
-        'https://*.myworkdayjobs.com/*',
-        'https://*.workday.com/*',
-        'https://jobs.ashbyhq.com/*',
-        'https://*.ashbyhq.com/*',
-        'https://www.linkedin.com/jobs/*',
-        'https://www.linkedin.com/hiring/*',
-        'https://*.indeed.com/*',
-        'https://smartapply.indeed.com/*',
-        'https://apply.workable.com/*',
-        'https://*.workable.com/*',
-        'https://*.smartrecruiters.com/*',
-        'https://jobs.smartrecruiters.com/*',
-        'https://careers.smartrecruiters.com/*',
-        'https://*.icims.com/*',
-      ],
+      matches: SITE_MATCHES,
       js: ['src/content/index.ts'],
       run_at: 'document_idle',
     },
@@ -55,11 +58,11 @@ export default defineManifest({
   permissions: ['storage', 'activeTab'],
   host_permissions: ['https://emplorio-api.fly.dev/*'],
   // The on-page panel (injected into a shadow DOM) renders the brand icon, so the
-  // icon file must be reachable from page context.
+  // icon file must be reachable from page context, but only on the job sites above.
   web_accessible_resources: [
     {
       resources: ['icon128.png'],
-      matches: ['<all_urls>'],
+      matches: SITE_MATCHES,
     },
   ],
   commands: {
