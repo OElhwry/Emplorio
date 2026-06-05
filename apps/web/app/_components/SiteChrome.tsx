@@ -34,9 +34,9 @@ export function SiteFooter() {
       <div className="container footer-inner">
         <small>© {new Date().getFullYear()} Emplorio. All rights reserved.</small>
         <nav className="footer-links" aria-label="Footer">
+          <a href="/support">Support</a>
           <a href="/privacy">Privacy</a>
           <a href="/terms">Terms</a>
-          <a href="mailto:emplorioEXT@gmail.com">Contact</a>
         </nav>
       </div>
     </footer>
