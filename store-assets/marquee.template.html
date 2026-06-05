@@ -1,0 +1,223 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Emplorio — Marquee 1400×560</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  html, body { margin: 0; padding: 0; }
+  * { box-sizing: border-box; }
+  :root { --logo: url('__LOGO__'); }
+  body {
+    width: 1400px; height: 560px; overflow: hidden;
+    font-family: 'Plus Jakarta Sans', -apple-system, 'Segoe UI', Roboto, sans-serif;
+    -webkit-font-smoothing: antialiased; text-rendering: geometricPrecision;
+  }
+
+  .stage {
+    position: relative; width: 1400px; height: 560px; overflow: hidden;
+    background:
+      radial-gradient(900px 560px at 95% 2%, rgba(199, 210, 254, 0.55), transparent 60%),
+      radial-gradient(760px 560px at 2% 100%, rgba(221, 214, 254, 0.45), transparent 60%),
+      linear-gradient(180deg, #ffffff 0%, #f4f5ff 100%);
+  }
+
+  /* faint shapes for vibe */
+  .shape { position: absolute; opacity: 0.55;
+    border: 1px solid rgba(99, 102, 241, 0.16);
+    background: linear-gradient(135deg, rgba(129, 140, 248, 0.10), rgba(167, 139, 250, 0.04));
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.4); }
+  .sh1 { width: 90px; height: 90px; top: 60px; left: 38px; border-radius: 22px; transform: rotate(-12deg); }
+  .sh2 { width: 56px; height: 56px; bottom: 70px; left: 120px; border-radius: 50%; }
+  .sh3 { width: 64px; height: 64px; top: 40px; left: 600px; border-radius: 16px; transform: rotate(14deg); }
+
+  .wrap { position: relative; z-index: 2; height: 100%;
+    display: grid; grid-template-columns: 1.04fr 0.96fr; align-items: center;
+    padding: 0 72px; column-gap: 30px; }
+
+  /* ---- left ---- */
+  .brandline { display: flex; align-items: center; gap: 11px; margin-bottom: 26px; }
+  .brandmark { width: 40px; height: 40px; background: #1e1b4b;
+    -webkit-mask: var(--logo) center / contain no-repeat; mask: var(--logo) center / contain no-repeat; }
+  .brandname { font-size: 24px; font-weight: 800; color: #1e1b4b; letter-spacing: -0.02em; }
+
+  h1 { margin: 0; color: #15132e; font-size: 56px; line-height: 1.06;
+    letter-spacing: -0.035em; font-weight: 800; max-width: 640px; }
+  h1 .u { position: relative; color: #4f46e5; white-space: nowrap; }
+  h1 .u::after { content: ''; position: absolute; left: 0; right: 0; bottom: 2px;
+    height: 5px; border-radius: 4px; background: linear-gradient(90deg, #4f46e5, #7c3aed); }
+
+  p.sub { margin: 26px 0 0; max-width: 540px; color: #4b4870;
+    font-size: 22px; line-height: 1.5; font-weight: 500; }
+  p.sub b { color: #2a2658; font-weight: 800; }
+
+  .ctas { display: flex; align-items: center; gap: 18px; margin-top: 34px; }
+  .btn { display: inline-flex; align-items: center; gap: 11px;
+    padding: 16px 26px; border-radius: 13px; font-weight: 800; font-size: 18px;
+    background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%); color: #fff;
+    box-shadow: 0 18px 34px -12px rgba(79, 70, 229, 0.55), inset 0 1px 0 rgba(255,255,255,0.2); }
+  .btn svg { width: 20px; height: 20px; }
+  .ctas .free { font-size: 16px; font-weight: 700; color: #56557a; }
+
+  .meta { margin-top: 26px; display: flex; align-items: center; gap: 14px;
+    font-size: 15px; font-weight: 600; color: #6b6a8c; }
+  .meta .stars { color: #f59e0b; letter-spacing: 1px; font-size: 16px; }
+  .meta .sep { width: 4px; height: 4px; border-radius: 50%; background: #c7c6d8; }
+
+  /* ---- right visual ---- */
+  .scene { position: relative; height: 460px; }
+
+  .browser { position: absolute; top: 34px; left: 0; right: 84px; height: 392px;
+    background: #fff; border: 1px solid #dcdded; border-radius: 16px; overflow: hidden;
+    box-shadow: 0 50px 90px -44px rgba(40, 33, 120, 0.45); }
+  .bbar { height: 42px; background: #f3f3fb; border-bottom: 1px solid #ececf6;
+    display: flex; align-items: center; gap: 10px; padding: 0 14px; }
+  .bbar .tl { display: flex; gap: 7px; }
+  .bbar .tl i { width: 10px; height: 10px; border-radius: 50%; display: block; }
+  .bbar .tl .r { background: #ff5f57; } .bbar .tl .y { background: #febc2e; } .bbar .tl .g { background: #28c840; }
+  .bbar .url { flex: 1; height: 22px; border-radius: 999px; background: #fff; border: 1px solid #e6e6f2; }
+  .bpage { padding: 22px 26px; }
+  .bhead { display: flex; align-items: center; gap: 13px; margin-bottom: 20px; }
+  .bhead .lg { width: 40px; height: 40px; border-radius: 11px; flex: none;
+    background: linear-gradient(135deg, #4f46e5, #7c3aed); }
+  .bhead .nm { font-size: 18px; font-weight: 800; color: #2c2950; }
+  .bhead .role { font-size: 14px; color: #8a8ca8; font-weight: 600; }
+  .field { display: flex; align-items: center; gap: 14px; margin-bottom: 14px; }
+  .field .lb { width: 80px; font-size: 13.5px; font-weight: 700; color: #9a9cb4; flex: none; }
+  .field .vl { flex: 1; height: 38px; border-radius: 10px; background: #eef0ff;
+    border: 1px solid #dde1ff; display: flex; align-items: center; padding: 0 15px;
+    font-size: 15px; font-weight: 600; color: #3a3760; }
+
+  /* extension panel */
+  .panel { position: absolute; top: 86px; right: 0; width: 300px;
+    background: #fff; border: 1px solid #ececf6; border-radius: 18px;
+    box-shadow: 0 44px 84px -34px rgba(40, 33, 120, 0.5); padding: 18px 18px 20px; z-index: 4; }
+  .panel-head { display: flex; align-items: center; gap: 9px; margin-bottom: 15px; }
+  .panel-mark { width: 24px; height: 24px; background: #1e1b4b;
+    -webkit-mask: var(--logo) center / contain no-repeat; mask: var(--logo) center / contain no-repeat; }
+  .panel-title { font-size: 16px; font-weight: 800; color: #1e1b4b; }
+  .item { display: flex; align-items: center; gap: 12px; padding: 12px 13px;
+    border-radius: 12px; border: 1px solid #eeeef7; margin-bottom: 9px; background: #fcfcff; }
+  .item .ico { width: 32px; height: 32px; border-radius: 9px; flex: none;
+    display: flex; align-items: center; justify-content: center; }
+  .ico svg { width: 17px; height: 17px; }
+  .ico.a { background: #eef0ff; color: #4f46e5; }
+  .ico.b { background: #f3ecff; color: #7c3aed; }
+  .ico.c { background: #fff1e8; color: #ea8a3c; }
+  .item .lbl { font-size: 14.5px; font-weight: 700; color: #2c2950; }
+  .panel-foot { display: flex; align-items: center; gap: 11px; margin-top: 13px; }
+  .skel { flex: 1; height: 36px; border-radius: 10px; background: #f1f1fa; }
+  .fill-btn { display: inline-flex; align-items: center; gap: 7px; padding: 11px 18px;
+    border-radius: 11px; font-weight: 800; font-size: 14px; color: #fff;
+    background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+    box-shadow: 0 12px 22px -10px rgba(79,70,229,0.6); }
+  .fill-btn svg { width: 15px; height: 15px; }
+
+  /* floating badges */
+  .badge { position: absolute; display: inline-flex; align-items: center; gap: 9px;
+    background: #fff; border: 1px solid #e7e8f4; border-radius: 12px; padding: 11px 15px;
+    font-size: 14.5px; font-weight: 800; color: #2c2950;
+    box-shadow: 0 24px 44px -22px rgba(40, 33, 120, 0.45); z-index: 6; }
+  .badge .ic { width: 24px; height: 24px; border-radius: 7px; flex: none;
+    display: flex; align-items: center; justify-content: center; }
+  .badge .ic svg { width: 14px; height: 14px; }
+  .badge-1 { top: 4px; left: 18px; }
+  .badge-1 .ic { background: #eef0ff; color: #4f46e5; }
+  .badge-2 { bottom: 6px; left: 60px; }
+  .badge-2 .ic { background: #e9f7f0; color: #15a673; }
+</style>
+</head>
+<body>
+  <div class="stage">
+    <span class="shape sh1"></span>
+    <span class="shape sh2"></span>
+    <span class="shape sh3"></span>
+
+    <div class="wrap">
+      <!-- LEFT -->
+      <div>
+        <div class="brandline">
+          <span class="brandmark"></span>
+          <span class="brandname">Emplorio</span>
+        </div>
+        <h1>Apply to <span class="u">10 roles</span> in the time it took to apply to one.</h1>
+        <p class="sub">Emplorio autofills every application, drafts tailored cover letters, and tracks each role. <b>Free to use, private by design.</b></p>
+        <div class="ctas">
+          <span class="btn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="4"/><line x1="21.17" y1="8" x2="12" y2="8"/><line x1="3.95" y1="6.06" x2="8.54" y2="14"/><line x1="10.88" y1="21.94" x2="15.46" y2="14"/></svg>
+            Add to Chrome
+          </span>
+          <span class="free">Free forever · No card needed</span>
+        </div>
+        <div class="meta">
+          <span class="stars">★ ★ ★ ★ ★</span>
+          <span class="sep"></span>
+          <span>Works on 9 major ATS</span>
+          <span class="sep"></span>
+          <span>Bring your own AI key</span>
+        </div>
+      </div>
+
+      <!-- RIGHT -->
+      <div class="scene">
+        <div class="browser">
+          <div class="bbar">
+            <span class="tl"><i class="r"></i><i class="y"></i><i class="g"></i></span>
+            <span class="url"></span>
+          </div>
+          <div class="bpage">
+            <div class="bhead">
+              <span class="lg"></span>
+              <div>
+                <div class="nm">Software Engineer</div>
+                <div class="role">Vercel · Remote</div>
+              </div>
+            </div>
+            <div class="field"><span class="lb">Name</span><span class="vl">Alex Morgan</span></div>
+            <div class="field"><span class="lb">Email</span><span class="vl">alex.morgan@email.com</span></div>
+            <div class="field"><span class="lb">Phone</span><span class="vl">+44 7700 900 000</span></div>
+            <div class="field"><span class="lb">Location</span><span class="vl">London, UK</span></div>
+          </div>
+        </div>
+
+        <div class="badge badge-1">
+          <span class="ic"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M13 2 3 14h7l-1 8 10-12h-7z"/></svg></span>
+          14 fields filled
+        </div>
+        <div class="badge badge-2">
+          <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>
+          Cover letter drafted
+        </div>
+
+        <div class="panel">
+          <div class="panel-head">
+            <span class="panel-mark"></span>
+            <span class="panel-title">Emplorio</span>
+          </div>
+          <div class="item">
+            <span class="ico a"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"/><line x1="7" y1="9" x2="15" y2="9"/><line x1="7" y1="13" x2="12" y2="13"/></svg></span>
+            <span class="lbl">Autofill Applications</span>
+          </div>
+          <div class="item">
+            <span class="ico b"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 4.6L18.5 9.5l-4.6 1.9L12 16l-1.9-4.6L5.5 9.5l4.6-1.9z"/></svg></span>
+            <span class="lbl">AI Cover Letters</span>
+          </div>
+          <div class="item">
+            <span class="ico c"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="20" x2="20" y2="20"/><rect x="6" y="11" width="3" height="7" rx="1"/><rect x="11" y="6" width="3" height="12" rx="1"/><rect x="16" y="14" width="3" height="4" rx="1"/></svg></span>
+            <span class="lbl">Application Tracker</span>
+          </div>
+          <div class="panel-foot">
+            <span class="skel"></span>
+            <span class="fill-btn">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M13 2 3 14h7l-1 8 10-12h-7z"/></svg>
+              Autofill
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
