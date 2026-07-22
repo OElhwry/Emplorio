@@ -334,6 +334,7 @@ The visual language, brand mark, marketing site, and Chrome Web Store assets wer
 | [**Coolors**](https://coolors.co) | Indigo / purple gradient palette tuning |
 | [**Radix UI**](https://www.radix-ui.com) | Accessible accordion + primitives in the marketing site |
 | [**Vercel**](https://vercel.com) · [**Fly.io**](https://fly.io) · [**Neon**](https://neon.tech) · [**Resend**](https://resend.com) | Hosting, database, transactional email |
+| [**Sez**](https://sez.c-sharptutorial.com/) | Generate, preview, and apply color palettes to HTML website themes |
 
 Brand identity: indigo `#4f46e5` → violet `#818cf8` gradient on a warm dark `#0b0a18` canvas. Dark mode is the default; light mode is hand-tuned with warm-ink shadows rather than flat slate.
 
